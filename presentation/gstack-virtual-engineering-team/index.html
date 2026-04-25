@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="../../!/claude-jumping.svg">
+    <title>gstack — Your Virtual Engineering Team</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #fff; color: #1a1a1a; line-height: 1.6; }
+        .slide { display: none; min-height: 100vh; padding: 60px 80px; max-width: 1200px; margin: 0 auto; }
+        .slide.active { display: block; }
+        h1 { font-size: 2.5rem; font-weight: 600; margin-bottom: 40px; color: #1a1a1a; border-bottom: 2px solid #e5e5e5; padding-bottom: 20px; }
+        h2 { font-size: 1.8rem; font-weight: 600; margin-bottom: 24px; color: #2a2a2a; }
+        h3 { font-size: 1.3rem; font-weight: 600; margin: 24px 0 12px 0; color: #333; }
+        p { font-size: 1.1rem; margin-bottom: 16px; color: #444; }
+        code { background: #f0f0f0; padding: 2px 6px; border-radius: 4px; font-family: 'SF Mono', Monaco, 'Courier New', monospace; font-size: 0.95rem; }
+        .slide.title-slide.active { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; text-align: center; padding: 40px; }
+        .title-slide h1 { font-size: 3.5rem; font-weight: 700; margin-bottom: 20px; border-bottom: none; padding-bottom: 0; }
+        .title-slide .subtitle { font-size: 1.4rem; color: #555; margin-bottom: 50px; font-weight: 400; }
+        .slide.section-slide.active { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; text-align: center; padding: 40px; }
+        .section-slide h1 { font-size: 3rem; font-weight: 700; border-bottom: none; padding-bottom: 0; margin-bottom: 16px; }
+        .section-slide .section-number { font-size: 1.1rem; text-transform: uppercase; letter-spacing: 3px; color: #999; margin-bottom: 20px; }
+        .section-slide .section-desc { font-size: 1.2rem; color: #666; max-width: 600px; }
+        .trigger-box { background: #f8f9fa; border-left: 4px solid #1a1a1a; padding: 20px 24px; margin: 24px 0; }
+        .trigger-box h4 { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: #666; margin-bottom: 8px; }
+        .trigger-box p { font-size: 1.05rem; color: #333; margin: 0; }
+        .how-to-trigger { background: #e8f5e9; border-left: 4px solid #4caf50; padding: 20px 24px; margin: 16px 0 24px 0; }
+        .how-to-trigger h4 { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: #2e7d32; margin-bottom: 8px; }
+        .how-to-trigger p { font-size: 1.05rem; color: #1b5e20; margin: 0; }
+        .how-to-trigger code { background: rgba(0,0,0,0.08); padding: 2px 6px; border-radius: 4px; font-family: 'SF Mono', Monaco, 'Courier New', monospace; font-size: 0.95rem; }
+        .warning-box { background: #fff3e0; border-left: 4px solid #ff9800; padding: 20px 24px; margin: 16px 0 24px 0; }
+        .warning-box h4 { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: #e65100; margin-bottom: 8px; }
+        .warning-box p { font-size: 1.05rem; color: #bf360c; margin: 0; }
+        .code-block { background: #1a1a1a; color: #e5e5e5; padding: 20px 24px; border-radius: 8px; font-family: 'SF Mono', Monaco, 'Courier New', monospace; font-size: 0.9rem; overflow-x: auto; margin: 20px 0; white-space: pre; line-height: 1.7; }
+        .code-block .comment { color: #6a9955; }
+        .code-block .key { color: #9cdcfe; }
+        .code-block .string { color: #ce9178; }
+        .code-block .cmd { color: #dcdcaa; }
+        .use-cases { margin: 24px 0; }
+        .use-case-item { display: flex; align-items: flex-start; margin-bottom: 12px; padding: 14px 20px; background: #fafafa; border-radius: 8px; }
+        .use-case-icon { font-size: 1.5rem; margin-right: 16px; min-width: 32px; }
+        .use-case-text { flex: 1; }
+        .use-case-text strong { display: block; font-size: 1.05rem; color: #1a1a1a; margin-bottom: 4px; }
+        .use-case-text span { font-size: 0.95rem; color: #666; }
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin: 24px 0; }
+        .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin: 24px 0; }
+        .col-card { background: #f8f9fa; padding: 24px; border-radius: 8px; }
+        .col-card h4 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: #666; margin-bottom: 12px; }
+        .col-card.good { border-left: 4px solid #4caf50; }
+        .col-card.bad { border-left: 4px solid #f44336; }
+        .col-card.accent { border-left: 4px solid #2196f3; }
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin: 24px 0; }
+        .info-card { background: #f8f9fa; padding: 24px; border-radius: 8px; }
+        .info-card h4 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: #666; margin-bottom: 12px; }
+        .matcher-tag { display: inline-block; padding: 4px 10px; background: #e9ecef; border-radius: 4px; font-family: 'SF Mono', Monaco, 'Courier New', monospace; font-size: 0.85rem; margin: 4px 4px 4px 0; color: #495057; }
+        .toc-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 32px; }
+        .toc-item { display: flex; align-items: center; padding: 16px 20px; background: #f8f9fa; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+        .toc-item:hover { background: #eee; }
+        .toc-number { width: 28px; height: 28px; background: #1a1a1a; color: #fff; border-radius: 50%; text-align: center; line-height: 28px; font-size: 0.85rem; margin-right: 12px; font-weight: 600; flex-shrink: 0; }
+        .toc-name { font-size: 1rem; color: #1a1a1a; }
+        .feature-list { list-style: none; margin: 24px 0; }
+        .feature-list li { padding: 12px 0; border-bottom: 1px solid #eee; font-size: 1.05rem; }
+        .feature-list li:last-child { border-bottom: none; }
+        .navigation { position: fixed; bottom: 30px; right: 30px; display: flex; gap: 12px; z-index: 100; }
+        .nav-btn { width: 50px; height: 50px; border: 2px solid #1a1a1a; background: #fff; border-radius: 50%; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+        .nav-btn:hover { background: #1a1a1a; color: #fff; }
+        .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        .progress { position: fixed; top: 0; left: 0; height: 4px; background: #1a1a1a; transition: width 0.3s; z-index: 100; }
+        .slide-counter { position: fixed; bottom: 40px; left: 40px; font-size: 0.9rem; color: #999; }
+        .keyboard-hint { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); font-size: 0.85rem; color: #999; }
+        .keyboard-hint kbd { background: #f0f0f0; padding: 4px 8px; border-radius: 4px; border: 1px solid #ddd; font-family: inherit; }
+        .header-logo { position: fixed; top: 20px; right: 40px; width: 100px; height: 65px; z-index: 50; }
+        .header-logo img { width: 100%; height: 100%; }
+        .title-logo { width: 200px; height: 130px; margin-bottom: 40px; }
+        .title-logo img { width: 100%; height: 100%; }
+        /* Journey Bar — vertical, right side below mascot */
+        .journey-bar { position: fixed; top: 95px; right: 62px; display: flex; flex-direction: column; align-items: center; z-index: 99; gap: 6px; }
+        .journey-bar.hidden { display: none; }
+        .journey-track-wrap { position: relative; display: flex; align-items: stretch; gap: 4px; }
+        .journey-track { width: 20px; height: 280px; background: #e5e5e5; border-radius: 10px; overflow: hidden; position: relative; flex-shrink: 0; }
+        .journey-fill { position: absolute; bottom: 0; width: 100%; border-radius: 10px; transition: height 0.4s ease, background-color 0.4s ease; height: 0%; }
+        .journey-level-label { font-size: 0.65rem; color: #777; font-weight: 400; }
+        /* Level tick marks beside the journey track */
+        .journey-ticks { display: flex; flex-direction: column; justify-content: space-between; height: 280px; padding: 2px 0; }
+        .journey-tick { font-size: 0.45rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; color: #999; white-space: nowrap; line-height: 1; }
+        /* Level badge shown on level-transition slides */
+        .level-badge { display: inline-block; background: #e8f5e9; color: #2e7d32; font-size: 0.75rem; font-weight: 700; padding: 2px 8px; border-radius: 12px; margin-left: 12px; vertical-align: middle; }
+        /* Celebration slide */
+        .celebration { font-size: 4rem; margin-bottom: 24px; }
+        /* Sprint flow */
+        .sprint-flow { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 32px 0; flex-wrap: wrap; }
+        .sprint-step { background: #f8f9fa; border: 1px solid #e5e5e5; border-radius: 8px; padding: 12px 18px; font-weight: 600; font-size: 0.95rem; color: #1a1a1a; }
+        .sprint-arrow { color: #999; font-size: 1.2rem; }
+        /* Quote block */
+        .quote-block { background: #f8f9fa; border-left: 4px solid #1a1a1a; padding: 28px 32px; margin: 32px 0; border-radius: 0 8px 8px 0; }
+        .quote-block blockquote { font-size: 1.4rem; font-style: italic; color: #333; line-height: 1.5; margin: 0 0 12px 0; }
+        .quote-block cite { font-size: 0.95rem; color: #888; font-style: normal; }
+        /* Stat highlight */
+        .stat-highlight { text-align: center; padding: 24px; background: #f8f9fa; border-radius: 8px; }
+        .stat-highlight .stat-number { font-size: 3rem; font-weight: 700; color: #1a1a1a; line-height: 1; }
+        .stat-highlight .stat-label { font-size: 0.95rem; color: #666; margin-top: 8px; }
+    </style>
+</head>
+<body>
+    <div class="progress" id="progress"></div>
+    <div class="journey-bar hidden" id="journeyBar">
+        <div class="journey-track-wrap">
+            <div class="journey-track"><div class="journey-fill" id="journeyFill"></div></div>
+            <div class="journey-ticks">
+                <span class="journey-tick">Pro</span>
+                <span class="journey-tick">High</span>
+                <span class="journey-tick">Med</span>
+                <span class="journey-tick">Low</span>
+            </div>
+        </div>
+        <span class="journey-level-label" id="journeyLevelLabel">Current = <strong>Low</strong></span>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SECTION 0: INTRODUCTION (Slides 1-2)                         -->
+    <!-- ============================================================ -->
+
+    <!-- Slide 1: Title -->
+    <div class="slide active title-slide" data-slide="1">
+        <div class="title-logo">
+            <img src="../../!/claude-jumping.svg" alt="Claude Code mascot jumping" />
+        </div>
+        <h1>gstack</h1>
+        <p class="subtitle">Your Virtual Engineering Team</p>
+        <p style="font-size: 1.1rem; color: #555; margin-bottom: 12px;">23 AI-powered specialists &mdash; all slash commands, all Markdown, all free</p>
+        <p style="margin-top: 24px; font-size: 0.95rem; color: #888;">By Garry Tan, President &amp; CEO of Y Combinator &mdash; MIT License &mdash; 77K+ GitHub Stars</p>
+    </div>
+
+    <!-- Slide 2: The Problem -->
+    <div class="slide" data-slide="2">
+        <h1>The Problem: One Person, Team Scale</h1>
+        <div class="quote-block">
+            <blockquote>"I don't think I've typed like a line of code probably since December."</blockquote>
+            <cite>&mdash; Andrej Karpathy, January 2025</cite>
+        </div>
+        <div class="trigger-box">
+            <h4>The Question</h4>
+            <p>How does one person ship like a team of twenty?</p>
+        </div>
+        <div class="how-to-trigger">
+            <h4>Garry Tan's Answer</h4>
+            <p>gstack &mdash; his open source software factory built on top of Claude Code. 23 opinionated slash-command skills that act as specialized team roles: CEO, Designer, Eng Manager, Release Manager, Doc Engineer, QA Lead, Security Officer, and more.</p>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SECTION 1: THE SPRINT WORKFLOW (Slides 3-4)                  -->
+    <!-- ============================================================ -->
+
+    <!-- Slide 3: Section Divider — The Sprint Workflow -->
+    <div class="slide section-slide" data-slide="3" data-level="low">
+        <p class="section-number">Section 1</p>
+        <h1>The Sprint Workflow</h1>
+        <p class="section-desc">Level: Low &mdash; a structured process that makes parallelism work.</p>
+    </div>
+
+    <!-- Slide 4: Sprint Process -->
+    <div class="slide" data-slide="4">
+        <h1>Think &rarr; Plan &rarr; Build &rarr; Review &rarr; Test &rarr; Ship &rarr; Reflect</h1>
+        <div class="sprint-flow">
+            <span class="sprint-step">Think</span>
+            <span class="sprint-arrow">&#8594;</span>
+            <span class="sprint-step">Plan</span>
+            <span class="sprint-arrow">&#8594;</span>
+            <span class="sprint-step">Build</span>
+            <span class="sprint-arrow">&#8594;</span>
+            <span class="sprint-step">Review</span>
+            <span class="sprint-arrow">&#8594;</span>
+            <span class="sprint-step">Test</span>
+            <span class="sprint-arrow">&#8594;</span>
+            <span class="sprint-step">Ship</span>
+            <span class="sprint-arrow">&#8594;</span>
+            <span class="sprint-step">Reflect</span>
+        </div>
+        <div class="trigger-box">
+            <h4>How Skills Chain Together</h4>
+            <p>Each skill feeds into the next. <code>/office-hours</code> writes a design doc that <code>/plan-ceo-review</code> reads. <code>/plan-eng-review</code> writes a test plan that <code>/qa</code> picks up. Nothing falls through the cracks because every step knows what came before.</p>
+        </div>
+        <div class="warning-box">
+            <h4>Why Process Matters</h4>
+            <p>Without structure, ten agents is ten sources of chaos. The sprint process is what makes parallelism work.</p>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SECTION 2: THE SPECIALISTS (Slides 5-10)                     -->
+    <!-- ============================================================ -->
+
+    <!-- Slide 5: Section Divider — The Specialists -->
+    <div class="slide section-slide" data-slide="5" data-level="medium">
+        <p class="section-number">Section 2</p>
+        <h1>The Specialists</h1>
+        <p class="section-desc">Level: Medium &mdash; 23 AI roles spanning every phase of software delivery.</p>
+    </div>
+
+    <!-- Slide 6: Think & Plan -->
+    <div class="slide" data-slide="6">
+        <h1>Think &amp; Plan Specialists</h1>
+        <div class="use-cases">
+            <div class="use-case-item">
+                <span class="use-case-icon">&#128161;</span>
+                <div class="use-case-text">
+                    <strong>/office-hours &mdash; YC Office Hours</strong>
+                    <span>6 forcing questions that reframe your product — demand reality, status quo, moat, and more</span>
+                </div>
+            </div>
+            <div class="use-case-item">
+                <span class="use-case-icon">&#128081;</span>
+                <div class="use-case-text">
+                    <strong>/plan-ceo-review &mdash; CEO/Founder Mode</strong>
+                    <span>Rethinks the problem from scratch, finds the 10-star product, challenges every premise</span>
+                </div>
+            </div>
+            <div class="use-case-item">
+                <span class="use-case-icon">&#9881;</span>
+                <div class="use-case-text">
+                    <strong>/plan-eng-review &mdash; Eng Manager</strong>
+                    <span>Locks architecture, data flow, diagrams, edge cases — execution plan before a line is written</span>
+                </div>
+            </div>
+            <div class="use-case-item">
+                <span class="use-case-icon">&#127912;</span>
+                <div class="use-case-text">
+                    <strong>/plan-design-review &mdash; Senior Designer</strong>
+                    <span>Rates every design dimension 0–10, detects AI slop patterns, ensures taste before build</span>
+                </div>
+            </div>
+            <div class="use-case-item">
+                <span class="use-case-icon">&#9889;</span>
+                <div class="use-case-text">
+                    <strong>/autoplan &mdash; Full Pipeline</strong>
+                    <span>Runs CEO &#8594; design &#8594; eng review automatically in sequence — one command, three perspectives</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 7: Build & Review -->
+    <div class="slide" data-slide="7">
+        <h1>Build &amp; Review Specialists</h1>
+        <div class="use-cases">
+            <div class="use-case-item">
+                <span class="use-case-icon">&#128269;</span>
+                <div class="use-case-text">
+                    <strong>/review &mdash; Staff Engineer</strong>
+                    <span>Finds bugs that pass CI but blow up in production — SQL safety, trust boundaries, race conditions</span>
+                </div>
+            </div>
+            <div class="use-case-item">
+                <span class="use-case-icon">&#128300;</span>
+                <div class="use-case-text">
+                    <strong>/investigate &mdash; Debugger</strong>
+                    <span>Systematic root-cause analysis — no fixes without investigation first</span>
+                </div>
+            </div>
+            <div class="use-case-item">
+                <span class="use-case-icon">&#127912;</span>
+                <div class="use-case-text">
+                    <strong>/design-review &mdash; Designer Who Codes</strong>
+                    <span>Audits visual inconsistency, spacing, hierarchy — then fixes it with atomic commits</span>
+                </div>
+            </div>
+            <div class="use-case-item">
+                <span class="use-case-icon">&#127775;</span>
+                <div class="use-case-text">
+                    <strong>/design-shotgun &mdash; Design Explorer</strong>
+                    <span>Generates 4–6 AI mockup variants with taste memory — opens a comparison board</span>
+                </div>
+            </div>
+            <div class="use-case-item">
+                <span class="use-case-icon">&#128187;</span>
+                <div class="use-case-text">
+                    <strong>/design-html &mdash; Design Engineer</strong>
+                    <span>Production HTML with Pretext computed layout — 30KB, zero dependencies</span>
+                </div>
+            </div>
+            <div class="use-case-item">
+                <span class="use-case-icon">&#129302;</span>
+                <div class="use-case-text">
+                    <strong>/codex &mdash; Second Opinion</strong>
+                    <span>Independent review via OpenAI Codex CLI — cross-model analysis catches blind spots</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 8: Test & Ship -->
+    <div class="slide" data-slide="8">
+        <h1>Test &amp; Ship Specialists</h1>
+        <div class="use-cases">
+            <div class="use-case-item">
+                <span class="use-case-icon">&#127959;</span>
+                <div class="use-case-text">
+                    <strong>/qa &mdash; QA Lead</strong>
+                    <span>Opens a real browser, clicks through flows, finds and fixes bugs with regression tests</span>
+                </div>
+            </div>
+            <div class="use-case-item">
+                <span class="use-case-icon">&#128274;</span>
+                <div class="use-case-text">
+                    <strong>/cso &mdash; Chief Security Officer</strong>
+                    <span>OWASP Top 10 + STRIDE threat model — zero-noise, infrastructure-first security audit</span>
+                </div>
+            </div>
+            <div class="use-case-item">
+                <span class="use-case-icon">&#128666;</span>
+                <div class="use-case-text">
+                    <strong>/ship &mdash; Release Engineer</strong>
+                    <span>Sync main, run tests, audit coverage, push, open PR — the full release checklist automated</span>
+                </div>
+            </div>
+            <div class="use-case-item">
+                <span class="use-case-icon">&#128640;</span>
+                <div class="use-case-text">
+                    <strong>/land-and-deploy</strong>
+                    <span>Merges PR, waits for CI, verifies production health — no manual hand-off</span>
+                </div>
+            </div>
+            <div class="use-case-item">
+                <span class="use-case-icon">&#128202;</span>
+                <div class="use-case-text">
+                    <strong>/canary &mdash; Post-Deploy Monitor</strong>
+                    <span>Continuous monitoring loop after deploy — console errors, performance regressions, page health</span>
+                </div>
+            </div>
+            <div class="use-case-item">
+                <span class="use-case-icon">&#128221;</span>
+                <div class="use-case-text">
+                    <strong>/document-release + /retro</strong>
+                    <span>Updates all project docs to match what shipped, then runs a team-aware weekly retrospective</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 9: Power Tools -->
+    <div class="slide" data-slide="9">
+        <h1>Power Tools</h1>
+        <div class="use-cases">
+            <div class="use-case-item">
+                <span class="use-case-icon">&#127758;</span>
+                <div class="use-case-text">
+                    <strong>/browse &mdash; Real Chromium Browser</strong>
+                    <span>Anti-bot stealth, ~100ms per command — lets agents actually click through your live app</span>
+                </div>
+            </div>
+            <div class="use-case-item">
+                <span class="use-case-icon">&#129309;</span>
+                <div class="use-case-text">
+                    <strong>/pair-agent &mdash; Cross-Agent Coordination</strong>
+                    <span>Share a browser between Claude, Codex, and Hermes — multi-agent workflows on the same session</span>
+                </div>
+            </div>
+            <div class="use-case-item">
+                <span class="use-case-icon">&#128736;</span>
+                <div class="use-case-text">
+                    <strong>/careful, /freeze, /guard &mdash; Safety Guardrails</strong>
+                    <span>Warn before destructive commands, restrict edits to a directory, or combine both into full safety mode</span>
+                </div>
+            </div>
+            <div class="use-case-item">
+                <span class="use-case-icon">&#129504;</span>
+                <div class="use-case-text">
+                    <strong>/learn &mdash; Persistent Memory</strong>
+                    <span>Compounds knowledge across sessions — the agent remembers patterns it discovers over time</span>
+                </div>
+            </div>
+            <div class="use-case-item">
+                <span class="use-case-icon">&#127760;</span>
+                <div class="use-case-text">
+                    <strong>GStack Browser</strong>
+                    <span>AI-controlled Chromium with a sidebar agent — natural language browser automation built in</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 10: The Full Team Overview -->
+    <div class="slide" data-slide="10">
+        <h1>The Full Roster at a Glance</h1>
+        <div class="three-col">
+            <div class="col-card">
+                <h4>Think &amp; Plan</h4>
+                <p><code>/office-hours</code></p>
+                <p><code>/plan-ceo-review</code></p>
+                <p><code>/plan-eng-review</code></p>
+                <p><code>/plan-design-review</code></p>
+                <p><code>/autoplan</code></p>
+            </div>
+            <div class="col-card">
+                <h4>Build &amp; Review</h4>
+                <p><code>/review</code></p>
+                <p><code>/investigate</code></p>
+                <p><code>/design-review</code></p>
+                <p><code>/design-shotgun</code></p>
+                <p><code>/design-html</code></p>
+                <p><code>/codex</code></p>
+            </div>
+            <div class="col-card">
+                <h4>Test, Ship &amp; Tools</h4>
+                <p><code>/qa</code></p>
+                <p><code>/cso</code></p>
+                <p><code>/ship</code></p>
+                <p><code>/land-and-deploy</code></p>
+                <p><code>/canary</code></p>
+                <p><code>/document-release</code></p>
+                <p><code>/retro</code></p>
+                <p><code>/browse</code></p>
+                <p><code>/pair-agent</code></p>
+                <p><code>/careful</code> / <code>/freeze</code> / <code>/guard</code></p>
+                <p><code>/learn</code></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SECTION 3: REAL-WORLD IMPACT (Slides 11-12)                  -->
+    <!-- ============================================================ -->
+
+    <!-- Slide 11: Section Divider — Real-World Impact -->
+    <div class="slide section-slide" data-slide="11" data-level="high">
+        <p class="section-number">Section 3</p>
+        <h1>Real-World Impact</h1>
+        <p class="section-desc">Level: High &mdash; what Garry shipped running gstack part-time while leading YC.</p>
+    </div>
+
+    <!-- Slide 12: Garry's Stats -->
+    <div class="slide" data-slide="12">
+        <h1>Garry's Stats &mdash; 60 Days of gstack</h1>
+        <div class="three-col" style="margin-bottom: 24px;">
+            <div class="stat-highlight">
+                <div class="stat-number">3</div>
+                <div class="stat-label">Production services shipped</div>
+            </div>
+            <div class="stat-highlight">
+                <div class="stat-number">40+</div>
+                <div class="stat-label">Features shipped in 60 days</div>
+            </div>
+            <div class="stat-highlight">
+                <div class="stat-number">~810x</div>
+                <div class="stat-label">His 2013 coding pace</div>
+            </div>
+        </div>
+        <div class="trigger-box">
+            <h4>The Numbers</h4>
+            <p>11,417 logical lines/day in 2025 vs. 14 logical lines/day in 2013. All done <strong>part-time</strong> while running Y Combinator.</p>
+        </div>
+        <div class="use-cases">
+            <div class="use-case-item">
+                <span class="use-case-icon">&#9889;</span>
+                <div class="use-case-text">
+                    <strong>10–15 Parallel Sprints</strong>
+                    <span>Regularly runs concurrent sprints using Conductor — multiple agents working simultaneously</span>
+                </div>
+            </div>
+            <div class="use-case-item">
+                <span class="use-case-icon">&#129302;</span>
+                <div class="use-case-text">
+                    <strong>10 AI Coding Agents</strong>
+                    <span>Works across Claude Code, OpenClaw, Codex CLI, Cursor, and 7 other agents — not just one</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SECTION 4: GETTING STARTED (Slides 13-14)                    -->
+    <!-- ============================================================ -->
+
+    <!-- Slide 13: Getting Started -->
+    <div class="slide" data-slide="13">
+        <h1>Getting Started in 30 Seconds</h1>
+        <div class="how-to-trigger">
+            <h4>Install</h4>
+            <div class="code-block"><span class="comment"># Clone gstack into your project</span>
+<span class="cmd">git clone</span> https://github.com/garrytan/gstack .claude/gstack
+<span class="cmd">cd</span> .claude/gstack &amp;&amp; ./setup.sh</div>
+        </div>
+        <h3>Recommended First Sprint</h3>
+        <div class="sprint-flow">
+            <span class="sprint-step">/office-hours</span>
+            <span class="sprint-arrow">&#8594;</span>
+            <span class="sprint-step">/plan-ceo-review</span>
+            <span class="sprint-arrow">&#8594;</span>
+            <span class="sprint-step">/review</span>
+            <span class="sprint-arrow">&#8594;</span>
+            <span class="sprint-step">/qa</span>
+            <span class="sprint-arrow">&#8594;</span>
+            <span class="sprint-step">/ship</span>
+        </div>
+        <div class="info-grid" style="margin-top: 24px;">
+            <div class="info-card">
+                <h4>Team Mode</h4>
+                <p>Add gstack as a git submodule so the whole team gets automatic updates.</p>
+                <div class="code-block" style="font-size: 0.8rem; margin: 8px 0;"><span class="cmd">git submodule add</span> https://github.com/garrytan/gstack</div>
+            </div>
+            <div class="info-card">
+                <h4>Works With</h4>
+                <p>OpenClaw, Codex CLI, Cursor, Hermes, and 7 other AI coding agents. The browser session is shareable across all of them via <code>/pair-agent</code>.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SECTION 5: PHILOSOPHY (Slides 14-15)                         -->
+    <!-- ============================================================ -->
+
+    <!-- Slide 14: Philosophy -->
+    <div class="slide" data-slide="14">
+        <h1>Philosophy</h1>
+        <div class="quote-block">
+            <blockquote>"That is not a copilot. That is a team."</blockquote>
+            <cite>&mdash; Garry Tan, on gstack</cite>
+        </div>
+        <div class="use-cases">
+            <div class="use-case-item">
+                <span class="use-case-icon">&#129504;</span>
+                <div class="use-case-text">
+                    <strong>Process Makes Parallelism Work</strong>
+                    <span>Without the sprint structure, ten agents is ten sources of chaos. The workflow is the force multiplier.</span>
+                </div>
+            </div>
+            <div class="use-case-item">
+                <span class="use-case-icon">&#128295;</span>
+                <div class="use-case-text">
+                    <strong>Fork It, Improve It, Make It Yours</strong>
+                    <span>All skills are plain Markdown. Customize every role, add your own specialists, adapt to your stack.</span>
+                </div>
+            </div>
+            <div class="use-case-item">
+                <span class="use-case-icon">&#128273;</span>
+                <div class="use-case-text">
+                    <strong>MIT License &mdash; Free and Open Source</strong>
+                    <span>No vendor lock-in. No pricing. Garry uses it himself. 77K+ stars. The community improves it.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 15: Thank You -->
+    <div class="slide title-slide" data-slide="15">
+        <div class="title-logo">
+            <img src="../../!/claude-jumping.svg" alt="Claude Code mascot jumping" />
+        </div>
+        <h1>Build Like a Team of Twenty</h1>
+        <p class="subtitle">github.com/garrytan/gstack</p>
+        <p style="margin-top: 40px; font-size: 1rem; color: #666;">MIT License &mdash; 77K+ stars &mdash; By Garry Tan, President &amp; CEO of Y Combinator</p>
+    </div>
+
+    <!-- Header Logo -->
+    <div class="header-logo">
+        <img src="../../!/claude-jumping.svg" alt="Claude Code mascot" />
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" id="prevBtn" onclick="prevSlide()">&#8592;</button>
+        <button class="nav-btn" id="nextBtn" onclick="nextSlide()">&#8594;</button>
+    </div>
+    <div class="slide-counter" id="slideCounter">1 / --</div>
+    <div class="keyboard-hint"><kbd>&#8592;</kbd> <kbd>&#8594;</kbd> or <kbd>Space</kbd> to navigate</div>
+
+    <script>
+        let currentSlide = 1;
+        const slides = document.querySelectorAll('[data-slide]');
+        const totalSlides = slides.length;
+
+        // Level definitions (order 1=bottom, 4=top)
+        const LEVELS = {
+            'low':    { order: 1, color: 'hsl(0, 70%, 45%)',   height: '25%',  label: 'Low' },
+            'medium': { order: 2, color: 'hsl(40, 70%, 45%)',  height: '50%',  label: 'Medium' },
+            'high':   { order: 3, color: 'hsl(80, 70%, 45%)',  height: '75%',  label: 'High' },
+            'pro':    { order: 4, color: 'hsl(120, 70%, 45%)', height: '100%', label: 'Pro' }
+        };
+
+        // Build slide-to-level map: inherit level from previous data-level slide
+        const SLIDE_LEVELS = {};
+        let lastLevel = null;
+        slides.forEach((s) => {
+            const num = parseInt(s.dataset.slide);
+            if (s.dataset.level) { lastLevel = s.dataset.level; }
+            SLIDE_LEVELS[num] = lastLevel;
+        });
+
+        let prevDisplayedLevel = null;
+
+        function updateJourneyBar(slideNum) {
+            const bar = document.getElementById('journeyBar');
+            const fill = document.getElementById('journeyFill');
+            const labelEl = document.getElementById('journeyLevelLabel');
+            if (slideNum <= 1) { bar.classList.add('hidden'); prevDisplayedLevel = null; return; }
+            bar.classList.remove('hidden');
+            const levelKey = SLIDE_LEVELS[slideNum];
+            if (!levelKey || !LEVELS[levelKey]) {
+                fill.style.height = '0%';
+                if (labelEl) { labelEl.innerHTML = ''; }
+                return;
+            }
+            const lvl = LEVELS[levelKey];
+            fill.style.height = lvl.height;
+            fill.style.backgroundColor = lvl.color;
+            if (labelEl) { labelEl.innerHTML = 'Current = <strong style="color:' + lvl.color + '">' + lvl.label + '</strong>'; }
+
+            // Show level badge when level changes
+            document.querySelectorAll('.level-badge').forEach(b => b.remove());
+            const slideEl = document.querySelector(`[data-slide="${slideNum}"]`);
+            if (slideEl && slideEl.dataset.level && slideEl.dataset.level !== prevDisplayedLevel) {
+                const h1 = slideEl.querySelector('h1');
+                if (h1) {
+                    const badge = document.createElement('span');
+                    badge.className = 'level-badge';
+                    badge.textContent = '\u2192 ' + lvl.label;
+                    h1.appendChild(badge);
+                }
+            }
+            prevDisplayedLevel = levelKey;
+        }
+
+        function showSlide(n) {
+            slides.forEach(s => s.classList.remove('active'));
+            if (n > totalSlides) currentSlide = totalSlides;
+            if (n < 1) currentSlide = 1;
+            document.querySelector(`[data-slide="${currentSlide}"]`).classList.add('active');
+            document.getElementById('slideCounter').textContent = `${currentSlide} / ${totalSlides}`;
+            document.getElementById('progress').style.width = `${(currentSlide / totalSlides) * 100}%`;
+            document.getElementById('prevBtn').disabled = currentSlide === 1;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides;
+            updateJourneyBar(currentSlide);
+        }
+        function nextSlide() { currentSlide++; showSlide(currentSlide); }
+        function prevSlide() { currentSlide--; showSlide(currentSlide); }
+        function goToSlide(n) { currentSlide = n; showSlide(currentSlide); }
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+            else if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
+        });
+        let touchStartX = 0;
+        document.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; });
+        document.addEventListener('touchend', (e) => {
+            const diff = touchStartX - e.changedTouches[0].clientX;
+            if (Math.abs(diff) > 50) { if (diff > 0) nextSlide(); else prevSlide(); }
+        });
+        showSlide(currentSlide);
+    </script>
+</body>
+</html>
