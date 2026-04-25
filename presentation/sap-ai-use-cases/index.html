@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Use Cases – Chat with your SAP Data</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script type="application/json" id="speaker-notes">
+[
+  "Welcome everyone. Today we're exploring six AI use cases that become possible when you connect a conversational AI agent directly to your SAP data. The core idea is simple: instead of logging into SAP transactions, running reports, or waiting for the BI team, your people just ask a question in Microsoft Teams — and get an answer in seconds, pulled live from SAP HANA. We'll walk through six domains: supply chain, sales, data governance, operations, finance, and HR. For each one, we'll show how it works, what SAP data it touches, and crucially — how to implement it step by step.",
+
+  "Here's a quick map of all six use cases. What they share is a common architecture: a Power Virtual Agent in Teams, Azure OpenAI generating SQL from natural language, an Azure Function executing that SQL on SAP HANA, and results returned as a natural language response — sometimes with charts. The beauty is that once this pipeline is built for one use case, expanding to the next is mostly a question of configuring the system prompt with the right table schema. Think of it as a platform, not six separate projects.",
+
+  "Let's start with supply chain. This is often the first use case teams pilot because the value is immediate and the data is well-structured. A planner or buyer can ask 'What is my current stock of Material A from Vendor X across all factories?' and get back a consolidated table — stock by plant, open purchase orders, in-transit quantities — all in one answer. Today that same question requires running MB52 for stock, ME2M for POs, and VL06 for deliveries, then manually consolidating in Excel. The bot does all of that in seconds. Key benefits: real-time visibility, no SAP training required for the end user, and the ability to set up proactive alerts — so instead of waiting for someone to ask, the bot can post a daily shortage report to a Teams channel automatically.",
+
+  "For supply chain implementation, the most important first step is to start with read-only queries and validate them against known SAP reports. Before users trust the bot, they need to see it return the same numbers as MB52. Once trust is established, the real productivity gains come from creating HANA views — pre-joined tables that combine stock, POs, and deliveries — so the bot queries a clean, simple view rather than composing complex joins on the fly. Chart output is a quick win: a bar chart of stock by warehouse in the Teams chat is far more impactful than a table of numbers. And the most advanced step is proactive alerting: schedule a Power Automate flow to run the safety-stock check every morning and post results automatically. This transforms the bot from a Q&A tool into a supply chain watchdog.",
+
+  "Use case two is sales and demand trend analysis. This is conversational OLAP — the ability to slice and dice revenue data the way an analyst would, but without any tool. A sales VP can ask 'How are sales progressing for Product Z over the last 6 weeks?' and get back a week-by-week breakdown with the top customer highlighted. What makes this powerful is the follow-up: they can immediately ask 'Which customer caused the dip in week 43?' and the bot answers without them having to re-specify the product or time period — it holds context across the conversation. Add chart output, and that trend line appears right in the Teams chat. For field reps, this means they can check a customer's purchase history before walking into a meeting, without needing SAP access at all.",
+
+  "For sales implementation, the most critical step is defining common queries in the system prompt with few-shot examples — literally showing the LLM how to translate '6-week sales trend for Product Z' into the correct SQL. Date intelligence is the next challenge: phrases like 'last quarter' are ambiguous unless you define fiscal periods explicitly. The Power Automate flow can intercept these phrases and inject actual date ranges before they reach the LLM. For performance, maintain pre-aggregated summary tables — weekly sales by product and region — so queries return in under a second even on large datasets. And always test multi-turn conversations: a user who says 'show me week 43 orders' after a trend query shouldn't have to repeat which product they meant. Verify conversation history is passed correctly in the OpenAI API payload.",
+
+  "Use case three is data quality and compliance checking. The example from the source document is perfect: 'Show me sold products that have incomplete owner data.' The bot translates this into a SQL query that joins sold products with the material master, filters for null owner fields, and returns a list with product names and last sold dates. What used to require an ABAP developer to write a custom report now takes a data steward thirty seconds. The broader principle here is that any business rule expressible as a SQL WHERE clause — missing fields, out-of-range values, orphaned records — can be turned into a conversational query. This empowers business users to own their data quality, rather than waiting for IT.",
+
+  "Implementation for data quality has a few important patterns. First, pre-define the check queries as stored SQL logic rather than letting the LLM generate them ad-hoc — data quality rules must be precise, and a slightly wrong query gives wrong audit results. Second, use a count-first pattern: the bot runs COUNT first, and if there are more than 20 results, it summarises and offers to export to SharePoint rather than flooding the chat. Third, consider scheduling these checks: a weekly Data Quality Digest posted automatically to a governance Teams channel is incredibly powerful. Data stewards see the headline numbers every Monday and ask follow-ups inline. And the most advanced step is closing the loop: after identifying 23 products missing owner data, the user can say 'assign John Doe to MAT-4892' and the bot executes the update via OData — all within the same conversation.",
+
+  "Use case four covers operations — and this one has two distinct modes. The first is operational analytics: asking about capacity utilisation, machine output versus plan, or downtime statistics. The second — and more exciting — is front-line support. An operator on the shop floor describes a machine problem in chat. The bot searches indexed maintenance manuals using Azure Cognitive Search, returns the most relevant troubleshooting steps, and if the issue can't be resolved, creates a SAP PM maintenance order automatically — populated with the equipment ID, problem description, and priority gleaned from the conversation. This compresses what used to be a 30-minute process — diagnose, look up manual, call supervisor, log ticket — into a two-minute chat interaction.",
+
+  "Operations implementation requires two architectural additions beyond the basic SQL pipeline. First, document indexing: upload equipment manuals as PDFs to Azure Cognitive Search and add a retrieval step in the flow that fetches relevant text before the OpenAI call. Second, an intent router: a classifier that decides whether a user's message should go to the SQL path or the document search path. The PM order creation dialog needs careful design — the bot must collect Equipment ID, problem description, and priority before calling BAPI_ALM_ORDER_CREATE, which means a multi-turn conversation with confirmation. Always test this in a QA SAP system first. And think about the interface: shop-floor operators may be on tablets or using voice. Keep bot responses short and scannable — they may be read aloud by a text-to-speech system.",
+
+  "Use case five is financial insights on demand. The CFO or controller can ask 'What is our revenue and profit this quarter by region?' and get back a formatted P&L table — North America, Europe, APAC — with margins, directly in Teams. No Fiori login, no BEx query, no waiting for the finance analyst to pull a report. The key data source in S/4HANA is the Universal Journal — ACDOCA — which contains every posting with full dimensional detail: company code, profit center, segment, cost center. A well-configured system prompt that maps account ranges to business terms like 'revenue' or 'gross margin' unlocks almost any financial metric. This is particularly valuable for global leadership teams in different time zones who need numbers outside of business hours.",
+
+  "Finance implementation has the highest stakes of all six use cases because the numbers are used for decisions. The most important step is validating bot output against a verified period close before going live — any discrepancy must be explained and resolved. Account mapping in the system prompt is foundational: the LLM needs to know that revenue equals accounts 400000 to 499999, otherwise it cannot answer correctly. Multi-entity, multi-currency groups need a reporting layer — either pre-converting to group currency in a HANA view, or handling FX explicitly in SQL. Role-based access is non-negotiable: a regional manager should never see another region's P&L. And integrating plan data from BPC or Integrated Business Planning unlocks the highest-value use case: budget versus actual in a single conversational query.",
+
+  "Use case six is HR analytics and people insights. An HR business partner or line manager can ask 'Which Engineering employees haven't completed mandatory cybersecurity training?' and get back a breakdown by sub-org, with the option to send reminders automatically from within the same conversation. This replaces a process that typically involves downloading a training report, cross-referencing with the org chart in a spreadsheet, drafting reminder emails, and sending them manually. The bot collapses that into two messages. Beyond compliance, managers can ask about headcount, attrition, overtime, or org structure changes — all without raising a ticket with HR or waiting for a monthly People Analytics report.",
+
+  "HR implementation comes with the strictest data governance requirements of all six use cases. The single most important control is org-scoped filtering: the Azure Function must automatically restrict queries to the requesting manager's authorised org units, regardless of what the LLM generates. This prevents accidental over-disclosure. For particularly sensitive attributes — compensation, medical, performance ratings — consider aggregate-only responses that never expose individual-level data. If training completions are tracked in a standalone LMS outside SAP, you'll need to replicate that data into HANA or call an API, otherwise compliance queries return incomplete results. And before launch, get a legal and DPO sign-off on which fields the bot can access — document those rules as hard constraints in the system prompt.",
+
+  "Here's how all five components fit together. The user sends a message in Microsoft Teams. Power Virtual Agents receives it and triggers a Power Automate flow. The flow passes the message — along with conversation history and the system prompt containing table schema — to Azure OpenAI GPT-4, which generates a SQL query. That query is sent to an Azure Function, which executes it against SAP HANA via the SAP HANA Client, converts the result set from CSV to JSON to Markdown, and returns it to the flow. OpenAI then formats a natural language response. If a chart was requested, an additional step calls a chart generation service. The whole round trip takes five to fifteen seconds. The key insight is that SAP HANA is queried directly — no middleware, no data duplication, no freshness lag.",
+
+  "So where do you start? The recommended path is: pick one use case with a well-defined dataset and a champion user who will validate it. Configure the Azure Function and write the system prompt with your actual table schema — this is the hardest part and takes iteration. Deploy the Power Virtual Agent to a pilot Teams channel and spend two weeks testing with real users, refining the prompt based on what they ask. Once the first use case is trusted and adopted, the incremental effort to add a second is much lower — you're adding to an existing platform, not starting over. And the most impactful long-term evolution is enabling write actions: not just answering questions, but executing updates, creating orders, sending notifications — turning the bot from a window into SAP into an interface for SAP. Thank you."
+]
+</script>
+<script src="deck-stage.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #060a12; font-family: 'DM Sans', sans-serif; }
+
+  section {
+    width: 1920px; height: 1080px;
+    background: #0b0f1a; color: #e8edf5;
+    position: relative; overflow: hidden;
+  }
+
+  /* ── Shared ────────────────────────────────────────────── */
+  .dot-grid {
+    position: absolute; inset: 0; pointer-events: none;
+    background-image: radial-gradient(circle, #1e2d47 1px, transparent 1px);
+    background-size: 48px 48px; opacity: 0.4;
+  }
+  .glow {
+    position: absolute; width: 700px; height: 700px;
+    border-radius: 50%; filter: blur(160px); opacity: 0.1; pointer-events: none;
+  }
+  .slide-num {
+    position: absolute; bottom: 48px; right: 80px;
+    font-size: 24px; color: #3d506e; font-weight: 500; letter-spacing: 0.06em;
+  }
+  .logo {
+    position: absolute; top: 44px; left: 80px;
+    display: flex; align-items: center; gap: 14px; z-index: 10;
+  }
+  .logo-icon {
+    width: 44px; height: 44px; border-radius: 12px;
+    background: linear-gradient(135deg, #4f9cf9, #00d4aa);
+    display: flex; align-items: center; justify-content: center; font-size: 26px;
+  }
+  .logo-text { font-size: 24px; font-weight: 600; color: #4f9cf9; letter-spacing: 0.06em; text-transform: uppercase; }
+
+  .pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 24px; border-radius: 24px;
+    font-size: 24px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+
+  /* ── Cover ─────────────────────────────────────────────── */
+  .cover-body {
+    position: absolute; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center; z-index: 2; gap: 0;
+  }
+  .cover-kicker { font-size: 26px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #4f9cf9; margin-bottom: 32px; }
+  .cover-h1 {
+    font-size: 88px; font-weight: 700; line-height: 1.08; margin-bottom: 32px;
+    background: linear-gradient(140deg, #e8edf5 20%, #5a7399);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .cover-sub { font-size: 28px; color: #6b7fa3; max-width: 900px; line-height: 1.7; margin-bottom: 56px; }
+  .domain-pills { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+
+  /* ── Overview ───────────────────────────────────────────── */
+  .ov-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+    padding: 0 80px; margin-top: 36px; position: relative; z-index: 2;
+  }
+  .ov-card {
+    background: #131929; border-radius: 20px; border: 1px solid #1e2d47;
+    padding: 32px 28px; display: flex; flex-direction: column; gap: 12px;
+  }
+  .ov-icon { font-size: 36px; }
+  .ov-domain { font-size: 24px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
+  .ov-title { font-size: 28px; font-weight: 700; color: #e8edf5; }
+  .ov-tagline { font-size: 24px; color: #6b7fa3; line-height: 1.5; }
+
+  /* ── Use-Case Slide (left / right) ─────────────────────── */
+  .uc-slide { display: grid; grid-template-columns: 1fr 1fr; height: 100%; }
+  .uc-left {
+    padding: 130px 64px 72px 80px;
+    display: flex; flex-direction: column; justify-content: center;
+    position: relative; z-index: 2;
+  }
+  .uc-num {
+    position: absolute; bottom: 52px; left: 80px;
+    font-size: 120px; font-weight: 800; opacity: 0.05;
+    font-family: 'DM Mono', monospace; line-height: 1;
+  }
+  .uc-title { font-size: 48px; font-weight: 700; line-height: 1.15; margin-bottom: 20px; }
+  .uc-desc { font-size: 24px; color: #a8bdd4; line-height: 1.65; margin-bottom: 40px; }
+  .lbl { font-size: 24px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #3d506e; margin-bottom: 14px; }
+  .checks { display: flex; flex-direction: column; gap: 14px; }
+  .chk { display: flex; gap: 14px; align-items: flex-start; font-size: 24px; color: #a8bdd4; line-height: 1.5; }
+  .chk-icon { font-size: 24px; flex-shrink: 0; margin-top: 2px; }
+
+  .uc-right {
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 100px 80px 72px 60px; gap: 28px; position: relative; z-index: 2;
+  }
+  .v-div { position: absolute; top: 0; bottom: 0; left: 50%; width: 1px; background: #1e2d47; z-index: 1; }
+
+  /* Chat */
+  .chat-win { background: #0d1220; border: 1px solid #1e2d47; border-radius: 20px; overflow: hidden; width: 100%; }
+  .chat-top {
+    background: #131929; padding: 20px 24px; border-bottom: 1px solid #1e2d47;
+    display: flex; align-items: center; gap: 14px;
+    font-size: 24px; font-weight: 600; color: #6b7fa3;
+  }
+  .chat-av { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+  .chat-body { padding: 24px 20px; display: flex; flex-direction: column; gap: 18px; }
+  .chat-u {
+    align-self: flex-end; padding: 14px 20px; max-width: 82%;
+    font-size: 24px; font-family: 'DM Mono', monospace; color: #e8edf5;
+    border-radius: 16px 16px 4px 16px; line-height: 1.5;
+  }
+  .chat-b {
+    background: #131929; border: 1px solid #1e2d47;
+    border-radius: 16px 16px 16px 4px; padding: 16px 20px; max-width: 95%;
+    font-size: 24px; font-family: 'DM Mono', monospace;
+    color: #a8bdd4; line-height: 1.55; white-space: pre-wrap;
+  }
+  .chat-b-lbl { font-size: 24px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; font-family: 'DM Sans', sans-serif; }
+
+  .sap-tags { display: flex; flex-wrap: wrap; gap: 10px; }
+  .sap-tag { background: #1a2236; border: 1px solid #243352; border-radius: 10px; padding: 10px 18px; font-size: 24px; font-family: 'DM Mono', monospace; color: #a8bdd4; }
+
+  /* ── Implementation Slide ──────────────────────────────── */
+  .impl-body {
+    position: absolute; inset: 0; z-index: 2;
+    display: flex; flex-direction: column;
+    padding: 130px 80px 72px;
+  }
+  .impl-header { display: flex; align-items: center; gap: 20px; margin-bottom: 48px; }
+  .impl-title { font-size: 42px; font-weight: 700; }
+  .impl-steps { display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; flex: 1; }
+  .step-card {
+    background: #131929; border-radius: 18px; border: 1px solid #1e2d47;
+    padding: 32px 28px; display: flex; flex-direction: column; gap: 16px;
+    position: relative; overflow: hidden;
+  }
+  .step-card::before {
+    content: attr(data-num);
+    position: absolute; bottom: -10px; right: 12px;
+    font-size: 96px; font-weight: 800; opacity: 0.06;
+    font-family: 'DM Mono', monospace; line-height: 1;
+  }
+  .step-num {
+    width: 40px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; font-weight: 700;
+  }
+  .step-title { font-size: 28px; font-weight: 700; color: #e8edf5; line-height: 1.3; }
+  .step-detail { font-size: 24px; color: #6b7fa3; line-height: 1.6; }
+
+  /* ── Architecture ─────────────────────────────────────── */
+  .arch-body {
+    position: absolute; inset: 0; z-index: 2;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; padding: 0 100px;
+  }
+  .arch-flow { display: flex; align-items: stretch; gap: 0; width: 100%; }
+  .arch-box {
+    flex: 1; background: #131929; border-radius: 20px; border: 1px solid #1e2d47;
+    padding: 40px 28px; display: flex; flex-direction: column; align-items: center;
+    gap: 16px; text-align: center;
+  }
+  .arch-icon { font-size: 44px; }
+  .arch-name { font-size: 28px; font-weight: 700; }
+  .arch-detail { font-size: 24px; color: #6b7fa3; line-height: 1.5; }
+  .arch-arr { width: 60px; text-align: center; font-size: 32px; color: #3d506e; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+
+  /* ── Close ─────────────────────────────────────────────── */
+  .close-body {
+    position: absolute; inset: 0; z-index: 2;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center; gap: 28px;
+  }
+  .close-h { font-size: 72px; font-weight: 700; line-height: 1.12; max-width: 1100px;
+    background: linear-gradient(135deg, #e8edf5 20%, #5a7399);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .close-sub { font-size: 28px; color: #6b7fa3; max-width: 780px; line-height: 1.7; }
+  .next-steps { display: flex; gap: 24px; margin-top: 16px; }
+  .next-card { background: #131929; border: 1px solid #1e2d47; border-radius: 18px; padding: 28px 32px; text-align: left; max-width: 280px; }
+  .next-n { font-size: 24px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
+  .next-t { font-size: 26px; font-weight: 600; color: #e8edf5; line-height: 1.4; }
+</style>
+</head>
+<body>
+<deck-stage>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 01 — Cover
+═══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="01 Cover">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#4f9cf9;top:-200px;right:-200px;"></div>
+  <div class="glow" style="background:#00d4aa;bottom:-200px;left:-200px;"></div>
+  <div class="logo"><div class="logo-icon">✦</div><div class="logo-text">Chat with your SAP Data</div></div>
+  <div class="cover-body">
+    <div class="cover-kicker">AI Innovation Series</div>
+    <div class="cover-h1">6 AI Use Cases<br>Enabled by Chat<br>with your SAP Data</div>
+    <div class="cover-sub">Natural language queries · Real-time analytics · Automated SAP actions<br>delivered directly in Microsoft Teams</div>
+    <div class="domain-pills">
+      <span class="pill" style="background:#4f9cf918;border:1px solid #4f9cf944;color:#4f9cf9">📦 Supply Chain</span>
+      <span class="pill" style="background:#00d4aa18;border:1px solid #00d4aa44;color:#00d4aa">📈 Sales</span>
+      <span class="pill" style="background:#a78bfa18;border:1px solid #a78bfa44;color:#a78bfa">🔍 Data Governance</span>
+      <span class="pill" style="background:#f5a62318;border:1px solid #f5a62344;color:#f5a623">⚙️ Operations</span>
+      <span class="pill" style="background:#4ade8018;border:1px solid #4ade8044;color:#4ade80">💰 Finance</span>
+      <span class="pill" style="background:#ff6b6b18;border:1px solid #ff6b6b44;color:#ff6b6b">👥 HR</span>
+    </div>
+  </div>
+  <div class="slide-num">1 / 16</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 02 — Overview
+═══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="02 Overview">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#4f9cf9;top:-200px;left:-100px;"></div>
+  <div class="logo"><div class="logo-icon">✦</div><div class="logo-text">Chat with your SAP Data</div></div>
+  <div style="position:relative;z-index:2;padding:130px 80px 0">
+    <div class="pill" style="background:#4f9cf918;border:1px solid #4f9cf944;color:#4f9cf9;margin-bottom:20px;">Overview</div>
+    <h2 style="font-size:52px;font-weight:700;line-height:1.1;margin-bottom:8px;">Six domains, one AI agent</h2>
+    <p style="font-size:26px;color:#6b7fa3;">Each use case connects conversational AI to live SAP data via Azure OpenAI + HANA SQL.</p>
+  </div>
+  <div class="ov-grid">
+    <div class="ov-card" style="border-color:#4f9cf933"><div class="ov-icon">📦</div><div class="ov-domain" style="color:#4f9cf9">Supply Chain</div><div class="ov-title">Inventory &amp; Supply Queries</div><div class="ov-tagline">Stock levels, POs, in-transit — consolidated in one answer</div></div>
+    <div class="ov-card" style="border-color:#00d4aa33"><div class="ov-icon">📈</div><div class="ov-domain" style="color:#00d4aa">Sales</div><div class="ov-title">Demand Trend Analysis</div><div class="ov-tagline">Revenue trends, top products, customer breakdowns with charts</div></div>
+    <div class="ov-card" style="border-color:#a78bfa33"><div class="ov-icon">🔍</div><div class="ov-domain" style="color:#a78bfa">Data Governance</div><div class="ov-title">Data Quality Checks</div><div class="ov-tagline">Exception reports and compliance audits in plain language</div></div>
+    <div class="ov-card" style="border-color:#f5a62333"><div class="ov-icon">⚙️</div><div class="ov-domain" style="color:#f5a623">Operations</div><div class="ov-title">Ops Support &amp; Maintenance</div><div class="ov-tagline">Utilisation metrics + PM order creation from chat</div></div>
+    <div class="ov-card" style="border-color:#4ade8033"><div class="ov-icon">💰</div><div class="ov-domain" style="color:#4ade80">Finance</div><div class="ov-title">Financial Insights</div><div class="ov-tagline">Real-time P&amp;L, cash, CAPEX, budget-vs-actual by any dimension</div></div>
+    <div class="ov-card" style="border-color:#ff6b6b33"><div class="ov-icon">👥</div><div class="ov-domain" style="color:#ff6b6b">HR</div><div class="ov-title">HR Analytics</div><div class="ov-tagline">Workforce metrics, training compliance, org data on demand</div></div>
+  </div>
+  <div class="slide-num">2 / 16</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 03 — Supply Chain (Use Case)
+═══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="03 Supply Chain">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#4f9cf9;top:-100px;left:-100px;"></div>
+  <div class="v-div"></div>
+  <div class="logo"><div class="logo-icon">✦</div><div class="logo-text">Chat with your SAP Data</div></div>
+  <div class="uc-slide">
+    <div class="uc-left">
+      <div class="uc-num" style="color:#4f9cf9">01</div>
+      <div style="margin-bottom:20px;"><span class="pill" style="background:#4f9cf918;border:1px solid #4f9cf944;color:#4f9cf9">📦 Supply Chain</span></div>
+      <div class="uc-title">Inventory &amp;<br>Supply Chain Queries</div>
+      <div class="uc-desc">Ask complex supply chain questions in plain English. Get consolidated answers across stock, purchase orders, and in-transit shipments — without navigating multiple SAP transactions.</div>
+      <div class="lbl">Key benefits</div>
+      <div class="checks">
+        <div class="chk"><span class="chk-icon" style="color:#4f9cf9">✓</span>Real-time inventory visibility across all plants</div>
+        <div class="chk"><span class="chk-icon" style="color:#4f9cf9">✓</span>Non-technical planners can query during customer calls</div>
+        <div class="chk"><span class="chk-icon" style="color:#4f9cf9">✓</span>Stock + open POs + in-transit combined in one answer</div>
+        <div class="chk"><span class="chk-icon" style="color:#4f9cf9">✓</span>Proactive shortage alerts via scheduled queries</div>
+      </div>
+    </div>
+    <div class="uc-right">
+      <div class="chat-win" style="border-color:#4f9cf933">
+        <div class="chat-top"><div class="chat-av" style="background:#4f9cf922;border:1px solid #4f9cf944">📦</div>SAP Supply Chain Agent</div>
+        <div class="chat-body">
+          <div class="chat-u" style="background:rgba(79,156,249,0.15);border:1px solid rgba(79,156,249,0.3)">What is my current stock of Material A from Vendor X across all factories?</div>
+          <div class="chat-b"><div class="chat-b-lbl" style="color:#4f9cf9">✦ SAP Agent</div>Material A stock across all factories:
+• Plant DE01 — 850 units
+• Plant US02 — 320 units
+• Plant SG03 — 140 units
+
+Total: 1,310 units  |  3 open POs arriving next week (+680 units)</div>
+        </div>
+      </div>
+      <div><div class="lbl">SAP data accessed</div>
+      <div class="sap-tags">
+        <span class="sap-tag">MARD (Stock by Plant)</span>
+        <span class="sap-tag">EKKO/EKPO (POs)</span>
+        <span class="sap-tag">LIKP/LIPS (Deliveries)</span>
+        <span class="sap-tag">MARA (Material Master)</span>
+      </div></div>
+    </div>
+  </div>
+  <div class="slide-num">3 / 16</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 04 — Supply Chain (Implementation)
+═══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="04 Supply Chain Implementation">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#4f9cf9;bottom:-200px;right:-200px;"></div>
+  <div class="logo"><div class="logo-icon">✦</div><div class="logo-text">Chat with your SAP Data</div></div>
+  <div class="impl-body">
+    <div class="impl-header">
+      <span class="pill" style="background:#4f9cf918;border:1px solid #4f9cf944;color:#4f9cf9">📦 Supply Chain</span>
+      <div class="impl-title">Implementation Guide</div>
+    </div>
+    <div class="impl-steps">
+      <div class="step-card" style="border-color:#4f9cf933" data-num="1">
+        <div class="step-num" style="background:#4f9cf922;border:1px solid #4f9cf944;color:#4f9cf9">1</div>
+        <div class="step-title">Start read-only</div>
+        <div class="step-detail">Focus on informational queries first (stock levels, order lists). Compare bot output to standard SAP reports like MB52 to validate accuracy before expanding scope.</div>
+      </div>
+      <div class="step-card" style="border-color:#4f9cf933" data-num="2">
+        <div class="step-num" style="background:#4f9cf922;border:1px solid #4f9cf944;color:#4f9cf9">2</div>
+        <div class="step-title">Create HANA views</div>
+        <div class="step-detail">Build an InventoryStatus view joining stock, open POs, and in-transit data. Let the bot query this simple view rather than composing complex joins — reduces error chance significantly.</div>
+      </div>
+      <div class="step-card" style="border-color:#4f9cf933" data-num="3">
+        <div class="step-num" style="background:#4f9cf922;border:1px solid #4f9cf944;color:#4f9cf9">3</div>
+        <div class="step-title">Enable chart output</div>
+        <div class="step-detail">Configure the chart.js step in Power Automate. Bar charts of stock by warehouse or trend lines of stock over time are highly valued by supply chain managers.</div>
+      </div>
+      <div class="step-card" style="border-color:#4f9cf933" data-num="4">
+        <div class="step-num" style="background:#4f9cf922;border:1px solid #4f9cf944;color:#4f9cf9">4</div>
+        <div class="step-title">Add proactive alerts</div>
+        <div class="step-detail">Schedule Power Automate to run daily checks for parts below safety stock and post Teams alerts. Turns Q&amp;A into a proactive shortage-prevention assistant.</div>
+      </div>
+      <div class="step-card" style="border-color:#4f9cf933" data-num="5">
+        <div class="step-num" style="background:#4f9cf922;border:1px solid #4f9cf944;color:#4f9cf9">5</div>
+        <div class="step-title">Define schema in prompt</div>
+        <div class="step-detail">Include field definitions: material, plant, vendor, quantity fields, and join keys. Incomplete schema = wrong SQL. Test with varied phrasings before go-live.</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">4 / 16</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 05 — Sales (Use Case)
+═══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="05 Sales">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#00d4aa;top:-100px;right:-100px;"></div>
+  <div class="v-div"></div>
+  <div class="logo"><div class="logo-icon">✦</div><div class="logo-text">Chat with your SAP Data</div></div>
+  <div class="uc-slide">
+    <div class="uc-left">
+      <div class="uc-num" style="color:#00d4aa">02</div>
+      <div style="margin-bottom:20px;"><span class="pill" style="background:#00d4aa18;border:1px solid #00d4aa44;color:#00d4aa">📈 Sales</span></div>
+      <div class="uc-title">Sales &amp; Demand<br>Trend Analysis</div>
+      <div class="uc-desc">Conversational OLAP — no BI tool required. Sales VPs and account managers query revenue trends, top products, and customer breakdowns in Teams, with chart output.</div>
+      <div class="lbl">Key benefits</div>
+      <div class="checks">
+        <div class="chk"><span class="chk-icon" style="color:#00d4aa">✓</span>Immediate answers in board meetings — no BI wait time</div>
+        <div class="chk"><span class="chk-icon" style="color:#00d4aa">✓</span>Follow-up drill-downs: 'Which customer caused the dip?'</div>
+        <div class="chk"><span class="chk-icon" style="color:#00d4aa">✓</span>Bar/line charts rendered directly in Teams</div>
+        <div class="chk"><span class="chk-icon" style="color:#00d4aa">✓</span>Field reps get data before client calls — no SAP login needed</div>
+      </div>
+    </div>
+    <div class="uc-right">
+      <div class="chat-win" style="border-color:#00d4aa33">
+        <div class="chat-top"><div class="chat-av" style="background:#00d4aa22;border:1px solid #00d4aa44">📈</div>SAP Sales Agent</div>
+        <div class="chat-body">
+          <div class="chat-u" style="background:rgba(0,212,170,0.12);border:1px solid rgba(0,212,170,0.3)">How are sales progressing over the last 6 weeks for Product Z?</div>
+          <div class="chat-b"><div class="chat-b-lbl" style="color:#00d4aa">✦ SAP Agent</div>Product Z — 6-week trend:
+Wk 39: $1.2M ↑  Wk 42: $1.8M ↑ ← peak
+Wk 40: $1.5M ↑  Wk 43: $1.1M ↓
+Wk 41: $1.3M ↓  Wk 44: $1.6M ↑
+
+Top customer: Acme Corp ($4.2M, 31%)</div>
+        </div>
+      </div>
+      <div><div class="lbl">SAP data accessed</div>
+      <div class="sap-tags">
+        <span class="sap-tag">VBRK/VBRP (Billing)</span>
+        <span class="sap-tag">VBAK/VBAP (Sales Orders)</span>
+        <span class="sap-tag">KNA1 (Customer Master)</span>
+        <span class="sap-tag">CO-PA (Profitability)</span>
+      </div></div>
+    </div>
+  </div>
+  <div class="slide-num">5 / 16</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 06 — Sales (Implementation)
+═══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="06 Sales Implementation">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#00d4aa;top:-200px;left:-200px;"></div>
+  <div class="logo"><div class="logo-icon">✦</div><div class="logo-text">Chat with your SAP Data</div></div>
+  <div class="impl-body">
+    <div class="impl-header">
+      <span class="pill" style="background:#00d4aa18;border:1px solid #00d4aa44;color:#00d4aa">📈 Sales</span>
+      <div class="impl-title">Implementation Guide</div>
+    </div>
+    <div class="impl-steps">
+      <div class="step-card" style="border-color:#00d4aa33" data-num="1">
+        <div class="step-num" style="background:#00d4aa22;border:1px solid #00d4aa44;color:#00d4aa">1</div>
+        <div class="step-title">Pre-define common queries</div>
+        <div class="step-detail">Include 6-week trend and top-5-products examples in the system prompt as few-shot examples. This anchors the LLM to produce correct SQL for typical sales requests.</div>
+      </div>
+      <div class="step-card" style="border-color:#00d4aa33" data-num="2">
+        <div class="step-num" style="background:#00d4aa22;border:1px solid #00d4aa44;color:#00d4aa">2</div>
+        <div class="step-title">Inject date intelligence</div>
+        <div class="step-detail">Power Automate can detect phrases like 'last quarter' and insert actual date ranges before passing to the LLM. Maintain a calendar table with fiscal quarter definitions.</div>
+      </div>
+      <div class="step-card" style="border-color:#00d4aa33" data-num="3">
+        <div class="step-num" style="background:#00d4aa22;border:1px solid #00d4aa44;color:#00d4aa">3</div>
+        <div class="step-title">Maintain summary tables</div>
+        <div class="step-detail">Pre-aggregate sales by week/product/region. Let the bot query these instead of raw line-item tables. Enables sub-second responses even for large datasets.</div>
+      </div>
+      <div class="step-card" style="border-color:#00d4aa33" data-num="4">
+        <div class="step-num" style="background:#00d4aa22;border:1px solid #00d4aa44;color:#00d4aa">4</div>
+        <div class="step-title">Enable chart rendering</div>
+        <div class="step-detail">Configure the chart.js connector in the Power Automate flow. For trend queries, a line chart in Teams is far more impactful than a table of numbers.</div>
+      </div>
+      <div class="step-card" style="border-color:#00d4aa33" data-num="5">
+        <div class="step-num" style="background:#00d4aa22;border:1px solid #00d4aa44;color:#00d4aa">5</div>
+        <div class="step-title">Test multi-turn context</div>
+        <div class="step-detail">Verify conversation history is passed in the OpenAI payload. Users often ask 'which week was highest?' after a trend query — the bot must remember Product Z without prompting.</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">6 / 16</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 07 — Data Governance (Use Case)
+═══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="07 Data Governance">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#a78bfa;bottom:-100px;left:-100px;"></div>
+  <div class="v-div"></div>
+  <div class="logo"><div class="logo-icon">✦</div><div class="logo-text">Chat with your SAP Data</div></div>
+  <div class="uc-slide">
+    <div class="uc-left">
+      <div class="uc-num" style="color:#a78bfa">03</div>
+      <div style="margin-bottom:20px;"><span class="pill" style="background:#a78bfa18;border:1px solid #a78bfa44;color:#a78bfa">🔍 Data Governance</span></div>
+      <div class="uc-title">Data Quality &amp;<br>Compliance Checks</div>
+      <div class="uc-desc">Data stewards and compliance officers ask for exception reports in plain English. The bot identifies records violating completeness or accuracy rules across any SAP module.</div>
+      <div class="lbl">Key benefits</div>
+      <div class="checks">
+        <div class="chk"><span class="chk-icon" style="color:#a78bfa">✓</span>Business users spot and fix their own data errors</div>
+        <div class="chk"><span class="chk-icon" style="color:#a78bfa">✓</span>Instant audit evidence for compliance teams</div>
+        <div class="chk"><span class="chk-icon" style="color:#a78bfa">✓</span>Prevents downstream failures (missing ship-to addresses, etc.)</div>
+        <div class="chk"><span class="chk-icon" style="color:#a78bfa">✓</span>Schedule weekly data quality digest to Teams channel</div>
+      </div>
+    </div>
+    <div class="uc-right">
+      <div class="chat-win" style="border-color:#a78bfa33">
+        <div class="chat-top"><div class="chat-av" style="background:#a78bfa22;border:1px solid #a78bfa44">🔍</div>SAP Data Governance Agent</div>
+        <div class="chat-body">
+          <div class="chat-u" style="background:rgba(167,139,250,0.12);border:1px solid rgba(167,139,250,0.3)">Show me sold products that have incomplete owner data.</div>
+          <div class="chat-b"><div class="chat-b-lbl" style="color:#a78bfa">✦ SAP Agent</div>Found 23 products sold in last 30 days with no owner:
+
+1. MAT-4892 — Hydraulic Valve  (18 Oct)
+2. MAT-2234 — Sensor Module B  (21 Oct)
+3. MAT-7701 — Cable Assembly   (22 Oct)
+…and 20 more.  Export full list?</div>
+        </div>
+      </div>
+      <div><div class="lbl">SAP data accessed</div>
+      <div class="sap-tags">
+        <span class="sap-tag">MARA (Material Master)</span>
+        <span class="sap-tag">KNA1 (Customers)</span>
+        <span class="sap-tag">LFA1 (Vendors)</span>
+        <span class="sap-tag">BSEG/BKPF (FI Postings)</span>
+      </div></div>
+    </div>
+  </div>
+  <div class="slide-num">7 / 16</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 08 — Data Governance (Implementation)
+═══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="08 Data Governance Implementation">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#a78bfa;top:-200px;right:-200px;"></div>
+  <div class="logo"><div class="logo-icon">✦</div><div class="logo-text">Chat with your SAP Data</div></div>
+  <div class="impl-body">
+    <div class="impl-header">
+      <span class="pill" style="background:#a78bfa18;border:1px solid #a78bfa44;color:#a78bfa">🔍 Data Governance</span>
+      <div class="impl-title">Implementation Guide</div>
+    </div>
+    <div class="impl-steps">
+      <div class="step-card" style="border-color:#a78bfa33" data-num="1">
+        <div class="step-num" style="background:#a78bfa22;border:1px solid #a78bfa44;color:#a78bfa">1</div>
+        <div class="step-title">Pre-define check queries</div>
+        <div class="step-detail">Build a library of SQL queries for known data quality rules. The LLM selects the right one based on user intent. This trades some flexibility for reliability — wrong SQL means wrong audit results.</div>
+      </div>
+      <div class="step-card" style="border-color:#a78bfa33" data-num="2">
+        <div class="step-num" style="background:#a78bfa22;border:1px solid #a78bfa44;color:#a78bfa">2</div>
+        <div class="step-title">Count-first pattern</div>
+        <div class="step-detail">Run COUNT(*) first. If ≤ 20 records, list inline. If &gt; 20, summarise and offer export to SharePoint/Excel via Power Automate. Keeps chat readable and manageable.</div>
+      </div>
+      <div class="step-card" style="border-color:#a78bfa33" data-num="3">
+        <div class="step-num" style="background:#a78bfa22;border:1px solid #a78bfa44;color:#a78bfa">3</div>
+        <div class="step-title">Schedule weekly digest</div>
+        <div class="step-detail">Post an automated weekly Data Quality report to a governance Teams channel: '8 products missing owner · 3 customers missing region'. Users ask follow-ups inline.</div>
+      </div>
+      <div class="step-card" style="border-color:#a78bfa33" data-num="4">
+        <div class="step-num" style="background:#a78bfa22;border:1px solid #a78bfa44;color:#a78bfa">4</div>
+        <div class="step-title">Add corrective actions</div>
+        <div class="step-detail">Extend the bot to fix issues: after listing products missing owner, user says 'Assign John Doe to MAT-4892' and the bot calls OData PATCH. Log all updates for audit trail.</div>
+      </div>
+      <div class="step-card" style="border-color:#a78bfa33" data-num="5">
+        <div class="step-num" style="background:#a78bfa22;border:1px solid #a78bfa44;color:#a78bfa">5</div>
+        <div class="step-title">Segment by domain</div>
+        <div class="step-detail">If the bot covers multiple modules, split context by domain (sales vs HR data quality). Either use separate bots per team, or train the AI to clarify context when queries are ambiguous.</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">8 / 16</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 09 — Operations (Use Case)
+═══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="09 Operations">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#f5a623;top:-100px;left:-100px;"></div>
+  <div class="v-div"></div>
+  <div class="logo"><div class="logo-icon">✦</div><div class="logo-text">Chat with your SAP Data</div></div>
+  <div class="uc-slide">
+    <div class="uc-left">
+      <div class="uc-num" style="color:#f5a623">04</div>
+      <div style="margin-bottom:20px;"><span class="pill" style="background:#f5a62318;border:1px solid #f5a62344;color:#f5a623">⚙️ Operations</span></div>
+      <div class="uc-title">Operations<br>Optimization &amp; Support</div>
+      <div class="uc-desc">Query capacity utilisation metrics or support front-line workers with documented solutions. If unresolved, the bot creates an SAP PM maintenance order automatically from the chat conversation.</div>
+      <div class="lbl">Key benefits</div>
+      <div class="checks">
+        <div class="chk"><span class="chk-icon" style="color:#f5a623">✓</span>Reduces mean-time-to-repair significantly</div>
+        <div class="chk"><span class="chk-icon" style="color:#f5a623">✓</span>New operators access decades of machinery knowledge instantly</div>
+        <div class="chk"><span class="chk-icon" style="color:#f5a623">✓</span>Every incident logged automatically in SAP PM</div>
+        <div class="chk"><span class="chk-icon" style="color:#f5a623">✓</span>Managers query utilisation: factory output vs. plan</div>
+      </div>
+    </div>
+    <div class="uc-right">
+      <div class="chat-win" style="border-color:#f5a62333">
+        <div class="chat-top"><div class="chat-av" style="background:#f5a62322;border:1px solid #f5a62344">⚙️</div>SAP Operations Agent</div>
+        <div class="chat-body">
+          <div class="chat-u" style="background:rgba(245,166,35,0.12);border:1px solid rgba(245,166,35,0.3)">Machine line 3 is showing vibration errors. What should I check?</div>
+          <div class="chat-b"><div class="chat-b-lbl" style="color:#f5a623">✦ SAP Agent</div>Based on Manual v4.2 §7.3:
+✓ Check bearing lubrication
+✓ Inspect coupling alignment
+✓ Review sensor calibration log
+
+Unresolved? Reply 'yes' to create PM order</div>
+        </div>
+      </div>
+      <div><div class="lbl">SAP data accessed</div>
+      <div class="sap-tags">
+        <span class="sap-tag">PM Notifications (IW21)</span>
+        <span class="sap-tag">Equipment Master (EQUI)</span>
+        <span class="sap-tag">Production Orders (AUFK)</span>
+        <span class="sap-tag">Capacity Tables (CRTX)</span>
+      </div></div>
+    </div>
+  </div>
+  <div class="slide-num">9 / 16</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 10 — Operations (Implementation)
+═══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="10 Operations Implementation">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#f5a623;bottom:-200px;left:-200px;"></div>
+  <div class="logo"><div class="logo-icon">✦</div><div class="logo-text">Chat with your SAP Data</div></div>
+  <div class="impl-body">
+    <div class="impl-header">
+      <span class="pill" style="background:#f5a62318;border:1px solid #f5a62344;color:#f5a623">⚙️ Operations</span>
+      <div class="impl-title">Implementation Guide</div>
+    </div>
+    <div class="impl-steps">
+      <div class="step-card" style="border-color:#f5a62333" data-num="1">
+        <div class="step-num" style="background:#f5a62322;border:1px solid #f5a62344;color:#f5a623">1</div>
+        <div class="step-title">Index docs in Azure Search</div>
+        <div class="step-detail">Upload equipment manuals and troubleshooting guides as PDFs. Build an Azure Cognitive Search index and embed a retrieval step in the Power Automate flow before the OpenAI call.</div>
+      </div>
+      <div class="step-card" style="border-color:#f5a62333" data-num="2">
+        <div class="step-num" style="background:#f5a62322;border:1px solid #f5a62344;color:#f5a623">2</div>
+        <div class="step-title">Build an intent router</div>
+        <div class="step-detail">Before querying HANA or docs, classify the user's intent: analytics query → SQL path; operational problem → doc search path. Power Virtual Agents topics or a classifier prompt handles routing.</div>
+      </div>
+      <div class="step-card" style="border-color:#f5a62333" data-num="3">
+        <div class="step-num" style="background:#f5a62322;border:1px solid #f5a62344;color:#f5a623">3</div>
+        <div class="step-title">Dialog flow for PM orders</div>
+        <div class="step-detail">If the bot offers to create a PM order, it must collect Equipment ID, problem description, and priority. Design a multi-turn dialog, then confirm before calling BAPI_ALM_ORDER_CREATE.</div>
+      </div>
+      <div class="step-card" style="border-color:#f5a62333" data-num="4">
+        <div class="step-num" style="background:#f5a62322;border:1px solid #f5a62344;color:#f5a623">4</div>
+        <div class="step-title">Test in QA sandbox first</div>
+        <div class="step-detail">Validate the full cycle: operator asks question → correct doc snippet returned → 'cannot fix' path triggered → PM order appears correctly in SAP QA. Check all required fields are populated.</div>
+      </div>
+      <div class="step-card" style="border-color:#f5a62333" data-num="5">
+        <div class="step-num" style="background:#f5a62322;border:1px solid #f5a62344;color:#f5a623">5</div>
+        <div class="step-title">Consider voice / mobile</div>
+        <div class="step-detail">Operators on the shop floor benefit from hands-free access. Teams mobile or a tablet works today. Keep bot responses short and scannable — they may be displayed on small screens or spoken via TTS.</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">10 / 16</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 11 — Finance (Use Case)
+═══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="11 Finance">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#4ade80;bottom:-100px;right:-100px;"></div>
+  <div class="v-div"></div>
+  <div class="logo"><div class="logo-icon">✦</div><div class="logo-text">Chat with your SAP Data</div></div>
+  <div class="uc-slide">
+    <div class="uc-left">
+      <div class="uc-num" style="color:#4ade80">05</div>
+      <div style="margin-bottom:20px;"><span class="pill" style="background:#4ade8018;border:1px solid #4ade8044;color:#4ade80">💰 Finance</span></div>
+      <div class="uc-title">Financial Insights<br>on Demand</div>
+      <div class="uc-desc">Executives and controllers get real-time P&amp;L, cash, CAPEX, and budget-vs-actual from SAP — by region, entity, product line, or project — without Fiori or BEx.</div>
+      <div class="lbl">Key benefits</div>
+      <div class="checks">
+        <div class="chk"><span class="chk-icon" style="color:#4ade80">✓</span>Real-time figures during board meetings — no month-end wait</div>
+        <div class="chk"><span class="chk-icon" style="color:#4ade80">✓</span>Non-finance execs self-serve metrics responsibly</div>
+        <div class="chk"><span class="chk-icon" style="color:#4ade80">✓</span>Budget-vs-actual drill-down within a single conversation</div>
+        <div class="chk"><span class="chk-icon" style="color:#4ade80">✓</span>24/7 availability for global leadership teams</div>
+      </div>
+    </div>
+    <div class="uc-right">
+      <div class="chat-win" style="border-color:#4ade8033">
+        <div class="chat-top"><div class="chat-av" style="background:#4ade8022;border:1px solid #4ade8044">💰</div>SAP Finance Agent</div>
+        <div class="chat-body">
+          <div class="chat-u" style="background:rgba(74,222,128,0.12);border:1px solid rgba(74,222,128,0.3)">What is our revenue and profit this quarter by region?</div>
+          <div class="chat-b"><div class="chat-b-lbl" style="color:#4ade80">✦ SAP Agent</div>Q4 YTD (as of 22 Oct):
+Region    Revenue   Margin
+──────────────────────────
+North AM  $48.2M    38.8%
+Europe    $31.5M    35.6%
+APAC      $22.1M    33.5%
+──────────────────────────
+Total     $101.8M   36.6%</div>
+        </div>
+      </div>
+      <div><div class="lbl">SAP data accessed</div>
+      <div class="sap-tags">
+        <span class="sap-tag">ACDOCA (Universal Journal)</span>
+        <span class="sap-tag">CO-PA (Profitability)</span>
+        <span class="sap-tag">BSID/BSAD (AR Items)</span>
+        <span class="sap-tag">SAP PS (Projects)</span>
+      </div></div>
+    </div>
+  </div>
+  <div class="slide-num">11 / 16</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 12 — Finance (Implementation)
+═══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="12 Finance Implementation">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#4ade80;top:-200px;right:-200px;"></div>
+  <div class="logo"><div class="logo-icon">✦</div><div class="logo-text">Chat with your SAP Data</div></div>
+  <div class="impl-body">
+    <div class="impl-header">
+      <span class="pill" style="background:#4ade8018;border:1px solid #4ade8044;color:#4ade80">💰 Finance</span>
+      <div class="impl-title">Implementation Guide</div>
+    </div>
+    <div class="impl-steps">
+      <div class="step-card" style="border-color:#4ade8033" data-num="1">
+        <div class="step-num" style="background:#4ade8022;border:1px solid #4ade8044;color:#4ade80">1</div>
+        <div class="step-title">Map accounts in prompt</div>
+        <div class="step-detail">Include account mappings in the system prompt: 'Revenue = accounts 400000–499999; COGS = 500000–549999'. Without this, the LLM cannot translate terms like 'gross margin' into correct GL queries.</div>
+      </div>
+      <div class="step-card" style="border-color:#4ade8033" data-num="2">
+        <div class="step-num" style="background:#4ade8022;border:1px solid #4ade8044;color:#4ade80">2</div>
+        <div class="step-title">Validate against period close</div>
+        <div class="step-detail">Before go-live, run the bot against the last closed period and compare with verified financial statements. Any discrepancy must be resolved — financial data has zero tolerance for inaccuracy.</div>
+      </div>
+      <div class="step-card" style="border-color:#4ade8033" data-num="3">
+        <div class="step-num" style="background:#4ade8022;border:1px solid #4ade8044;color:#4ade80">3</div>
+        <div class="step-title">Handle currency consolidation</div>
+        <div class="step-detail">Multi-entity groups need currency translation. Either pre-convert to group currency in a reporting view, or handle FX explicitly in SQL. Document clearly so the AI knows what currency amounts represent.</div>
+      </div>
+      <div class="step-card" style="border-color:#4ade8033" data-num="4">
+        <div class="step-num" style="background:#4ade8022;border:1px solid #4ade8044;color:#4ade80">4</div>
+        <div class="step-title">Role-based access tiers</div>
+        <div class="step-detail">CFO sees all entities; division heads see their P&amp;L only; regional managers see their region. Map restrictions to SAP auth objects or add WHERE clauses per user in the Azure Function layer.</div>
+      </div>
+      <div class="step-card" style="border-color:#4ade8033" data-num="5">
+        <div class="step-num" style="background:#4ade8022;border:1px solid #4ade8044;color:#4ade80">5</div>
+        <div class="step-title">Integrate plan data</div>
+        <div class="step-detail">If budget/plan is in SAP BPC or IBP, expose it via OData or a replicated HANA table. The bot can then answer budget-vs-actual questions — one of the most requested finance analytics use cases.</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">12 / 16</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 13 — HR (Use Case)
+═══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="13 HR">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#ff6b6b;top:-100px;right:-100px;"></div>
+  <div class="v-div"></div>
+  <div class="logo"><div class="logo-icon">✦</div><div class="logo-text">Chat with your SAP Data</div></div>
+  <div class="uc-slide">
+    <div class="uc-left">
+      <div class="uc-num" style="color:#ff6b6b">06</div>
+      <div style="margin-bottom:20px;"><span class="pill" style="background:#ff6b6b18;border:1px solid #ff6b6b44;color:#ff6b6b">👥 HR</span></div>
+      <div class="uc-title">HR Analytics &amp;<br>People Insights</div>
+      <div class="uc-desc">HR business partners and managers query workforce metrics, training compliance, and org data conversationally — without building custom SAP HCM or SuccessFactors reports.</div>
+      <div class="lbl">Key benefits</div>
+      <div class="checks">
+        <div class="chk"><span class="chk-icon" style="color:#ff6b6b">✓</span>Training compliance gaps flagged instantly</div>
+        <div class="chk"><span class="chk-icon" style="color:#ff6b6b">✓</span>Managers self-serve headcount without HR tickets</div>
+        <div class="chk"><span class="chk-icon" style="color:#ff6b6b">✓</span>Automated reminder dispatch directly from chat</div>
+        <div class="chk"><span class="chk-icon" style="color:#ff6b6b">✓</span>Faster audit response for HR policy compliance</div>
+      </div>
+    </div>
+    <div class="uc-right">
+      <div class="chat-win" style="border-color:#ff6b6b33">
+        <div class="chat-top"><div class="chat-av" style="background:#ff6b6b22;border:1px solid #ff6b6b44">👥</div>SAP HR Agent</div>
+        <div class="chat-body">
+          <div class="chat-u" style="background:rgba(255,107,107,0.12);border:1px solid rgba(255,107,107,0.3)">Which Engineering employees haven't completed cybersecurity training?</div>
+          <div class="chat-b"><div class="chat-b-lbl" style="color:#ff6b6b">✦ SAP Agent</div>Engineering — Training Overdue (31 Oct):
+
+12 employees across 3 sub-orgs:
+• SW Development (DE): 4
+• Infrastructure (US): 5
+• Architecture (UK): 3
+
+Reply 'send' to dispatch reminders to all 12</div>
+        </div>
+      </div>
+      <div><div class="lbl">SAP data accessed</div>
+      <div class="sap-tags">
+        <span class="sap-tag">PA0001 (Org Assignment)</span>
+        <span class="sap-tag">HRP1001 (Org Structure)</span>
+        <span class="sap-tag">LSO (Training &amp; Events)</span>
+        <span class="sap-tag">CATS (Time Management)</span>
+      </div></div>
+    </div>
+  </div>
+  <div class="slide-num">13 / 16</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 14 — HR (Implementation)
+═══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="14 HR Implementation">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#ff6b6b;bottom:-200px;right:-200px;"></div>
+  <div class="logo"><div class="logo-icon">✦</div><div class="logo-text">Chat with your SAP Data</div></div>
+  <div class="impl-body">
+    <div class="impl-header">
+      <span class="pill" style="background:#ff6b6b18;border:1px solid #ff6b6b44;color:#ff6b6b">👥 HR</span>
+      <div class="impl-title">Implementation Guide</div>
+    </div>
+    <div class="impl-steps">
+      <div class="step-card" style="border-color:#ff6b6b33" data-num="1">
+        <div class="step-num" style="background:#ff6b6b22;border:1px solid #ff6b6b44;color:#ff6b6b">1</div>
+        <div class="step-title">Apply strict GDPR controls</div>
+        <div class="step-detail">Enforce that queries always filter by the requesting manager's org unit. Never return individual personal data without authorisation. Consider aggregate-only responses for sensitive attributes like salary or medical data.</div>
+      </div>
+      <div class="step-card" style="border-color:#ff6b6b33" data-num="2">
+        <div class="step-num" style="background:#ff6b6b22;border:1px solid #ff6b6b44;color:#ff6b6b">2</div>
+        <div class="step-title">Build org-aware SQL logic</div>
+        <div class="step-detail">The Azure Function should automatically append WHERE OrgUnit IN (user's authorised units) based on the logged-in user's profile. This prevents accidental over-disclosure even if the LLM generates a broad query.</div>
+      </div>
+      <div class="step-card" style="border-color:#ff6b6b33" data-num="3">
+        <div class="step-num" style="background:#ff6b6b22;border:1px solid #ff6b6b44;color:#ff6b6b">3</div>
+        <div class="step-title">Integrate training systems</div>
+        <div class="step-detail">If mandatory training is tracked in a standalone LMS outside SAP, replicate completion data into HANA or expose it via API. A unified view avoids partial results when checking compliance.</div>
+      </div>
+      <div class="step-card" style="border-color:#ff6b6b33" data-num="4">
+        <div class="step-num" style="background:#ff6b6b22;border:1px solid #ff6b6b44;color:#ff6b6b">4</div>
+        <div class="step-title">Add automated nudges</div>
+        <div class="step-detail">After listing overdue employees, offer to send reminders automatically via Power Automate (Teams message or email). This closes the loop from insight to action — a key differentiator over static HR reports.</div>
+      </div>
+      <div class="step-card" style="border-color:#ff6b6b33" data-num="5">
+        <div class="step-num" style="background:#ff6b6b22;border:1px solid #ff6b6b44;color:#ff6b6b">5</div>
+        <div class="step-title">Privacy review before launch</div>
+        <div class="step-detail">Have legal/DPO review the data fields the bot can access. Document which queries are permitted, which require aggregation, and which are blocked outright. Include these rules in the system prompt as hard constraints.</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">14 / 16</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 15 — Architecture
+═══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="15 Architecture">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#4f9cf9;top:-200px;right:-200px;"></div>
+  <div class="glow" style="background:#00d4aa;bottom:-200px;left:-200px;"></div>
+  <div class="logo"><div class="logo-icon">✦</div><div class="logo-text">Chat with your SAP Data</div></div>
+  <div class="arch-body">
+    <div class="pill" style="background:#4f9cf918;border:1px solid #4f9cf944;color:#4f9cf9;margin-bottom:24px;">Technical Architecture</div>
+    <h2 style="font-size:56px;font-weight:700;margin-bottom:16px;text-align:center;">How it's built</h2>
+    <p style="font-size:26px;color:#6b7fa3;margin-bottom:56px;text-align:center;">Five components working together to turn natural language into SAP actions</p>
+    <div class="arch-flow">
+      <div class="arch-box" style="border-color:#4f9cf933"><div class="arch-icon">💬</div><div class="arch-name" style="color:#4f9cf9">Microsoft Teams</div><div class="arch-detail">User sends natural language question via chat</div></div>
+      <div class="arch-arr">→</div>
+      <div class="arch-box" style="border-color:#a78bfa33"><div class="arch-icon">🤖</div><div class="arch-name" style="color:#a78bfa">Power Virtual Agents</div><div class="arch-detail">Conversational interface, routes to Power Automate flow</div></div>
+      <div class="arch-arr">→</div>
+      <div class="arch-box" style="border-color:#00d4aa33"><div class="arch-icon">⚡</div><div class="arch-name" style="color:#00d4aa">Azure OpenAI GPT-4</div><div class="arch-detail">Translates intent to SQL, generates natural language response</div></div>
+      <div class="arch-arr">→</div>
+      <div class="arch-box" style="border-color:#f5a62333"><div class="arch-icon">🔧</div><div class="arch-name" style="color:#f5a623">Azure Function</div><div class="arch-detail">Executes HANA SQL, converts results CSV → JSON → Markdown</div></div>
+      <div class="arch-arr">→</div>
+      <div class="arch-box" style="border-color:#4ade8033"><div class="arch-icon">🗄️</div><div class="arch-name" style="color:#4ade80">SAP HANA</div><div class="arch-detail">Live SAP data queried in real-time, results returned</div></div>
+    </div>
+  </div>
+  <div class="slide-num">15 / 16</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 16 — Close
+═══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="16 Close">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#4f9cf9;top:-200px;left:-200px;"></div>
+  <div class="glow" style="background:#a78bfa;bottom:-200px;right:-200px;"></div>
+  <div class="logo"><div class="logo-icon">✦</div><div class="logo-text">Chat with your SAP Data</div></div>
+  <div class="close-body">
+    <div class="pill" style="background:#4f9cf918;border:1px solid #4f9cf944;color:#4f9cf9;">Next steps</div>
+    <div class="close-h">From conversation<br>to action in SAP</div>
+    <div class="close-sub">One AI agent. Six domains. Unlimited natural language queries against live SAP data — delivered in Microsoft Teams.</div>
+    <div class="next-steps">
+      <div class="next-card" style="border-color:#4f9cf933"><div class="next-n" style="color:#4f9cf9">Step 01</div><div class="next-t">Identify pilot use case &amp; define data scope</div></div>
+      <div class="next-card" style="border-color:#00d4aa33"><div class="next-n" style="color:#00d4aa">Step 02</div><div class="next-t">Configure Azure Function + system prompt with table schema</div></div>
+      <div class="next-card" style="border-color:#a78bfa33"><div class="next-n" style="color:#a78bfa">Step 03</div><div class="next-t">Deploy Power Virtual Agent in Teams &amp; validate with users</div></div>
+      <div class="next-card" style="border-color:#f5a62333"><div class="next-n" style="color:#f5a623">Step 04</div><div class="next-t">Expand to additional domains &amp; enable write actions</div></div>
+    </div>
+  </div>
+  <div class="slide-num">16 / 16</div>
+</section>
+
+</deck-stage>
+</body>
+</html>
