@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Use Cases in DevGTM Mesh</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script type="application/json" id="speaker-notes">
+[
+  "Welcome. This deck walks through the ten AI capabilities built into DevGTM Mesh — a developer-focused GTM platform that unifies HubSpot, Reo.Dev, Fireflies, Instantly, HeyReach, and Firecrawl. The core thesis is that six integrations on their own are a data problem; AI is what turns them into an intelligent GTM system. We'll cover what each use case does, the AI technique behind it, and how it fits the broader architecture.",
+
+  "DevGTM Mesh is a platform built in Lovable, powered by the Claude API, with Supabase as the data layer. It targets developer-led GTM motions — where the buyers are developers, signals come from code repositories and product usage, and outreach needs to be technically credible. The six integrations cover every stage: CRM context from HubSpot, developer intelligence from Reo.Dev, meeting transcripts from Fireflies, email and LinkedIn outreach from Instantly and HeyReach, and web extraction via Firecrawl. Alone, each integration is a silo. Together, normalized on domain, they become a unified account graph.",
+
+  "Here is the map of all ten use cases grouped into four categories. Intelligence covers the research bot, pitch generator, streaming chat interface, and enrichment intelligence — these are the AI reasoning capabilities. Conversation covers the meeting intelligence and AI-first dashboard use cases. Prioritization covers intent scoring and SDR auto-assignment. Data foundation covers cross-source normalization and web extraction. We'll go through each one in detail.",
+
+  "The AI Research Bot automates the manual prospecting work that used to take an SDR fifteen to thirty minutes per account. When triggered, it fires a Firecrawl scrape of the company domain, passes the extracted content to Claude with a structured system prompt asking for company summary, technology stack, recent news, and key contacts — then streams the result into the account detail panel. The output is a structured research brief that surfaces context no CRM record would contain. Claude's reasoning capability is what lets it synthesize unstructured web content into actionable sales intelligence.",
+
+  "The AI Pitch Generator takes the research brief plus account signals from the normalized data layer and generates a personalized outreach pitch. This is more than template filling — Claude reasons about why this specific account, with this specific tech stack and signal pattern, should care about the product right now. The output is saved as a shareable slug-based page, so the SDR can send a unique pitch URL rather than a generic email. LLM personalization at scale means every outreach message is contextually justified, not just name-merged.",
+
+  "The Streaming Chat Interface is a Claude-powered conversational layer over the entire GTM dataset. Rather than building static dashboards that go stale, the interface lets any user ask natural language questions — 'which accounts spiked in activity this week?', 'what did the Acme Corp meeting cover?', 'show me open-source companies in fintech with more than fifty developers'. The Claude API's streaming endpoint delivers responses token-by-token via Server-Sent Events, parsed as content_block_delta events. The result feels like a real-time analyst sitting inside your GTM data.",
+
+  "Intent Scoring is the prioritization engine. It reads signals from multiple sources — HubSpot activities, Reo.Dev developer events, meeting recency from Fireflies, outreach engagement from Instantly and HeyReach — and applies configurable weights via the intent_score_config table. The compute-intent-scores edge function runs the weighted aggregation and writes a signal_score back to the accounts table. AI plays two roles here: the scoring config itself can be tuned by asking the AI what weight pattern best predicts conversion, and Claude can explain why a specific account ranked where it did. This is weighted signal aggregation with an AI reasoning layer on top.",
+
+  "Cross-Source Normalization is the foundational use case that all others depend on. Without it, HubSpot has a record for 'Stripe Inc', Reo.Dev has 'stripe.com', and Fireflies has a meeting with a participant at '@stripe.com' — they never connect. The normalize-sync-data edge function uses domain as the primary join key: every record from every source is matched against a domain_mappings table that tracks which source records map to which canonical account. This is entity resolution at scale. The trade-off is that domain matching works well for direct company email domains but can fail for subsidiaries using different domains or contacts on personal emails — a deliberate pragmatic choice that favors broad coverage over precision.",
+
+  "The AI-First Dashboard replaces the traditional metrics grid with an intent-driven interface. The home screen surfaces the highest-intent accounts by signal score, not alphabetically or by last-modified date. A global Claude chat panel is available on every screen, with context-aware suggested prompts that adapt to what the user is looking at. This is agentic UI: the interface is not a passive display of data but an active participant that surfaces what matters, suggests next actions, and executes them when asked. The shift from dashboard-as-report to dashboard-as-agent is the key architectural decision.",
+
+  "Meeting Intelligence closes the loop between conversations and accounts. When Fireflies syncs a meeting transcript, the sync-fireflies edge function runs a GraphQL query that pulls transcript text, summary, action items, and sentiment scores. It then matches the meeting to an account using the email domains of the participants — a domain-match lookup against the accounts table. The meeting summary is available directly on the account page, so an SDR checking an account before a call sees every prior conversation. Speech-to-text plus summarization, linked by the same domain join key that powers normalization.",
+
+  "Enrichment Intelligence fills the firmographic gaps that CRM records leave empty. When an account is created or synced, an enrichment pipeline runs Firecrawl against the company domain, then sends the extracted content to Claude with a prompt requesting industry tags, technology stack, funding stage, location, and social profiles. The results are written to the enrichment_data table and surfaced on the account page. This is LLM-driven firmographic enrichment — not a lookup against a static database, but a live inference from the company's own web presence.",
+
+  "SDR Auto-Assignment routes accounts to sales reps using a hybrid of rule-based logic and AI scoring. The rule layer handles explicit criteria — territory, industry, company size. The AI layer uses the intent score and account context to recommend assignment priority within a rep's territory. The assignment modal lets a manager review AI recommendations and confirm or override. This hybrid approach is intentional: pure rule-based routing ignores signal quality; pure AI routing creates a black box that managers won't trust. The combination gives reps the right accounts at the right time, with a human in the loop.",
+
+  "Web Extraction via Firecrawl is the data acquisition layer that makes everything else richer. Rather than relying solely on what HubSpot and Reo.Dev provide, Firecrawl extracts structured content from any company website — job listings, product pages, blog posts, pricing pages, tech stack references in job descriptions. Claude then processes this raw content into structured fields: technologies detected, hiring signals, product category. LLM-guided scraping means the extraction logic is expressed as a prompt, not a brittle CSS selector, so it adapts to site structure changes automatically.",
+
+  "The four-layer architecture can be stated as a single phrase: Normalize, then Score, then Reason, then Act. Normalize is the data foundation — domain-match entity resolution that creates one account record from six integration sources. Score is the prioritization layer — weighted signal aggregation that surfaces in-market accounts. Reason is the AI layer — Claude analyzes context, generates research, writes pitches, answers questions. Act is the outcome layer — SDR assignment, outreach generation, automated sequences. Each layer depends on the one below it. You cannot reason well about data that is not normalized. You cannot act effectively without knowing which accounts to prioritize.",
+
+  "Domain matching as the join key is a deliberate engineering trade-off. The alternative — matching on company name — fails too often due to spelling variants, subsidiaries, and legal entity differences. Matching on a Dun & Bradstreet identifier would be precise but requires paid enrichment on every record. Domain matching covers the vast majority of B2B accounts where the company email domain and the website domain are the same. It fails in three predictable cases: subsidiaries using a parent company email domain, contacts using personal Gmail or similar addresses, and companies that have rebranded without updating their domain. The system handles these with a manual override layer in domain_mappings, where an operator can explicitly link a variant domain to a canonical account.",
+
+  "The stack choice — Lovable for the application layer, Claude for reasoning — reflects a clean separation between deterministic plumbing and probabilistic intelligence. Lovable handles the UI, data flows, authentication, and integration sync logic: all of this is deterministic, rule-based, and should behave identically every time. Claude handles research synthesis, pitch generation, intent explanation, and conversational Q&A: all of this benefits from reasoning flexibility, not rigid rules. The entire platform was built in 26 Claude prompts inside Lovable — each prompt a discrete implementation step. This is the practical definition of vibe coding at GTM scale: natural language as the build interface, AI as the execution layer.",
+
+  "Three takeaways. First: normalize first. No amount of AI reasoning compensates for fragmented, inconsistent source data. Domain-match normalization is the prerequisite for every other use case. Second: AI as the read layer. The highest leverage AI applications in this stack are not write actions — they are read actions: research synthesis, pitch generation, conversational analytics. The AI reads the normalized data and surfaces insight. Third: agentic UI as the endpoint. The goal is not a smarter dashboard — it is a system that knows what to surface, when to surface it, and can act on it. The AI-first dashboard and global chat panel are the interface expression of that goal.",
+
+  "References and further reading. The full DevGTM Mesh Build Guide with all 26 implementation steps is available at getreo.dev/resources/devgtm-mesh-build-guide. The guide covers every edge function, every Supabase table schema, every Claude prompt, and every Lovable configuration step. The platform stack: Lovable for application scaffolding, Anthropic Claude for AI reasoning (claude-3-5-sonnet), Supabase for data persistence and edge functions, and the six integrations: HubSpot, Reo.Dev, Fireflies, Instantly, HeyReach, Firecrawl."
+]
+</script>
+<script src="../sap-ai-use-cases/deck-stage.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #060a12; font-family: 'DM Sans', sans-serif; }
+
+  section {
+    width: 1920px; height: 1080px;
+    background: #0b0f1a; color: #e8edf5;
+    position: relative; overflow: hidden;
+  }
+
+  /* ── Shared ────────────────────────────────────────────── */
+  .dot-grid {
+    position: absolute; inset: 0; pointer-events: none;
+    background-image: radial-gradient(circle, #1e2540 1px, transparent 1px);
+    background-size: 48px 48px; opacity: 0.4;
+  }
+  .glow {
+    position: absolute; width: 700px; height: 700px;
+    border-radius: 50%; filter: blur(160px); opacity: 0.1; pointer-events: none;
+  }
+  .slide-num {
+    position: absolute; bottom: 48px; right: 80px;
+    font-size: 24px; color: #3d4a6e; font-weight: 500; letter-spacing: 0.06em;
+  }
+  .logo {
+    position: absolute; top: 44px; left: 80px;
+    display: flex; align-items: center; gap: 14px; z-index: 10;
+  }
+  .logo-icon {
+    width: 44px; height: 44px; border-radius: 12px;
+    background: linear-gradient(135deg, #7c3aed, #2dd4bf);
+    display: flex; align-items: center; justify-content: center; font-size: 22px;
+  }
+  .logo-text { font-size: 24px; font-weight: 600; color: #7c3aed; letter-spacing: 0.06em; text-transform: uppercase; }
+
+  .pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 24px; border-radius: 24px;
+    font-size: 24px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+
+  /* ── Cover ─────────────────────────────────────────────── */
+  .cover-body {
+    position: absolute; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center; z-index: 2; gap: 0;
+  }
+  .cover-kicker { font-size: 26px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #7c3aed; margin-bottom: 32px; }
+  .cover-h1 {
+    font-size: 88px; font-weight: 700; line-height: 1.08; margin-bottom: 32px;
+    background: linear-gradient(140deg, #e8edf5 20%, #5a6a8a);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .cover-sub { font-size: 28px; color: #6b7fa3; max-width: 960px; line-height: 1.7; margin-bottom: 56px; }
+  .domain-pills { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+
+  /* ── Context / Overview ─────────────────────────────────── */
+  .ov-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+    padding: 0 80px; margin-top: 36px; position: relative; z-index: 2;
+  }
+  .ov-card {
+    background: #131929; border-radius: 20px; border: 1px solid #1e2d47;
+    padding: 32px 28px; display: flex; flex-direction: column; gap: 12px;
+  }
+  .ov-icon { font-size: 36px; }
+  .ov-domain { font-size: 24px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
+  .ov-title { font-size: 28px; font-weight: 700; color: #e8edf5; }
+  .ov-tagline { font-size: 24px; color: #6b7fa3; line-height: 1.5; }
+
+  /* ── Use-Case Map ────────────────────────────────────────── */
+  .map-body {
+    position: absolute; inset: 0; z-index: 2;
+    display: flex; flex-direction: column;
+    padding: 130px 80px 72px;
+  }
+  .map-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;
+    flex: 1; margin-top: 40px;
+  }
+  .map-col { display: flex; flex-direction: column; gap: 14px; }
+  .map-col-header {
+    font-size: 22px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.08em; padding: 14px 20px; border-radius: 12px;
+    text-align: center;
+  }
+  .map-item {
+    background: #131929; border: 1px solid #1e2d47;
+    border-radius: 14px; padding: 18px 20px;
+    display: flex; align-items: flex-start; gap: 14px;
+  }
+  .map-num {
+    width: 36px; height: 36px; border-radius: 8px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; font-weight: 700; font-family: 'DM Mono', monospace;
+  }
+  .map-item-content { flex: 1; }
+  .map-item-title { font-size: 24px; font-weight: 700; color: #e8edf5; line-height: 1.2; }
+  .map-item-sub { font-size: 20px; color: #6b7fa3; margin-top: 4px; line-height: 1.4; }
+
+  /* ── Use-Case Slide (left / right) ─────────────────────── */
+  .uc-slide { display: grid; grid-template-columns: 1fr 1fr; height: 100%; }
+  .uc-left {
+    padding: 130px 64px 72px 80px;
+    display: flex; flex-direction: column; justify-content: center;
+    position: relative; z-index: 2;
+  }
+  .uc-num {
+    position: absolute; bottom: 52px; left: 80px;
+    font-size: 120px; font-weight: 800; opacity: 0.05;
+    font-family: 'DM Mono', monospace; line-height: 1;
+  }
+  .uc-title { font-size: 48px; font-weight: 700; line-height: 1.15; margin-bottom: 20px; }
+  .uc-desc { font-size: 24px; color: #a8bdd4; line-height: 1.65; margin-bottom: 40px; }
+  .lbl { font-size: 24px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #3d4a6e; margin-bottom: 14px; }
+  .checks { display: flex; flex-direction: column; gap: 14px; }
+  .chk { display: flex; gap: 14px; align-items: flex-start; font-size: 24px; color: #a8bdd4; line-height: 1.5; }
+  .chk-icon { font-size: 24px; flex-shrink: 0; margin-top: 2px; }
+
+  .uc-right {
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 100px 80px 72px 60px; gap: 28px; position: relative; z-index: 2;
+  }
+  .v-div { position: absolute; top: 0; bottom: 0; left: 50%; width: 1px; background: #1e2d47; z-index: 1; }
+
+  /* Chat window */
+  .chat-win { background: #0d1220; border: 1px solid #1e2d47; border-radius: 20px; overflow: hidden; width: 100%; }
+  .chat-top {
+    background: #131929; padding: 20px 24px; border-bottom: 1px solid #1e2d47;
+    display: flex; align-items: center; gap: 14px;
+    font-size: 24px; font-weight: 600; color: #6b7fa3;
+  }
+  .chat-av { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+  .chat-body { padding: 24px 20px; display: flex; flex-direction: column; gap: 18px; }
+  .chat-u {
+    align-self: flex-end; padding: 14px 20px; max-width: 82%;
+    font-size: 24px; font-family: 'DM Mono', monospace; color: #e8edf5;
+    border-radius: 16px 16px 4px 16px; line-height: 1.5;
+  }
+  .chat-b {
+    background: #131929; border: 1px solid #1e2d47;
+    border-radius: 16px 16px 16px 4px; padding: 16px 20px; max-width: 95%;
+    font-size: 24px; font-family: 'DM Mono', monospace;
+    color: #a8bdd4; line-height: 1.55; white-space: pre-wrap;
+  }
+  .chat-b-lbl { font-size: 24px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; font-family: 'DM Sans', sans-serif; }
+
+  .data-tags { display: flex; flex-wrap: wrap; gap: 10px; }
+  .data-tag { background: #1a2236; border: 1px solid #243352; border-radius: 10px; padding: 10px 18px; font-size: 22px; font-family: 'DM Mono', monospace; color: #a8bdd4; }
+
+  /* ── Architecture Slide ──────────────────────────────────── */
+  .arch-body {
+    position: absolute; inset: 0; z-index: 2;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; padding: 0 100px;
+  }
+  .arch-layers { display: flex; flex-direction: column; gap: 22px; width: 100%; max-width: 1600px; }
+  .arch-layer {
+    display: flex; align-items: stretch; gap: 0;
+    background: #131929; border-radius: 20px; border: 1px solid #1e2d47;
+    overflow: hidden;
+  }
+  .arch-label {
+    width: 220px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 8px; padding: 28px 24px; text-align: center;
+    border-right: 1px solid #1e2d47;
+  }
+  .arch-label-num { font-size: 22px; font-weight: 700; font-family: 'DM Mono', monospace; opacity: 0.5; }
+  .arch-label-name { font-size: 28px; font-weight: 700; }
+  .arch-content {
+    flex: 1; padding: 28px 36px; display: flex; flex-direction: column; justify-content: center; gap: 6px;
+  }
+  .arch-content-title { font-size: 28px; font-weight: 700; color: #e8edf5; }
+  .arch-content-desc { font-size: 24px; color: #6b7fa3; line-height: 1.6; }
+  .arch-usecases { display: flex; gap: 12px; margin-top: 10px; flex-wrap: wrap; }
+  .arch-uc-tag {
+    padding: 6px 16px; border-radius: 20px; font-size: 20px; font-weight: 600;
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* ── Info / Domain slide ──────────────────────────────────── */
+  .info-body {
+    position: absolute; inset: 0; z-index: 2;
+    display: flex; flex-direction: column;
+    padding: 130px 80px 72px;
+  }
+  .two-col-info { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 40px; flex: 1; }
+  .info-card {
+    background: #131929; border: 1px solid #1e2d47; border-radius: 20px;
+    padding: 36px 36px; display: flex; flex-direction: column; gap: 16px;
+  }
+  .info-card-title { font-size: 30px; font-weight: 700; color: #e8edf5; margin-bottom: 4px; }
+  .info-card-body { font-size: 24px; color: #a8bdd4; line-height: 1.65; }
+  .match-list { display: flex; flex-direction: column; gap: 14px; margin-top: 8px; }
+  .match-item { display: flex; align-items: flex-start; gap: 14px; font-size: 24px; color: #a8bdd4; line-height: 1.5; }
+
+  /* ── Stack Slide ──────────────────────────────────────────── */
+  .stack-body {
+    position: absolute; inset: 0; z-index: 2;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; padding: 0 80px;
+  }
+  .stack-split { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; width: 100%; max-width: 1600px; margin-top: 40px; }
+  .stack-card {
+    background: #131929; border: 1px solid #1e2d47; border-radius: 20px;
+    padding: 48px 48px; display: flex; flex-direction: column; gap: 20px;
+  }
+  .stack-icon { font-size: 56px; }
+  .stack-name { font-size: 42px; font-weight: 700; }
+  .stack-role { font-size: 26px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.5; }
+  .stack-desc { font-size: 24px; color: #a8bdd4; line-height: 1.65; }
+  .stack-attrs { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+  .stack-attr { display: flex; align-items: center; gap: 12px; font-size: 24px; color: #a8bdd4; }
+
+  /* ── Takeaways ────────────────────────────────────────────── */
+  .take-body {
+    position: absolute; inset: 0; z-index: 2;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; padding: 0 80px;
+  }
+  .take-cards { display: flex; gap: 32px; width: 100%; max-width: 1600px; margin-top: 40px; }
+  .take-card {
+    flex: 1; background: #131929; border: 1px solid #1e2d47; border-radius: 20px;
+    padding: 48px 40px; display: flex; flex-direction: column; gap: 20px;
+  }
+  .take-num { font-size: 88px; font-weight: 800; font-family: 'DM Mono', monospace; opacity: 0.08; line-height: 1; }
+  .take-title { font-size: 36px; font-weight: 700; line-height: 1.2; margin-top: -20px; }
+  .take-desc { font-size: 24px; color: #a8bdd4; line-height: 1.65; }
+
+  /* ── Close ─────────────────────────────────────────────── */
+  .close-body {
+    position: absolute; inset: 0; z-index: 2;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center; gap: 28px;
+  }
+  .close-h { font-size: 72px; font-weight: 700; line-height: 1.12; max-width: 1100px;
+    background: linear-gradient(135deg, #e8edf5 20%, #5a6a8a);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .close-sub { font-size: 28px; color: #6b7fa3; max-width: 860px; line-height: 1.7; }
+  .ref-cards { display: flex; gap: 24px; margin-top: 16px; }
+  .ref-card {
+    background: #131929; border: 1px solid #1e2d47; border-radius: 18px;
+    padding: 28px 36px; text-align: left;
+  }
+  .ref-label { font-size: 22px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
+  .ref-val { font-size: 24px; color: #e8edf5; line-height: 1.4; font-family: 'DM Mono', monospace; }
+</style>
+</head>
+<body>
+<deck-stage>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 01 — Cover
+══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="01 Cover">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#7c3aed;top:-200px;right:-200px;"></div>
+  <div class="glow" style="background:#2dd4bf;bottom:-200px;left:-200px;"></div>
+  <div class="logo"><div class="logo-icon">⬡</div><div class="logo-text">DevGTM Mesh</div></div>
+  <div class="cover-body">
+    <div class="cover-kicker">AI Innovation Series</div>
+    <div class="cover-h1">AI Use Cases<br>in DevGTM Mesh</div>
+    <div class="cover-sub">10 AI capabilities that turn 6 integrations into one intelligent GTM system</div>
+    <div class="domain-pills">
+      <span class="pill" style="background:#7c3aed18;border:1px solid #7c3aed44;color:#a78bfa">🔬 Intelligence</span>
+      <span class="pill" style="background:#2dd4bf18;border:1px solid #2dd4bf44;color:#2dd4bf">💬 Conversation</span>
+      <span class="pill" style="background:#f59e0b18;border:1px solid #f59e0b44;color:#f59e0b">📊 Prioritization</span>
+      <span class="pill" style="background:#3b82f618;border:1px solid #3b82f644;color:#60a5fa">🔗 Data Foundation</span>
+    </div>
+  </div>
+  <div class="slide-num">1 / 18</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 02 — Context: What is DevGTM Mesh
+══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="02 Context">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#7c3aed;top:-200px;left:-100px;"></div>
+  <div class="logo"><div class="logo-icon">⬡</div><div class="logo-text">DevGTM Mesh</div></div>
+  <div style="position:relative;z-index:2;padding:130px 80px 0">
+    <div class="pill" style="background:#7c3aed18;border:1px solid #7c3aed44;color:#a78bfa;margin-bottom:20px;">Context</div>
+    <h2 style="font-size:52px;font-weight:700;line-height:1.1;margin-bottom:8px;">Six integrations, one AI-unified platform</h2>
+    <p style="font-size:26px;color:#6b7fa3;">DevGTM Mesh targets developer-led GTM motions. AI is the normalization and reasoning layer across all six sources.</p>
+  </div>
+  <div class="ov-grid">
+    <div class="ov-card" style="border-color:#7c3aed33"><div class="ov-icon">🏢</div><div class="ov-domain" style="color:#a78bfa">HubSpot</div><div class="ov-title">CRM</div><div class="ov-tagline">Companies, contacts, deals — the baseline account record</div></div>
+    <div class="ov-card" style="border-color:#2dd4bf33"><div class="ov-icon">👨‍💻</div><div class="ov-domain" style="color:#2dd4bf">Reo.Dev</div><div class="ov-title">Developer Intelligence</div><div class="ov-tagline">Accounts, developers, buyers, product-usage signals</div></div>
+    <div class="ov-card" style="border-color:#f59e0b33"><div class="ov-icon">🎙️</div><div class="ov-domain" style="color:#f59e0b">Fireflies</div><div class="ov-title">Meeting Intelligence</div><div class="ov-tagline">Transcripts, summaries, action items, sentiment</div></div>
+    <div class="ov-card" style="border-color:#3b82f633"><div class="ov-icon">📧</div><div class="ov-domain" style="color:#60a5fa">Instantly</div><div class="ov-title">Email Outreach</div><div class="ov-tagline">Campaign stats and email engagement data</div></div>
+    <div class="ov-card" style="border-color:#ec489933"><div class="ov-icon">🔗</div><div class="ov-domain" style="color:#f472b6">HeyReach</div><div class="ov-title">LinkedIn Outreach</div><div class="ov-tagline">Campaign stats and LinkedIn lead lists</div></div>
+    <div class="ov-card" style="border-color:#10b98133"><div class="ov-icon">🕷️</div><div class="ov-domain" style="color:#34d399">Firecrawl</div><div class="ov-title">Web Extraction</div><div class="ov-tagline">Domain content extraction for research and enrichment</div></div>
+  </div>
+  <div class="slide-num">2 / 18</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 03 — AI Use Case Map
+══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="03 Use Case Map">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#7c3aed;top:-100px;right:-100px;"></div>
+  <div class="logo"><div class="logo-icon">⬡</div><div class="logo-text">DevGTM Mesh</div></div>
+  <div class="map-body">
+    <div style="display:flex;align-items:center;gap:20px;">
+      <div class="pill" style="background:#7c3aed18;border:1px solid #7c3aed44;color:#a78bfa;">AI Use Case Map</div>
+      <h2 style="font-size:44px;font-weight:700;">10 use cases · 4 categories</h2>
+    </div>
+    <div class="map-grid">
+      <!-- Intelligence -->
+      <div class="map-col">
+        <div class="map-col-header" style="background:#7c3aed18;border:1px solid #7c3aed33;color:#a78bfa;">🔬 Intelligence</div>
+        <div class="map-item" style="border-color:#7c3aed33;">
+          <div class="map-num" style="background:#7c3aed22;color:#a78bfa;">1</div>
+          <div class="map-item-content"><div class="map-item-title">AI Research Bot</div><div class="map-item-sub">Claude reasoning + web context</div></div>
+        </div>
+        <div class="map-item" style="border-color:#7c3aed33;">
+          <div class="map-num" style="background:#7c3aed22;color:#a78bfa;">2</div>
+          <div class="map-item-content"><div class="map-item-title">AI Pitch Generator</div><div class="map-item-sub">LLM personalization</div></div>
+        </div>
+        <div class="map-item" style="border-color:#7c3aed33;">
+          <div class="map-num" style="background:#7c3aed22;color:#a78bfa;">8</div>
+          <div class="map-item-content"><div class="map-item-title">Enrichment Intelligence</div><div class="map-item-sub">LLM-driven firmographics</div></div>
+        </div>
+      </div>
+      <!-- Conversation -->
+      <div class="map-col">
+        <div class="map-col-header" style="background:#2dd4bf18;border:1px solid #2dd4bf33;color:#2dd4bf;">💬 Conversation</div>
+        <div class="map-item" style="border-color:#2dd4bf33;">
+          <div class="map-num" style="background:#2dd4bf22;color:#2dd4bf;">3</div>
+          <div class="map-item-content"><div class="map-item-title">Streaming Chat Interface</div><div class="map-item-sub">Claude streaming API</div></div>
+        </div>
+        <div class="map-item" style="border-color:#2dd4bf33;">
+          <div class="map-num" style="background:#2dd4bf22;color:#2dd4bf;">7</div>
+          <div class="map-item-content"><div class="map-item-title">Meeting Intelligence</div><div class="map-item-sub">Speech-to-text + summarization</div></div>
+        </div>
+        <div class="map-item" style="border-color:#2dd4bf33;">
+          <div class="map-num" style="background:#2dd4bf22;color:#2dd4bf;">6</div>
+          <div class="map-item-content"><div class="map-item-title">AI-First Dashboard</div><div class="map-item-sub">Agentic UI</div></div>
+        </div>
+      </div>
+      <!-- Prioritization -->
+      <div class="map-col">
+        <div class="map-col-header" style="background:#f59e0b18;border:1px solid #f59e0b33;color:#f59e0b;">📊 Prioritization</div>
+        <div class="map-item" style="border-color:#f59e0b33;">
+          <div class="map-num" style="background:#f59e0b22;color:#f59e0b;">4</div>
+          <div class="map-item-content"><div class="map-item-title">Intent Scoring</div><div class="map-item-sub">Weighted signal aggregation</div></div>
+        </div>
+        <div class="map-item" style="border-color:#f59e0b33;">
+          <div class="map-num" style="background:#f59e0b22;color:#f59e0b;">9</div>
+          <div class="map-item-content"><div class="map-item-title">SDR Auto-Assignment</div><div class="map-item-sub">Rule + AI scoring hybrid</div></div>
+        </div>
+      </div>
+      <!-- Data Foundation -->
+      <div class="map-col">
+        <div class="map-col-header" style="background:#3b82f618;border:1px solid #3b82f633;color:#60a5fa;">🔗 Data Foundation</div>
+        <div class="map-item" style="border-color:#3b82f633;">
+          <div class="map-num" style="background:#3b82f622;color:#60a5fa;">5</div>
+          <div class="map-item-content"><div class="map-item-title">Cross-Source Normalization</div><div class="map-item-sub">Domain-match entity resolution</div></div>
+        </div>
+        <div class="map-item" style="border-color:#3b82f633;">
+          <div class="map-num" style="background:#3b82f622;color:#60a5fa;">10</div>
+          <div class="map-item-content"><div class="map-item-title">Web Extraction</div><div class="map-item-sub">LLM-guided scraping (Firecrawl)</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">3 / 18</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 04 — Use Case 1: AI Research Bot
+══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="04 Research Bot">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#7c3aed;top:-100px;left:-100px;"></div>
+  <div class="v-div"></div>
+  <div class="logo"><div class="logo-icon">⬡</div><div class="logo-text">DevGTM Mesh</div></div>
+  <div class="uc-slide">
+    <div class="uc-left">
+      <div class="uc-num" style="color:#a78bfa">01</div>
+      <div style="margin-bottom:20px;"><span class="pill" style="background:#7c3aed18;border:1px solid #7c3aed44;color:#a78bfa">🔬 Intelligence</span></div>
+      <div class="uc-title">AI Research Bot</div>
+      <div class="uc-desc">Automates manual prospect research. Firecrawl scrapes the company domain; Claude synthesizes a structured research brief — company summary, tech stack, recent news, key contacts — and streams it into the account panel.</div>
+      <div class="lbl">AI technique</div>
+      <div class="checks">
+        <div class="chk"><span class="chk-icon" style="color:#a78bfa">✦</span>Firecrawl extracts unstructured web content from target domain</div>
+        <div class="chk"><span class="chk-icon" style="color:#a78bfa">✦</span>Claude reasoning synthesizes raw text into structured brief</div>
+        <div class="chk"><span class="chk-icon" style="color:#a78bfa">✦</span>Streaming API delivers output token-by-token in real time</div>
+        <div class="chk"><span class="chk-icon" style="color:#a78bfa">✦</span>Replaces 15–30 min of manual SDR research per account</div>
+      </div>
+    </div>
+    <div class="uc-right">
+      <div class="chat-win" style="border-color:#7c3aed33;">
+        <div class="chat-top"><div class="chat-av" style="background:#7c3aed22;border:1px solid #7c3aed44">🔬</div>Account Research Agent</div>
+        <div class="chat-body">
+          <div class="chat-u" style="background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.3)">Run research brief for stripe.com</div>
+          <div class="chat-b"><div class="chat-b-lbl" style="color:#a78bfa">✦ Research Bot</div>Stripe — Payment Infrastructure (2010)
+HQ: San Francisco · 8,000+ employees
+
+Tech stack: Ruby, Go, React, AWS, Kubernetes
+Recent: Series I at $95B valuation, expanded
+in EU market (Oct 2024)
+
+Key contacts: CEO Patrick Collison, CTO
+David Singleton, Head of DevRel Tara Seshan</div>
+        </div>
+      </div>
+      <div><div class="lbl">Sources used</div>
+      <div class="data-tags">
+        <span class="data-tag">Firecrawl scrape</span>
+        <span class="data-tag">Claude claude-3-5-sonnet</span>
+        <span class="data-tag">enrichment_data table</span>
+      </div></div>
+    </div>
+  </div>
+  <div class="slide-num">4 / 18</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 05 — Use Case 2: AI Pitch Generator
+══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="05 Pitch Generator">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#a78bfa;top:-100px;right:-100px;"></div>
+  <div class="v-div"></div>
+  <div class="logo"><div class="logo-icon">⬡</div><div class="logo-text">DevGTM Mesh</div></div>
+  <div class="uc-slide">
+    <div class="uc-left">
+      <div class="uc-num" style="color:#a78bfa">02</div>
+      <div style="margin-bottom:20px;"><span class="pill" style="background:#7c3aed18;border:1px solid #7c3aed44;color:#a78bfa">🔬 Intelligence</span></div>
+      <div class="uc-title">AI Pitch Generator</div>
+      <div class="uc-desc">Generates a personalized outreach pitch from account signals and research context. Output is saved as a shareable slug-based page — every SDR message is contextually justified, not template-merged.</div>
+      <div class="lbl">AI technique</div>
+      <div class="checks">
+        <div class="chk"><span class="chk-icon" style="color:#a78bfa">✦</span>LLM reads normalized account data + research brief</div>
+        <div class="chk"><span class="chk-icon" style="color:#a78bfa">✦</span>Reasons about why this account should care right now</div>
+        <div class="chk"><span class="chk-icon" style="color:#a78bfa">✦</span>Generates pitch + saves to pitch_pages with unique slug</div>
+        <div class="chk"><span class="chk-icon" style="color:#a78bfa">✦</span>SDR sends URL — not a generic templated email</div>
+      </div>
+    </div>
+    <div class="uc-right">
+      <div class="chat-win" style="border-color:#7c3aed33;">
+        <div class="chat-top"><div class="chat-av" style="background:#7c3aed22;border:1px solid #7c3aed44">✍️</div>Pitch Generator</div>
+        <div class="chat-body">
+          <div class="chat-u" style="background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.3)">Generate pitch for Stripe (intent score: 87)</div>
+          <div class="chat-b"><div class="chat-b-lbl" style="color:#a78bfa">✦ Pitch Agent</div>Hi Patrick — noticed Stripe's developer
+relations team grew 40% this quarter and
+you're expanding EU infrastructure.
+
+[Product] helps teams like yours track
+developer adoption signals before they
+show up in usage data.
+
+pitch.devgtm.io/stripe-q1-2025</div>
+        </div>
+      </div>
+      <div><div class="lbl">Data inputs</div>
+      <div class="data-tags">
+        <span class="data-tag">accounts table</span>
+        <span class="data-tag">enrichment_data</span>
+        <span class="data-tag">signal_score</span>
+        <span class="data-tag">pitch_pages table</span>
+      </div></div>
+    </div>
+  </div>
+  <div class="slide-num">5 / 18</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 06 — Use Case 3: Streaming Chat Interface
+══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="06 Streaming Chat">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#2dd4bf;bottom:-200px;left:-200px;"></div>
+  <div class="v-div"></div>
+  <div class="logo"><div class="logo-icon">⬡</div><div class="logo-text">DevGTM Mesh</div></div>
+  <div class="uc-slide">
+    <div class="uc-left">
+      <div class="uc-num" style="color:#2dd4bf">03</div>
+      <div style="margin-bottom:20px;"><span class="pill" style="background:#2dd4bf18;border:1px solid #2dd4bf44;color:#2dd4bf">💬 Conversation</span></div>
+      <div class="uc-title">Streaming Chat Interface</div>
+      <div class="uc-desc">A Claude-powered conversational layer over the entire GTM dataset. Real-time analyst-style Q&amp;A — token-by-token via Server-Sent Events. Replaces static dashboards with natural language queries.</div>
+      <div class="lbl">AI technique</div>
+      <div class="checks">
+        <div class="chk"><span class="chk-icon" style="color:#2dd4bf">✦</span>Claude streaming API (SSE content_block_delta events)</div>
+        <div class="chk"><span class="chk-icon" style="color:#2dd4bf">✦</span>account-ai-chat edge function injects account context as system prompt</div>
+        <div class="chk"><span class="chk-icon" style="color:#2dd4bf">✦</span>Multi-turn conversation with full GTM data as context</div>
+        <div class="chk"><span class="chk-icon" style="color:#2dd4bf">✦</span>Available globally — on account pages and dashboard</div>
+      </div>
+    </div>
+    <div class="uc-right">
+      <div class="chat-win" style="border-color:#2dd4bf33;">
+        <div class="chat-top"><div class="chat-av" style="background:#2dd4bf22;border:1px solid #2dd4bf44">💬</div>DevGTM Chat</div>
+        <div class="chat-body">
+          <div class="chat-u" style="background:rgba(45,212,191,0.12);border:1px solid rgba(45,212,191,0.3)">Which accounts spiked in activity this week?</div>
+          <div class="chat-b"><div class="chat-b-lbl" style="color:#2dd4bf">✦ GTM Agent</div>3 accounts with 2x+ activity spike:
+
+1. Datadog (+340%) — 12 dev events,
+   2 new buyers, campaign reply
+2. Vercel (+210%) — repo activity
+   surge, Reo.Dev signal elevated
+3. Clerk (+190%) — meeting booked,
+   intent score now 91▲</div>
+        </div>
+      </div>
+      <div><div class="lbl">Architecture</div>
+      <div class="data-tags">
+        <span class="data-tag">account-ai-chat edge fn</span>
+        <span class="data-tag">SSE streaming</span>
+        <span class="data-tag">activities table</span>
+      </div></div>
+    </div>
+  </div>
+  <div class="slide-num">6 / 18</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 07 — Use Case 4: Intent Scoring
+══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="07 Intent Scoring">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#f59e0b;top:-100px;right:-100px;"></div>
+  <div class="v-div"></div>
+  <div class="logo"><div class="logo-icon">⬡</div><div class="logo-text">DevGTM Mesh</div></div>
+  <div class="uc-slide">
+    <div class="uc-left">
+      <div class="uc-num" style="color:#f59e0b">04</div>
+      <div style="margin-bottom:20px;"><span class="pill" style="background:#f59e0b18;border:1px solid #f59e0b44;color:#f59e0b">📊 Prioritization</span></div>
+      <div class="uc-title">Intent Scoring</div>
+      <div class="uc-desc">Weighted signal aggregation across all six integration sources. The compute-intent-scores edge function calculates a signal_score per account. AI explains why an account ranked where it did.</div>
+      <div class="lbl">Signal sources</div>
+      <div class="checks">
+        <div class="chk"><span class="chk-icon" style="color:#f59e0b">✦</span>HubSpot: deal stage, activity recency, contact engagement</div>
+        <div class="chk"><span class="chk-icon" style="color:#f59e0b">✦</span>Reo.Dev: developer events, buyer signals, repo activity</div>
+        <div class="chk"><span class="chk-icon" style="color:#f59e0b">✦</span>Fireflies: meeting recency, sentiment, action items</div>
+        <div class="chk"><span class="chk-icon" style="color:#f59e0b">✦</span>Instantly / HeyReach: email opens, replies, connection rate</div>
+      </div>
+    </div>
+    <div class="uc-right">
+      <div class="chat-win" style="border-color:#f59e0b33;">
+        <div class="chat-top"><div class="chat-av" style="background:#f59e0b22;border:1px solid #f59e0b44">📊</div>Intent Score Engine</div>
+        <div class="chat-body">
+          <div class="chat-b" style="border-color:#f59e0b33;"><div class="chat-b-lbl" style="color:#f59e0b">Intent Score Breakdown — Clerk.dev</div>Score: 91 / 100
+
+HubSpot activity (w: 0.25)    → 88
+Reo.Dev dev signals (w: 0.35) → 96
+Meeting recency  (w: 0.20)    → 90
+Outreach engage  (w: 0.20)    → 82
+
+Trend: ↑ 23 pts this week
+Reason: 4 new devs, deal active</div>
+        </div>
+      </div>
+      <div><div class="lbl">Config table</div>
+      <div class="data-tags">
+        <span class="data-tag">intent_score_config</span>
+        <span class="data-tag">compute-intent-scores</span>
+        <span class="data-tag">signal_score field</span>
+      </div></div>
+    </div>
+  </div>
+  <div class="slide-num">7 / 18</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 08 — Use Case 5: Cross-Source Normalization
+══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="08 Normalization">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#3b82f6;bottom:-200px;left:-200px;"></div>
+  <div class="v-div"></div>
+  <div class="logo"><div class="logo-icon">⬡</div><div class="logo-text">DevGTM Mesh</div></div>
+  <div class="uc-slide">
+    <div class="uc-left">
+      <div class="uc-num" style="color:#60a5fa">05</div>
+      <div style="margin-bottom:20px;"><span class="pill" style="background:#3b82f618;border:1px solid #3b82f644;color:#60a5fa">🔗 Data Foundation</span></div>
+      <div class="uc-title">Cross-Source<br>Normalization</div>
+      <div class="uc-desc">Domain-match entity resolution creates one canonical account record from six integration sources. The normalize-sync-data edge function writes to domain_mappings — the join key for everything else.</div>
+      <div class="lbl">Why it matters</div>
+      <div class="checks">
+        <div class="chk"><span class="chk-icon" style="color:#60a5fa">✦</span>HubSpot "Stripe Inc" + Reo.Dev "stripe.com" + Fireflies "@stripe.com" → one record</div>
+        <div class="chk"><span class="chk-icon" style="color:#60a5fa">✦</span>domain_mappings table tracks source-to-canonical linkage</div>
+        <div class="chk"><span class="chk-icon" style="color:#60a5fa">✦</span>Prerequisite for intent scoring, research, and pitch generation</div>
+        <div class="chk"><span class="chk-icon" style="color:#60a5fa">✦</span>Manual override layer handles subsidiaries and rebrand cases</div>
+      </div>
+    </div>
+    <div class="uc-right">
+      <div class="chat-win" style="border-color:#3b82f633;">
+        <div class="chat-top"><div class="chat-av" style="background:#3b82f622;border:1px solid #3b82f644">🔗</div>normalize-sync-data</div>
+        <div class="chat-body">
+          <div class="chat-b" style="border-color:#3b82f633;"><div class="chat-b-lbl" style="color:#60a5fa">Domain resolution — stripe.com</div>HubSpot → "Stripe Inc"          ✓ matched
+Reo.Dev → "stripe.com"          ✓ matched
+Fireflies → "@stripe.com"       ✓ matched
+Instantly → "stripe.com"        ✓ matched
+HeyReach → "Stripe"             ✓ matched
+
+Canonical account: stripe.com
+5 sources merged → 1 record</div>
+        </div>
+      </div>
+      <div><div class="lbl">Data model</div>
+      <div class="data-tags">
+        <span class="data-tag">accounts table</span>
+        <span class="data-tag">domain_mappings</span>
+        <span class="data-tag">normalize-sync-data edge fn</span>
+      </div></div>
+    </div>
+  </div>
+  <div class="slide-num">8 / 18</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 09 — Use Case 6: AI-First Dashboard
+══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="09 AI Dashboard">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#2dd4bf;top:-100px;right:-100px;"></div>
+  <div class="v-div"></div>
+  <div class="logo"><div class="logo-icon">⬡</div><div class="logo-text">DevGTM Mesh</div></div>
+  <div class="uc-slide">
+    <div class="uc-left">
+      <div class="uc-num" style="color:#2dd4bf">06</div>
+      <div style="margin-bottom:20px;"><span class="pill" style="background:#2dd4bf18;border:1px solid #2dd4bf44;color:#2dd4bf">💬 Conversation</span></div>
+      <div class="uc-title">AI-First Dashboard</div>
+      <div class="uc-desc">Replaces the traditional metrics grid with an intent-driven interface. Home screen surfaces highest-signal accounts by score. Global Claude chat panel available on every screen with context-aware suggested prompts.</div>
+      <div class="lbl">Agentic UI principles</div>
+      <div class="checks">
+        <div class="chk"><span class="chk-icon" style="color:#2dd4bf">✦</span>Surfaces what matters — ranked by intent score, not recency</div>
+        <div class="chk"><span class="chk-icon" style="color:#2dd4bf">✦</span>Suggested prompts adapt to current account context</div>
+        <div class="chk"><span class="chk-icon" style="color:#2dd4bf">✦</span>Dashboard as agent — surfaces, suggests, executes</div>
+        <div class="chk"><span class="chk-icon" style="color:#2dd4bf">✦</span>Integration health displayed without switching tools</div>
+      </div>
+    </div>
+    <div class="uc-right">
+      <div class="chat-win" style="border-color:#2dd4bf33;">
+        <div class="chat-top"><div class="chat-av" style="background:#2dd4bf22;border:1px solid #2dd4bf44">🏠</div>DevGTM Dashboard</div>
+        <div class="chat-body">
+          <div class="chat-b" style="border-color:#2dd4bf33;"><div class="chat-b-lbl" style="color:#2dd4bf">Top Accounts by Intent</div>1. Clerk.dev        ▪ Score: 91  ↑ HOT
+2. Datadog          ▪ Score: 87  ↑
+3. Vercel           ▪ Score: 84  →
+4. Linear           ▪ Score: 78  →
+5. Resend           ▪ Score: 71  ↓
+
+Suggested: "Why did Clerk spike?"
+Suggested: "Draft pitch for Datadog"</div>
+        </div>
+      </div>
+      <div><div class="lbl">UI pattern</div>
+      <div class="data-tags">
+        <span class="data-tag">signal_score ranking</span>
+        <span class="data-tag">integration stats</span>
+        <span class="data-tag">global chat panel</span>
+      </div></div>
+    </div>
+  </div>
+  <div class="slide-num">9 / 18</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 10 — Use Case 7: Meeting Intelligence
+══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="10 Meeting Intelligence">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#f59e0b;bottom:-200px;left:-200px;"></div>
+  <div class="v-div"></div>
+  <div class="logo"><div class="logo-icon">⬡</div><div class="logo-text">DevGTM Mesh</div></div>
+  <div class="uc-slide">
+    <div class="uc-left">
+      <div class="uc-num" style="color:#f59e0b">07</div>
+      <div style="margin-bottom:20px;"><span class="pill" style="background:#2dd4bf18;border:1px solid #2dd4bf44;color:#2dd4bf">💬 Conversation</span></div>
+      <div class="uc-title">Meeting Intelligence</div>
+      <div class="uc-desc">Fireflies transcripts matched to accounts by participant email domain. Meeting summaries, action items, and sentiment scores surface directly on the account page — linked by the same domain join key as normalization.</div>
+      <div class="lbl">AI technique</div>
+      <div class="checks">
+        <div class="chk"><span class="chk-icon" style="color:#f59e0b">✦</span>Fireflies GraphQL API pulls transcript, summary, sentiment</div>
+        <div class="chk"><span class="chk-icon" style="color:#f59e0b">✦</span>Participant email domains matched to canonical accounts table</div>
+        <div class="chk"><span class="chk-icon" style="color:#f59e0b">✦</span>Speech-to-text + summarization creates structured meeting record</div>
+        <div class="chk"><span class="chk-icon" style="color:#f59e0b">✦</span>SDR sees every prior call context before entering a meeting</div>
+      </div>
+    </div>
+    <div class="uc-right">
+      <div class="chat-win" style="border-color:#f59e0b33;">
+        <div class="chat-top"><div class="chat-av" style="background:#f59e0b22;border:1px solid #f59e0b44">🎙️</div>Fireflies — Clerk.dev</div>
+        <div class="chat-body">
+          <div class="chat-b" style="border-color:#f59e0b33;"><div class="chat-b-lbl" style="color:#f59e0b">Meeting: 2025-04-22 · 34 min</div>Participants: sarah@clerk.dev,
+  alex@yourcompany.com
+
+Summary: Discussed auth SDK roadmap,
+interest in team plan upgrade. Sarah
+asked about SOC2 compliance timeline.
+
+Sentiment: Positive (0.78)
+Action: Send SOC2 report by Fri</div>
+        </div>
+      </div>
+      <div><div class="lbl">Data sources</div>
+      <div class="data-tags">
+        <span class="data-tag">sync-fireflies edge fn</span>
+        <span class="data-tag">Fireflies GraphQL</span>
+        <span class="data-tag">domain match → accounts</span>
+      </div></div>
+    </div>
+  </div>
+  <div class="slide-num">10 / 18</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 11 — Use Case 8: Enrichment Intelligence
+══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="11 Enrichment Intelligence">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#7c3aed;top:-100px;right:-100px;"></div>
+  <div class="v-div"></div>
+  <div class="logo"><div class="logo-icon">⬡</div><div class="logo-text">DevGTM Mesh</div></div>
+  <div class="uc-slide">
+    <div class="uc-left">
+      <div class="uc-num" style="color:#a78bfa">08</div>
+      <div style="margin-bottom:20px;"><span class="pill" style="background:#7c3aed18;border:1px solid #7c3aed44;color:#a78bfa">🔬 Intelligence</span></div>
+      <div class="uc-title">Enrichment Intelligence</div>
+      <div class="uc-desc">LLM-driven firmographic enrichment fills the gaps that CRM records leave empty. Firecrawl extracts content from the company domain; Claude infers industry tags, tech stack, funding stage, and social profiles.</div>
+      <div class="lbl">AI technique</div>
+      <div class="checks">
+        <div class="chk"><span class="chk-icon" style="color:#a78bfa">✦</span>Firecrawl scrapes company domain on account creation or sync</div>
+        <div class="chk"><span class="chk-icon" style="color:#a78bfa">✦</span>Claude structured output: industry, tech stack, funding, location</div>
+        <div class="chk"><span class="chk-icon" style="color:#a78bfa">✦</span>Live inference from company's own web presence — not static DB</div>
+        <div class="chk"><span class="chk-icon" style="color:#a78bfa">✦</span>Results written to enrichment_data, surfaced on account page</div>
+      </div>
+    </div>
+    <div class="uc-right">
+      <div class="chat-win" style="border-color:#7c3aed33;">
+        <div class="chat-top"><div class="chat-av" style="background:#7c3aed22;border:1px solid #7c3aed44">🧪</div>Enrichment — linear.app</div>
+        <div class="chat-body">
+          <div class="chat-b" style="border-color:#7c3aed33;"><div class="chat-b-lbl" style="color:#a78bfa">Enrichment Output</div>Industry: Developer Tools / PM Software
+Tech stack: TypeScript, React, Electron,
+  GraphQL, Cloudflare Workers
+Funding: Series B ($35M, 2021)
+HQ: San Francisco, CA
+GitHub: linear · 8,400 stars
+Jobs: Hiring Sr. Eng (4 roles open)</div>
+        </div>
+      </div>
+      <div><div class="lbl">Data table</div>
+      <div class="data-tags">
+        <span class="data-tag">enrichment_data table</span>
+        <span class="data-tag">Firecrawl extract</span>
+        <span class="data-tag">Claude structured output</span>
+      </div></div>
+    </div>
+  </div>
+  <div class="slide-num">11 / 18</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 12 — Use Case 9: SDR Auto-Assignment
+══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="12 SDR Assignment">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#f59e0b;bottom:-200px;right:-200px;"></div>
+  <div class="v-div"></div>
+  <div class="logo"><div class="logo-icon">⬡</div><div class="logo-text">DevGTM Mesh</div></div>
+  <div class="uc-slide">
+    <div class="uc-left">
+      <div class="uc-num" style="color:#f59e0b">09</div>
+      <div style="margin-bottom:20px;"><span class="pill" style="background:#f59e0b18;border:1px solid #f59e0b44;color:#f59e0b">📊 Prioritization</span></div>
+      <div class="uc-title">SDR Auto-Assignment</div>
+      <div class="uc-desc">Routes accounts to sales reps using a hybrid of rule-based logic and AI scoring. Rules handle territory and size; AI scoring handles intent priority within a territory. Human manager confirms or overrides.</div>
+      <div class="lbl">Hybrid approach</div>
+      <div class="checks">
+        <div class="chk"><span class="chk-icon" style="color:#f59e0b">✦</span>Rule layer: territory, industry, employee count filters</div>
+        <div class="chk"><span class="chk-icon" style="color:#f59e0b">✦</span>AI layer: intent score sorts priority within each rep's territory</div>
+        <div class="chk"><span class="chk-icon" style="color:#f59e0b">✦</span>Assignment modal surfaces AI recommendations for manager review</div>
+        <div class="chk"><span class="chk-icon" style="color:#f59e0b">✦</span>account_assignments table tracks SDR, notes, and override reason</div>
+      </div>
+    </div>
+    <div class="uc-right">
+      <div class="chat-win" style="border-color:#f59e0b33;">
+        <div class="chat-top"><div class="chat-av" style="background:#f59e0b22;border:1px solid #f59e0b44">👤</div>SDR Assignment Modal</div>
+        <div class="chat-body">
+          <div class="chat-b" style="border-color:#f59e0b33;"><div class="chat-b-lbl" style="color:#f59e0b">AI Routing — Clerk.dev (score: 91)</div>Recommended: Sarah Chen (West Coast)
+Reason: Territory match + highest
+  capacity + 3 prior Clerk touchpoints
+
+Alternatives:
+• Marcus Webb  (East) — at capacity
+• Priya Sharma (EMEA) — wrong region
+
+[ Assign to Sarah ]  [ Override ]</div>
+        </div>
+      </div>
+      <div><div class="lbl">Data table</div>
+      <div class="data-tags">
+        <span class="data-tag">account_assignments</span>
+        <span class="data-tag">signal_score</span>
+        <span class="data-tag">rule + AI hybrid</span>
+      </div></div>
+    </div>
+  </div>
+  <div class="slide-num">12 / 18</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 13 — Use Case 10: Web Extraction (Firecrawl)
+══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="13 Web Extraction">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#10b981;top:-100px;left:-100px;"></div>
+  <div class="v-div"></div>
+  <div class="logo"><div class="logo-icon">⬡</div><div class="logo-text">DevGTM Mesh</div></div>
+  <div class="uc-slide">
+    <div class="uc-left">
+      <div class="uc-num" style="color:#34d399">10</div>
+      <div style="margin-bottom:20px;"><span class="pill" style="background:#10b98118;border:1px solid #10b98144;color:#34d399">🔗 Data Foundation</span></div>
+      <div class="uc-title">Web Extraction<br>(Firecrawl)</div>
+      <div class="uc-desc">LLM-guided scraping pulls structured data from any company website — job listings, product pages, pricing, tech stack references. Extraction logic is expressed as a prompt, not a CSS selector, so it adapts automatically.</div>
+      <div class="lbl">AI technique</div>
+      <div class="checks">
+        <div class="chk"><span class="chk-icon" style="color:#34d399">✦</span>Firecrawl handles JS rendering and bot protection</div>
+        <div class="chk"><span class="chk-icon" style="color:#34d399">✦</span>Claude interprets unstructured HTML → structured JSON fields</div>
+        <div class="chk"><span class="chk-icon" style="color:#34d399">✦</span>Prompt-driven extraction adapts to site changes — no brittle selectors</div>
+        <div class="chk"><span class="chk-icon" style="color:#34d399">✦</span>Feeds enrichment_data, research bot, and pitch generator</div>
+      </div>
+    </div>
+    <div class="uc-right">
+      <div class="chat-win" style="border-color:#10b98133;">
+        <div class="chat-top"><div class="chat-av" style="background:#10b98122;border:1px solid #10b98144">🕷️</div>Firecrawl — resend.com</div>
+        <div class="chat-body">
+          <div class="chat-b" style="border-color:#10b98133;"><div class="chat-b-lbl" style="color:#34d399">Extracted Fields</div>Product: Transactional email API
+  for developers
+Tech: Next.js, TypeScript, React
+Open roles: 6 (3x engineering)
+Pricing tier: Free → Pro → Scale
+Blog: "Why we rebuilt our infra
+  on Cloudflare Workers" (Apr 2025)
+Hiring signal: Strong (6 open roles)</div>
+        </div>
+      </div>
+      <div><div class="lbl">Pipeline</div>
+      <div class="data-tags">
+        <span class="data-tag">Firecrawl API</span>
+        <span class="data-tag">Claude extraction prompt</span>
+        <span class="data-tag">enrichment_data write</span>
+      </div></div>
+    </div>
+  </div>
+  <div class="slide-num">13 / 18</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 14 — Architecture Pattern: Normalize → Score → Reason → Act
+══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="14 Architecture Pattern">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#7c3aed;top:-200px;right:-200px;"></div>
+  <div class="glow" style="background:#2dd4bf;bottom:-200px;left:-200px;"></div>
+  <div class="logo"><div class="logo-icon">⬡</div><div class="logo-text">DevGTM Mesh</div></div>
+  <div class="arch-body">
+    <div class="pill" style="background:#7c3aed18;border:1px solid #7c3aed44;color:#a78bfa;margin-bottom:24px;">Architecture Pattern</div>
+    <h2 style="font-size:56px;font-weight:700;margin-bottom:16px;text-align:center;">Normalize → Score → Reason → Act</h2>
+    <p style="font-size:26px;color:#6b7fa3;margin-bottom:48px;text-align:center;">Each layer depends on the one below it. You cannot reason well about data that is not normalized.</p>
+    <div class="arch-layers">
+      <div class="arch-layer" style="border-color:#3b82f633;">
+        <div class="arch-label" style="border-color:#3b82f633;">
+          <div class="arch-label-num" style="color:#60a5fa">01</div>
+          <div class="arch-label-name" style="color:#60a5fa">Normalize</div>
+        </div>
+        <div class="arch-content">
+          <div class="arch-content-title">Domain-match entity resolution — one account from six sources</div>
+          <div class="arch-content-desc">normalize-sync-data edge function · domain_mappings table · prerequisite for all layers above</div>
+          <div class="arch-usecases">
+            <span class="arch-uc-tag" style="background:#3b82f618;color:#60a5fa;">Use Case 5: Cross-Source Normalization</span>
+            <span class="arch-uc-tag" style="background:#3b82f618;color:#60a5fa;">Use Case 10: Web Extraction</span>
+          </div>
+        </div>
+      </div>
+      <div class="arch-layer" style="border-color:#f59e0b33;">
+        <div class="arch-label" style="border-color:#f59e0b33;">
+          <div class="arch-label-num" style="color:#f59e0b">02</div>
+          <div class="arch-label-name" style="color:#f59e0b">Score</div>
+        </div>
+        <div class="arch-content">
+          <div class="arch-content-title">Weighted signal aggregation — surfaces in-market accounts</div>
+          <div class="arch-content-desc">compute-intent-scores · configurable weights · signal_score written to accounts table</div>
+          <div class="arch-usecases">
+            <span class="arch-uc-tag" style="background:#f59e0b18;color:#f59e0b;">Use Case 4: Intent Scoring</span>
+            <span class="arch-uc-tag" style="background:#f59e0b18;color:#f59e0b;">Use Case 9: SDR Auto-Assignment</span>
+          </div>
+        </div>
+      </div>
+      <div class="arch-layer" style="border-color:#7c3aed33;">
+        <div class="arch-label" style="border-color:#7c3aed33;">
+          <div class="arch-label-num" style="color:#a78bfa">03</div>
+          <div class="arch-label-name" style="color:#a78bfa">Reason</div>
+        </div>
+        <div class="arch-content">
+          <div class="arch-content-title">Claude analyzes context — research, pitches, conversational Q&amp;A</div>
+          <div class="arch-content-desc">Claude API (claude-3-5-sonnet) · account-ai-chat · streaming SSE · structured output</div>
+          <div class="arch-usecases">
+            <span class="arch-uc-tag" style="background:#7c3aed18;color:#a78bfa;">Use Case 1: Research Bot</span>
+            <span class="arch-uc-tag" style="background:#7c3aed18;color:#a78bfa;">Use Case 2: Pitch Generator</span>
+            <span class="arch-uc-tag" style="background:#7c3aed18;color:#a78bfa;">Use Case 3: Chat Interface</span>
+            <span class="arch-uc-tag" style="background:#7c3aed18;color:#a78bfa;">Use Case 8: Enrichment</span>
+          </div>
+        </div>
+      </div>
+      <div class="arch-layer" style="border-color:#2dd4bf33;">
+        <div class="arch-label" style="border-color:#2dd4bf33;">
+          <div class="arch-label-num" style="color:#2dd4bf">04</div>
+          <div class="arch-label-name" style="color:#2dd4bf">Act</div>
+        </div>
+        <div class="arch-content">
+          <div class="arch-content-title">SDR assignment, outreach generation, agentic UI — the outcomes</div>
+          <div class="arch-content-desc">pitch_pages · account_assignments · AI-First Dashboard · automated sequences</div>
+          <div class="arch-usecases">
+            <span class="arch-uc-tag" style="background:#2dd4bf18;color:#2dd4bf;">Use Case 6: AI Dashboard</span>
+            <span class="arch-uc-tag" style="background:#2dd4bf18;color:#2dd4bf;">Use Case 7: Meeting Intelligence</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">14 / 18</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 15 — Why Domain Matching as Join Key
+══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="15 Domain Matching">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#3b82f6;top:-200px;left:-200px;"></div>
+  <div class="logo"><div class="logo-icon">⬡</div><div class="logo-text">DevGTM Mesh</div></div>
+  <div class="info-body">
+    <div style="display:flex;align-items:center;gap:20px;">
+      <div class="pill" style="background:#3b82f618;border:1px solid #3b82f644;color:#60a5fa;">Design Decision</div>
+      <h2 style="font-size:48px;font-weight:700;">Why domain as the join key?</h2>
+    </div>
+    <div class="two-col-info">
+      <div>
+        <div class="info-card" style="border-color:#3b82f633;margin-bottom:24px;">
+          <div class="info-card-title" style="color:#60a5fa;">The three alternatives considered</div>
+          <div class="match-list">
+            <div class="match-item"><span style="color:#f87171;font-size:22px;">✗</span><span><strong style="color:#e8edf5">Company name</strong> — fails on spelling variants, subsidiaries, legal entity differences</span></div>
+            <div class="match-item"><span style="color:#f87171;font-size:22px;">✗</span><span><strong style="color:#e8edf5">D&amp;B / DUNS identifier</strong> — precise but requires paid enrichment on every record</span></div>
+            <div class="match-item"><span style="color:#4ade80;font-size:22px;">✓</span><span><strong style="color:#e8edf5">Company domain</strong> — covers the vast majority of B2B accounts, available in every integration, free</span></div>
+          </div>
+        </div>
+        <div class="info-card" style="border-color:#3b82f633;">
+          <div class="info-card-title" style="color:#60a5fa;">When it works well</div>
+          <div class="info-card-body">Direct company email domains where stripe.com = stripe.com across all six sources. Covers 85–90% of typical B2B account lists without any manual intervention.</div>
+        </div>
+      </div>
+      <div>
+        <div class="info-card" style="border-color:#f59e0b33;margin-bottom:24px;">
+          <div class="info-card-title" style="color:#f59e0b;">Known failure cases</div>
+          <div class="match-list">
+            <div class="match-item"><span style="color:#f59e0b;font-size:22px;">⚠</span><span><strong style="color:#e8edf5">Subsidiaries</strong> — child company email differs from parent domain used in CRM</span></div>
+            <div class="match-item"><span style="color:#f59e0b;font-size:22px;">⚠</span><span><strong style="color:#e8edf5">Personal emails</strong> — contacts using @gmail.com or @yahoo.com cannot be matched</span></div>
+            <div class="match-item"><span style="color:#f59e0b;font-size:22px;">⚠</span><span><strong style="color:#e8edf5">Rebrands</strong> — company changed domain name; old records don't reconcile automatically</span></div>
+          </div>
+        </div>
+        <div class="info-card" style="border-color:#4ade8033;">
+          <div class="info-card-title" style="color:#4ade80;">The mitigation</div>
+          <div class="info-card-body">domain_mappings includes a manual override layer. Operators explicitly link variant domains (e.g. old-name.com → new-name.com) or subsidiary domains to the canonical account. A deliberate pragmatic trade-off: broad coverage now, precision via override.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">15 / 18</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 16 — Stack Choice: Lovable + Claude
+══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="16 Stack Choice">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#7c3aed;top:-200px;right:-200px;"></div>
+  <div class="glow" style="background:#2dd4bf;bottom:-200px;left:-200px;"></div>
+  <div class="logo"><div class="logo-icon">⬡</div><div class="logo-text">DevGTM Mesh</div></div>
+  <div class="stack-body">
+    <div style="text-align:center;">
+      <div class="pill" style="background:#7c3aed18;border:1px solid #7c3aed44;color:#a78bfa;margin-bottom:20px;">Stack Choice</div>
+      <h2 style="font-size:52px;font-weight:700;margin-bottom:8px;">Deterministic plumbing + probabilistic reasoning</h2>
+      <p style="font-size:26px;color:#6b7fa3;">Built in 26 Claude prompts inside Lovable. Clean separation between what should be deterministic and what benefits from AI flexibility.</p>
+    </div>
+    <div class="stack-split">
+      <div class="stack-card" style="border-color:#7c3aed33;">
+        <div class="stack-icon">🏗️</div>
+        <div class="stack-name" style="color:#a78bfa">Lovable</div>
+        <div class="stack-role">Deterministic Plumbing</div>
+        <div class="stack-desc">Handles UI scaffolding, data flows, authentication (email/password + Google OAuth), integration sync logic, and Supabase edge functions. Everything that should behave identically every time.</div>
+        <div class="stack-attrs">
+          <div class="stack-attr"><span style="color:#a78bfa;font-size:20px;">▸</span> Dark navy design system (hsl 232 30% 10%)</div>
+          <div class="stack-attr"><span style="color:#a78bfa;font-size:20px;">▸</span> 26 discrete implementation steps, one prompt each</div>
+          <div class="stack-attr"><span style="color:#a78bfa;font-size:20px;">▸</span> Route protection + role-based access</div>
+          <div class="stack-attr"><span style="color:#a78bfa;font-size:20px;">▸</span> Secrets via Lovable Cloud — never hardcoded</div>
+        </div>
+      </div>
+      <div class="stack-card" style="border-color:#2dd4bf33;">
+        <div class="stack-icon">🧠</div>
+        <div class="stack-name" style="color:#2dd4bf">Claude</div>
+        <div class="stack-role">Probabilistic Reasoning</div>
+        <div class="stack-desc">Handles research synthesis, pitch generation, intent explanation, and conversational Q&amp;A. Everything that benefits from reasoning flexibility rather than rigid rules. Model: claude-3-5-sonnet.</div>
+        <div class="stack-attrs">
+          <div class="stack-attr"><span style="color:#2dd4bf;font-size:20px;">▸</span> Streaming API (SSE) for real-time chat responses</div>
+          <div class="stack-attr"><span style="color:#2dd4bf;font-size:20px;">▸</span> Structured output for enrichment fields</div>
+          <div class="stack-attr"><span style="color:#2dd4bf;font-size:20px;">▸</span> Account context as system prompt for grounded answers</div>
+          <div class="stack-attr"><span style="color:#2dd4bf;font-size:20px;">▸</span> ANTHROPIC_API_KEY via Lovable Cloud secrets</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">16 / 18</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 17 — Takeaways
+══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="17 Takeaways">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#7c3aed;top:-200px;right:-200px;"></div>
+  <div class="logo"><div class="logo-icon">⬡</div><div class="logo-text">DevGTM Mesh</div></div>
+  <div class="take-body">
+    <div style="text-align:center;">
+      <div class="pill" style="background:#7c3aed18;border:1px solid #7c3aed44;color:#a78bfa;margin-bottom:16px;">Key Takeaways</div>
+      <h2 style="font-size:52px;font-weight:700;">Three principles that make AI GTM work</h2>
+    </div>
+    <div class="take-cards">
+      <div class="take-card" style="border-color:#3b82f633;">
+        <div class="take-num" style="color:#60a5fa">01</div>
+        <div class="take-title" style="color:#60a5fa;">Normalize First</div>
+        <div class="take-desc">No amount of AI reasoning compensates for fragmented, inconsistent source data. Domain-match normalization is the prerequisite for every other use case in this stack. Build the data foundation before the AI layer.</div>
+      </div>
+      <div class="take-card" style="border-color:#7c3aed33;">
+        <div class="take-num" style="color:#a78bfa">02</div>
+        <div class="take-title" style="color:#a78bfa;">AI as the Read Layer</div>
+        <div class="take-desc">The highest-leverage AI applications in DevGTM Mesh are read actions — research synthesis, pitch generation, conversational analytics. The AI reads the normalized data and surfaces insight. It does not replace the data layer; it interprets it.</div>
+      </div>
+      <div class="take-card" style="border-color:#2dd4bf33;">
+        <div class="take-num" style="color:#2dd4bf">03</div>
+        <div class="take-title" style="color:#2dd4bf;">Agentic UI as Endpoint</div>
+        <div class="take-desc">The goal is not a smarter dashboard — it is a system that knows what to surface, when to surface it, and can act on it when asked. The AI-first dashboard and global chat panel are the interface expression of the Normalize → Score → Reason → Act stack.</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">17 / 18</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 18 — Closing / References
+══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="18 References">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#7c3aed;top:-200px;left:-200px;"></div>
+  <div class="glow" style="background:#2dd4bf;bottom:-200px;right:-200px;"></div>
+  <div class="logo"><div class="logo-icon">⬡</div><div class="logo-text">DevGTM Mesh</div></div>
+  <div class="close-body">
+    <div class="pill" style="background:#7c3aed18;border:1px solid #7c3aed44;color:#a78bfa;">References</div>
+    <div class="close-h">10 AI use cases.<br>One intelligent GTM system.</div>
+    <div class="close-sub">DevGTM Mesh turns six developer-focused integrations into a unified, AI-powered GTM platform. Normalize. Score. Reason. Act.</div>
+    <div class="ref-cards">
+      <div class="ref-card" style="border-color:#7c3aed33;">
+        <div class="ref-label" style="color:#a78bfa;">Source Guide</div>
+        <div class="ref-val">getreo.dev/resources/<br>devgtm-mesh-build-guide</div>
+      </div>
+      <div class="ref-card" style="border-color:#2dd4bf33;">
+        <div class="ref-label" style="color:#2dd4bf;">AI Model</div>
+        <div class="ref-val">Anthropic Claude<br>claude-3-5-sonnet</div>
+      </div>
+      <div class="ref-card" style="border-color:#3b82f633;">
+        <div class="ref-label" style="color:#60a5fa;">Platform Stack</div>
+        <div class="ref-val">Lovable + Supabase<br>+ 6 integrations</div>
+      </div>
+      <div class="ref-card" style="border-color:#f59e0b33;">
+        <div class="ref-label" style="color:#f59e0b;">Build Method</div>
+        <div class="ref-val">26 prompts in Lovable<br>One step per Claude prompt</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">18 / 18</div>
+</section>
+
+</deck-stage>
+</body>
+</html>
