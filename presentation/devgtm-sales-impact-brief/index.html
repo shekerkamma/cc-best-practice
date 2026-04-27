@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>DevGTM Mesh — Sales Impact Brief</title>
+<style>
+  @page { size: Letter; margin: 0.6in; }
+  :root {
+    --purple: #7c3aed;
+    --purple-dark: #5b21b6;
+    --teal: #2dd4bf;
+    --teal-dark: #0f766e;
+    --amber: #f59e0b;
+    --rose: #f43f5e;
+    --slate-900: #0f172a;
+    --slate-700: #334155;
+    --slate-500: #64748b;
+    --slate-300: #cbd5e1;
+    --slate-100: #f1f5f9;
+    --slate-50:  #f8fafc;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: var(--slate-900);
+    font-size: 10.5pt;
+    line-height: 1.5;
+    background: white;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .page {
+    page-break-after: always;
+    padding: 0;
+  }
+  .page:last-child { page-break-after: auto; }
+  h1 { font-size: 28pt; font-weight: 800; margin: 0 0 8pt 0; letter-spacing: -0.5pt; line-height: 1.1; }
+  h2 { font-size: 18pt; font-weight: 700; margin: 0 0 10pt 0; color: var(--purple); letter-spacing: -0.3pt; }
+  h3 { font-size: 13pt; font-weight: 700; margin: 14pt 0 6pt 0; color: var(--slate-900); }
+  h4 { font-size: 11pt; font-weight: 600; margin: 8pt 0 4pt 0; color: var(--slate-700); text-transform: uppercase; letter-spacing: 0.5pt; }
+  p { margin: 0 0 8pt 0; }
+  .small { font-size: 9pt; color: var(--slate-500); }
+  .label { font-size: 8pt; text-transform: uppercase; letter-spacing: 1pt; color: var(--purple); font-weight: 700; }
+  .accent { color: var(--purple); font-weight: 700; }
+  .accent-teal { color: var(--teal-dark); font-weight: 700; }
+  .accent-amber { color: var(--amber); font-weight: 700; }
+  .strike { text-decoration: line-through; color: var(--slate-500); }
+
+  /* Cover */
+  .cover {
+    background: linear-gradient(135deg, var(--purple) 0%, var(--purple-dark) 100%);
+    color: white;
+    padding: 0.5in;
+    height: 9.6in;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border-radius: 0;
+  }
+  .cover .brand { font-size: 11pt; letter-spacing: 4pt; text-transform: uppercase; opacity: 0.85; font-weight: 600; }
+  .cover h1 { color: white; font-size: 44pt; line-height: 1.05; max-width: 7in; }
+  .cover .subtitle { font-size: 14pt; opacity: 0.9; max-width: 6in; line-height: 1.4; margin-top: 12pt; }
+  .cover .hero-stat {
+    background: rgba(255,255,255,0.12);
+    border: 1.5pt solid rgba(255,255,255,0.3);
+    border-radius: 12pt;
+    padding: 24pt;
+    margin-top: 20pt;
+  }
+  .cover .hero-stat .num { font-size: 56pt; font-weight: 800; line-height: 1; color: var(--teal); }
+  .cover .hero-stat .desc { font-size: 13pt; margin-top: 8pt; opacity: 0.95; }
+  .cover .footer { font-size: 9pt; opacity: 0.75; display: flex; justify-content: space-between; }
+
+  /* Section header */
+  .section-head {
+    border-bottom: 2pt solid var(--purple);
+    padding-bottom: 4pt;
+    margin-bottom: 14pt;
+  }
+  .section-head .label { display: block; margin-bottom: 2pt; }
+
+  /* Stat tiles */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10pt;
+    margin: 12pt 0;
+  }
+  .stat-tile {
+    background: var(--slate-50);
+    border-left: 3pt solid var(--purple);
+    border-radius: 6pt;
+    padding: 12pt;
+  }
+  .stat-tile .num { font-size: 22pt; font-weight: 800; color: var(--purple); line-height: 1; }
+  .stat-tile .label { display: block; margin-top: 4pt; }
+  .stat-tile .desc { font-size: 9pt; color: var(--slate-700); margin-top: 4pt; }
+
+  /* Persona card */
+  .persona-card {
+    border: 1pt solid var(--slate-300);
+    border-radius: 8pt;
+    padding: 14pt;
+    margin-bottom: 12pt;
+    background: white;
+  }
+  .persona-card .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-bottom: 1pt dashed var(--slate-300);
+    padding-bottom: 6pt;
+    margin-bottom: 8pt;
+  }
+  .persona-card .role { font-size: 14pt; font-weight: 700; color: var(--purple); }
+  .persona-card .impact { font-size: 9pt; color: var(--slate-500); text-transform: uppercase; letter-spacing: 1pt; }
+  .persona-card .ba {
+    display: grid;
+    grid-template-columns: 1fr 12pt 1fr;
+    gap: 8pt;
+    margin: 6pt 0;
+    font-size: 10pt;
+  }
+  .persona-card .before { background: #fef2f2; padding: 8pt; border-radius: 4pt; }
+  .persona-card .after { background: #ecfdf5; padding: 8pt; border-radius: 4pt; }
+  .persona-card .arrow { display: flex; align-items: center; justify-content: center; color: var(--purple); font-weight: 800; font-size: 16pt; }
+  .persona-card .savings {
+    margin-top: 8pt;
+    padding-top: 6pt;
+    border-top: 1pt dashed var(--slate-300);
+    font-size: 10pt;
+  }
+
+  /* Tables */
+  table { width: 100%; border-collapse: collapse; margin: 8pt 0; font-size: 10pt; }
+  th, td { text-align: left; padding: 6pt 8pt; vertical-align: top; }
+  th { background: var(--slate-100); color: var(--slate-700); font-size: 9pt; text-transform: uppercase; letter-spacing: 0.5pt; font-weight: 700; }
+  tr { border-bottom: 1pt solid var(--slate-300); }
+  tr:nth-child(even) td { background: var(--slate-50); }
+  .num-col { text-align: right; font-variant-numeric: tabular-nums; }
+
+  /* Capability grid */
+  .cap-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8pt;
+  }
+  .cap {
+    border-left: 3pt solid var(--purple);
+    background: var(--slate-50);
+    border-radius: 4pt;
+    padding: 8pt 10pt;
+    font-size: 9.5pt;
+  }
+  .cap.intel { border-left-color: var(--purple); }
+  .cap.conv { border-left-color: var(--teal); }
+  .cap.prio { border-left-color: var(--amber); }
+  .cap.work { border-left-color: var(--rose); }
+  .cap .pain { color: var(--slate-700); font-weight: 600; margin-bottom: 2pt; }
+  .cap .solution { color: var(--slate-500); font-size: 9pt; }
+  .cap .solution b { color: var(--purple); }
+
+  /* Bottom-line */
+  .bottom-line {
+    background: linear-gradient(135deg, var(--purple) 0%, var(--purple-dark) 100%);
+    color: white;
+    border-radius: 10pt;
+    padding: 18pt;
+    margin-top: 12pt;
+  }
+  .bottom-line h3 { color: white; margin-top: 0; font-size: 14pt; }
+  .bottom-line .num { font-size: 28pt; font-weight: 800; color: var(--teal); line-height: 1; }
+
+  /* Day timeline */
+  .timeline {
+    display: grid;
+    grid-template-columns: 50pt 1fr 1fr;
+    gap: 4pt 8pt;
+    font-size: 9.5pt;
+    margin: 8pt 0;
+  }
+  .timeline .head {
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5pt;
+    font-size: 8pt;
+    color: var(--slate-500);
+    border-bottom: 1pt solid var(--slate-300);
+    padding-bottom: 2pt;
+  }
+  .timeline .time { font-weight: 700; color: var(--slate-700); padding: 4pt 0; }
+  .timeline .before-cell { background: #fef2f2; padding: 4pt 6pt; border-radius: 3pt; color: var(--slate-700); }
+  .timeline .after-cell { background: #ecfdf5; padding: 4pt 6pt; border-radius: 3pt; color: var(--slate-900); }
+
+  /* Promise list */
+  .promises { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10pt; margin-top: 14pt; }
+  .promise { background: rgba(255,255,255,0.12); border-radius: 8pt; padding: 12pt; }
+  .promise .num { color: var(--teal); font-weight: 800; font-size: 18pt; }
+  .promise .text { font-size: 11pt; opacity: 0.95; margin-top: 4pt; }
+
+  /* Footer band */
+  .page-footer {
+    margin-top: 18pt;
+    padding-top: 8pt;
+    border-top: 1pt solid var(--slate-300);
+    font-size: 8pt;
+    color: var(--slate-500);
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .pull-quote {
+    border-left: 3pt solid var(--teal);
+    background: var(--slate-50);
+    padding: 10pt 14pt;
+    margin: 10pt 0;
+    font-style: italic;
+    font-size: 11pt;
+    color: var(--slate-700);
+  }
+  .pull-quote .attr { font-style: normal; font-size: 9pt; color: var(--slate-500); margin-top: 4pt; display: block; }
+
+  ul.tight { margin: 4pt 0 8pt 18pt; padding: 0; }
+  ul.tight li { margin-bottom: 3pt; }
+</style>
+</head>
+<body>
+
+<!-- ============== PAGE 1: COVER ============== -->
+<section class="page cover">
+  <div>
+    <div class="brand">DevGTM Mesh · Sales Impact Brief</div>
+  </div>
+  <div>
+    <h1>How AI Transforms<br>the Sales Day</h1>
+    <p class="subtitle">An executive briefing on what changes for SDRs, AEs, sales managers, and RevOps leaders when their stack starts thinking with them.</p>
+    <div class="hero-stat">
+      <div class="num">30–40%</div>
+      <div class="desc">of a typical salesperson's day is spent on research, data entry, and tool-switching — work that AI can now do for them.</div>
+    </div>
+    <div class="promises">
+      <div class="promise"><div class="num">2 hrs</div><div class="text">recovered per rep, per day</div></div>
+      <div class="promise"><div class="num">4×</div><div class="text">more meetings booked per week</div></div>
+      <div class="promise"><div class="num">$3.2M</div><div class="text">projected pipeline impact (30-rep team)</div></div>
+    </div>
+  </div>
+  <div class="footer">
+    <span>Prepared for sales leadership · 2026</span>
+    <span>Page 1 of 7</span>
+  </div>
+</section>
+
+<!-- ============== PAGE 2: PROBLEM ============== -->
+<section class="page">
+  <div class="section-head">
+    <span class="label">Section 1</span>
+    <h2>The Problem: Salespeople Aren't Selling</h2>
+  </div>
+  <p>Today's GTM stack — HubSpot, Salesforce, Outreach, LinkedIn, Gong, plus 4–6 point tools — was built for record-keeping, not selling. Every salesperson now spends most of their day feeding the stack instead of using it. The bottleneck isn't motivation or talent. It's <span class="accent">manual research, fragmented data, and dashboard fatigue</span>.</p>
+
+  <div class="stat-grid">
+    <div class="stat-tile">
+      <div class="num">2.5 hrs</div>
+      <span class="label">Per SDR, Per Day</span>
+      <div class="desc">spent manually researching prospects on LinkedIn, company sites, news, and funding databases</div>
+    </div>
+    <div class="stat-tile">
+      <div class="num">$430K</div>
+      <span class="label">Annual cost</span>
+      <div class="desc">of research time alone for a 12-SDR team at $65/hr loaded cost</div>
+    </div>
+    <div class="stat-tile">
+      <div class="num">6+</div>
+      <span class="label">Tool Switches/Hour</span>
+      <div class="desc">average for an SDR working an account end-to-end</div>
+    </div>
+  </div>
+
+  <div class="pull-quote">
+    "Manual prospect research is our SDR team's #1 bottleneck — we're losing hours a day."
+    <span class="attr">— CTO, Series B SaaS company (a real, common signal we hear from customers)</span>
+  </div>
+
+  <h3>What's Actually Happening on the Sales Floor</h3>
+  <div class="timeline">
+    <div class="head">Time</div>
+    <div class="head" style="color: #b91c1c;">Today (no DevGTM)</div>
+    <div class="head" style="color: #047857;">With DevGTM Mesh</div>
+
+    <div class="time">9:00 AM</div>
+    <div class="before-cell">Open 6 tabs. Stare at cold list. Pick an account by feel.</div>
+    <div class="after-cell">Dashboard shows 5 accounts with overnight buying signals. Start there.</div>
+
+    <div class="time">9:15 AM</div>
+    <div class="before-cell">LinkedIn deep-dive on 4 contacts. Tab into company website. Read about page.</div>
+    <div class="after-cell">Click account. Full briefing already written. Skim, not research.</div>
+
+    <div class="time">9:45 AM</div>
+    <div class="before-cell">Open Outreach. Find a sequence. Edit subject line. Edit first paragraph.</div>
+    <div class="after-cell">AI-generated personalized pitch deck ready. Tweak one paragraph. Send.</div>
+
+    <div class="time">10:00 AM</div>
+    <div class="before-cell">Repeat for next account. Same 60-minute cycle.</div>
+    <div class="after-cell">Repeat. 15-minute cycle. <b>4× more meetings booked.</b></div>
+  </div>
+
+  <div class="page-footer">
+    <span>DevGTM Mesh · Sales Impact Brief</span>
+    <span>Page 2 of 7</span>
+  </div>
+</section>
+
+<!-- ============== PAGE 3: SDR + AE PERSONAS ============== -->
+<section class="page">
+  <div class="section-head">
+    <span class="label">Section 2 · The Front Line</span>
+    <h2>What Changes for SDRs and AEs</h2>
+  </div>
+
+  <div class="persona-card">
+    <div class="header">
+      <span class="role">SDR — Sales Development Rep</span>
+      <span class="impact">Biggest impact · 4× output</span>
+    </div>
+    <div class="ba">
+      <div class="before"><b>Before:</b> 3 hours of manual research per day. Cold lists. Generic templates with name-merge.</div>
+      <div class="arrow">→</div>
+      <div class="after"><b>After:</b> AI surfaces 5 in-market accounts overnight. Briefings pre-written. Pitch deck per account auto-generated.</div>
+    </div>
+    <div class="savings">
+      <span class="accent">Time recovered:</span> 2.5 hrs/day. <span class="accent-teal">Meetings booked:</span> 8 → 22 per month. <span class="accent-amber">Annual value (12 SDRs):</span> ~$430K research time + +168 incremental meetings/month.
+    </div>
+  </div>
+
+  <div class="persona-card">
+    <div class="header">
+      <span class="role">AE — Account Executive</span>
+      <span class="impact">Higher quality, more concurrent deals</span>
+    </div>
+    <div class="ba">
+      <div class="before"><b>Before:</b> 45-minute prep per meeting. Hunt CRM. Read old transcripts. Ping SDR for context.</div>
+      <div class="arrow">→</div>
+      <div class="after"><b>After:</b> 5-minute brief auto-delivered before each call. Fireflies records, tags, and links to account. AI drafts follow-up.</div>
+    </div>
+    <div class="savings">
+      <span class="accent">Time recovered:</span> 1 hr/meeting. <span class="accent-teal">Concurrent deals:</span> +30%. <span class="accent-amber">Annual value (18 AEs):</span> ~$280K admin time + measurable close-rate lift.
+    </div>
+  </div>
+
+  <h3>The Hidden Win: Judgment Density</h3>
+  <p>Today's salespeople are stuck in <strong>60% admin / 40% selling</strong>. DevGTM Mesh inverts that to <strong>80% selling / 20% admin</strong>. That ratio matters as much as the time savings — it's the difference between a job your reps tolerate and a job they fight to keep.</p>
+
+  <div class="stat-grid">
+    <div class="stat-tile">
+      <div class="num">60% → 20%</div>
+      <span class="label">Admin Share</span>
+      <div class="desc">Reps spend 3× less time on the work they didn't sign up for</div>
+    </div>
+    <div class="stat-tile">
+      <div class="num">↓ 40%</div>
+      <span class="label">SDR Turnover</span>
+      <div class="desc">Reduced burnout from research grind reduces the 30%+ annual SDR churn</div>
+    </div>
+    <div class="stat-tile">
+      <div class="num">$50K+</div>
+      <span class="label">Per Avoided Replacement</span>
+      <div class="desc">Recruiting + ramp cost saved every time turnover drops</div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span>DevGTM Mesh · Sales Impact Brief</span>
+    <span>Page 3 of 7</span>
+  </div>
+</section>
+
+<!-- ============== PAGE 4: MANAGER + REVOPS ============== -->
+<section class="page">
+  <div class="section-head">
+    <span class="label">Section 3 · Leadership</span>
+    <h2>What Changes for Managers and RevOps</h2>
+  </div>
+
+  <div class="persona-card">
+    <div class="header">
+      <span class="role">Sales Manager</span>
+      <span class="impact">Coach with evidence, not gut</span>
+    </div>
+    <div class="ba">
+      <div class="before"><b>Before:</b> 3 hrs/week listening to call recordings. Spreadsheet-based lead routing. Forecasting by gut feel + last quarter.</div>
+      <div class="arrow">→</div>
+      <div class="after"><b>After:</b> AI summarizes patterns across the whole team. Auto-routing by intent + capacity. AI scores deals on real signals.</div>
+    </div>
+    <div class="savings">
+      <span class="accent">Time recovered:</span> 2.25 hrs/week. <span class="accent-teal">Coaching impact:</span> Specific, evidence-based feedback. <span class="accent-amber">Forecast accuracy:</span> material lift.
+    </div>
+  </div>
+
+  <div class="persona-card">
+    <div class="header">
+      <span class="role">VP Sales / RevOps</span>
+      <span class="impact">One source of truth, audit-ready AI</span>
+    </div>
+    <div class="ba">
+      <div class="before"><b>Before:</b> "HubSpot says 47, Salesforce says 52, Outreach says 39." 3 hrs/week reconciling. AI tools that can't show their work.</div>
+      <div class="arrow">→</div>
+      <div class="after"><b>After:</b> Domain-matched normalization gives identical numbers across tools. Every AI-generated artifact has an audit trail.</div>
+    </div>
+    <div class="savings">
+      <span class="accent">Operational lift:</span> Reconciliation eliminated. <span class="accent-teal">Strategic visibility:</span> AI ranks 1,200 accounts by quarter-buy probability. <span class="accent-amber">Compliance:</span> Defensible, explainable, governance-ready.
+    </div>
+  </div>
+
+  <h3>Day-to-Day Wins by Role</h3>
+  <table>
+    <tr>
+      <th>Role</th>
+      <th>What They Stop Doing</th>
+      <th>What They Start Doing</th>
+    </tr>
+    <tr>
+      <td><b>SDR</b></td>
+      <td>Manual LinkedIn scraping, generic outreach</td>
+      <td>Talking to humans, refining personalization</td>
+    </tr>
+    <tr>
+      <td><b>AE</b></td>
+      <td>Pre-meeting CRM hunting, follow-up drafting</td>
+      <td>Discovery, demo prep, deal strategy</td>
+    </tr>
+    <tr>
+      <td><b>Manager</b></td>
+      <td>Listening to recordings, spreadsheet routing</td>
+      <td>Targeted coaching, deal review, hiring</td>
+    </tr>
+    <tr>
+      <td><b>RevOps</b></td>
+      <td>Reconciling tools, building manual reports</td>
+      <td>Strategy, segmentation, AI governance</td>
+    </tr>
+  </table>
+
+  <div class="page-footer">
+    <span>DevGTM Mesh · Sales Impact Brief</span>
+    <span>Page 4 of 7</span>
+  </div>
+</section>
+
+<!-- ============== PAGE 5: 10 AI CAPABILITIES ============== -->
+<section class="page">
+  <div class="section-head">
+    <span class="label">Section 4 · Under the Hood</span>
+    <h2>The 10 AI Capabilities That Power This</h2>
+  </div>
+  <p>Every salesperson pain on the previous pages is solved by one of ten specific AI capabilities in DevGTM Mesh. They group into four categories.</p>
+
+  <h4 style="color: var(--purple); margin-top: 14pt;">Account Intelligence</h4>
+  <div class="cap-grid">
+    <div class="cap intel"><div class="pain">"I spend half my day researching prospects."</div><div class="solution"><b>1. AI Research Bot</b> — pulls company + person briefings automatically</div></div>
+    <div class="cap intel"><div class="pain">"Enrichment data is stale and incomplete."</div><div class="solution"><b>8. Enrichment Intelligence</b> — LLM keeps company profiles current</div></div>
+    <div class="cap intel"><div class="pain">"Our SDRs research the wrong companies."</div><div class="solution"><b>10. Web Extraction (Firecrawl)</b> — pulls firmographic data automatically</div></div>
+  </div>
+
+  <h4 style="color: var(--teal-dark); margin-top: 12pt;">Conversation</h4>
+  <div class="cap-grid">
+    <div class="cap conv"><div class="pain">"I copy-paste the same pitch with minor edits."</div><div class="solution"><b>2. AI Pitch Generator</b> — produces personalized decks per account</div></div>
+    <div class="cap conv"><div class="pain">"I want to ask questions about my pipeline."</div><div class="solution"><b>3. Streaming Chat Interface</b> — ask in plain English, get answers</div></div>
+    <div class="cap conv"><div class="pain">"I forget what was said in past meetings."</div><div class="solution"><b>7. Meeting Intelligence (Fireflies)</b> — auto-summarized, auto-linked</div></div>
+  </div>
+
+  <h4 style="color: var(--amber); margin-top: 12pt;">Prioritization</h4>
+  <div class="cap-grid">
+    <div class="cap prio"><div class="pain">"I don't know which accounts to focus on."</div><div class="solution"><b>4. Intent Scoring</b> — surfaces in-market accounts with buying signals</div></div>
+    <div class="cap prio"><div class="pain">"Lead routing is a manual nightmare."</div><div class="solution"><b>9. SDR Auto-Assignment</b> — intent + capacity → right rep</div></div>
+  </div>
+
+  <h4 style="color: #be123c; margin-top: 12pt;">Workflow</h4>
+  <div class="cap-grid">
+    <div class="cap work"><div class="pain">"I waste time switching between 6 tools."</div><div class="solution"><b>6. AI-First Dashboard</b> — one screen, AI tells you what matters</div></div>
+    <div class="cap work"><div class="pain">"Our CRM data is a mess across tools."</div><div class="solution"><b>5. Cross-Source Normalization</b> — domain matching unifies all 6 systems</div></div>
+  </div>
+
+  <div class="page-footer">
+    <span>DevGTM Mesh · Sales Impact Brief</span>
+    <span>Page 5 of 7</span>
+  </div>
+</section>
+
+<!-- ============== PAGE 6: ROI ============== -->
+<section class="page">
+  <div class="section-head">
+    <span class="label">Section 5 · The Numbers</span>
+    <h2>ROI for a 30-Person Sales Team</h2>
+  </div>
+  <p class="small">Sample team: 12 SDRs + 18 AEs + 3 managers + 1 RevOps lead. Numbers conservative; real customers commonly exceed these benchmarks within 90 days.</p>
+
+  <table>
+    <tr>
+      <th>Metric</th>
+      <th>Before</th>
+      <th>After</th>
+      <th class="num-col">Annual Value</th>
+    </tr>
+    <tr>
+      <td>Research hrs / SDR / day</td>
+      <td><span class="strike">3.0 hrs</span></td>
+      <td><b>0.5 hrs</b></td>
+      <td class="num-col"><b>$430K recovered</b></td>
+    </tr>
+    <tr>
+      <td>Prep min / AE / meeting</td>
+      <td><span class="strike">45 min</span></td>
+      <td><b>10 min</b></td>
+      <td class="num-col"><b>$280K recovered</b></td>
+    </tr>
+    <tr>
+      <td>Meetings booked / SDR / month</td>
+      <td><span class="strike">8</span></td>
+      <td><b>22</b></td>
+      <td class="num-col"><b>+168 meetings/mo</b></td>
+    </tr>
+    <tr>
+      <td>AE concurrent deal capacity</td>
+      <td><span class="strike">baseline</span></td>
+      <td><b>+30%</b></td>
+      <td class="num-col"><b>+5–6 deals/AE/yr</b></td>
+    </tr>
+    <tr>
+      <td>Manager coaching hrs / wk</td>
+      <td><span class="strike">3 hrs</span></td>
+      <td><b>0.75 hrs</b></td>
+      <td class="num-col"><b>$60K recovered</b></td>
+    </tr>
+    <tr>
+      <td>SDR annual turnover</td>
+      <td><span class="strike">30%+</span></td>
+      <td><b>~18%</b></td>
+      <td class="num-col"><b>~$200K saved hiring</b></td>
+    </tr>
+    <tr>
+      <td>RevOps reconciliation hrs / wk</td>
+      <td><span class="strike">3 hrs</span></td>
+      <td><b>0 hrs</b></td>
+      <td class="num-col"><b>$25K recovered</b></td>
+    </tr>
+  </table>
+
+  <div class="bottom-line">
+    <h3>Total Estimated Impact</h3>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14pt; align-items: end;">
+      <div>
+        <div class="num">+$3.2M</div>
+        <div style="margin-top: 4pt; opacity: 0.95; font-size: 11pt;">projected annual pipeline impact at $185K ACV</div>
+      </div>
+      <div>
+        <div class="num">~$995K</div>
+        <div style="margin-top: 4pt; opacity: 0.95; font-size: 11pt;">in time + turnover savings</div>
+      </div>
+    </div>
+    <p style="margin-top: 12pt; opacity: 0.92; font-size: 10pt;">Net: salespeople spend their day talking to humans and winning business. Leadership stops fighting the stack and starts running the play.</p>
+  </div>
+
+  <div class="page-footer">
+    <span>DevGTM Mesh · Sales Impact Brief</span>
+    <span>Page 6 of 7</span>
+  </div>
+</section>
+
+<!-- ============== PAGE 7: BOTTOM LINE ============== -->
+<section class="page">
+  <div class="section-head">
+    <span class="label">Section 6 · Closing</span>
+    <h2>Bottom Line for Sales Leaders</h2>
+  </div>
+
+  <p style="font-size: 12pt; line-height: 1.55;">DevGTM Mesh gives every member of your sales team back roughly <span class="accent">2 hours per day</span> by doing the research, data entry, and prioritization work that nobody enjoys — and replaces it with AI-generated context, pitches, and recommendations.</p>
+
+  <h3>What You Should Expect Within 90 Days</h3>
+  <ul class="tight">
+    <li><b>Week 1–2:</b> Integrations live across HubSpot, Salesforce, Outreach, Reo.Dev, Fireflies, HeyReach, Firecrawl. Data normalized. Single source of truth visible.</li>
+    <li><b>Week 3–4:</b> Intent scoring tuned. SDRs working AI-prioritized queues instead of cold lists. First AI-generated pitches in production.</li>
+    <li><b>Week 5–8:</b> Meeting volume per SDR climbs 2–3×. AE prep time collapses. Managers shift from listening-to-recordings to evidence-based coaching.</li>
+    <li><b>Week 9–12:</b> Pipeline impact materializes. Forecast accuracy improves. SDR retention metrics start moving.</li>
+  </ul>
+
+  <h3>What Makes This Defensible</h3>
+  <p>Three differentiators competitors don't match:</p>
+  <ol class="tight" style="margin-left: 18pt;">
+    <li><b>Audit trail on every AI output.</b> Every pitch, score, and recommendation shows its source signals — defensible to compliance, trustable by reps.</li>
+    <li><b>Cross-source normalization as the foundation.</b> Most "AI for sales" tools are bolted onto one CRM. DevGTM unifies six, then reasons over the unified view.</li>
+    <li><b>Agentic UX, not dashboard-with-AI.</b> Reps don't read charts; the AI tells them what to do next. Same paradigm shift as Gmail Priority Inbox in 2010.</li>
+  </ol>
+
+  <h3>Recommended Next Step</h3>
+  <p>A 30-minute working session with your VP RevOps, one SDR manager, and one AE. We'll walk through:</p>
+  <ul class="tight">
+    <li>Live demo on one of <b>your</b> real accounts (no synthetic data)</li>
+    <li>Tailored ROI math using your actual team size and ACV</li>
+    <li>60-day paid pilot terms with success metrics defined upfront</li>
+  </ul>
+
+  <div class="bottom-line" style="margin-top: 18pt;">
+    <h3>The Promise, In One Sentence</h3>
+    <p style="font-size: 14pt; opacity: 1; margin-bottom: 0;">Your salespeople will spend more of their day doing the part of the job they actually wanted: <span style="color: var(--teal); font-weight: 700;">talking to humans and winning business.</span></p>
+  </div>
+
+  <div class="page-footer">
+    <span>DevGTM Mesh · Sales Impact Brief · Prepared 2026</span>
+    <span>Page 7 of 7</span>
+  </div>
+</section>
+
+</body>
+</html>
