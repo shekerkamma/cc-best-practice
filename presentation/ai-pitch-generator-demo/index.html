@@ -1,0 +1,1459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DevGTM Mesh × Lumen Analytics — AI Pitch Generator Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script type="application/json" id="speaker-notes">
+[
+  "This is slide 1. The AI Pitch Generator ingested Lumen Analytics' firmographic profile and six live signals, then assembled this deck automatically — no SDR wrote a word of it. The subtitle 'A pitch tailored to your team, your stack, your moment' is literal: every section references data points specific to Lumen. The goal is to demonstrate to the VP RevOps at Lumen that DevGTM Mesh already understands their world before the first conversation.",
+
+  "This is slide 2. The opening hook is the CTO's own public LinkedIn post. The AI Pitch Generator flagged it as a high-relevance signal because (a) it is public, (b) it names the exact pain category — manual research — that DevGTM Mesh addresses, and (c) it was posted within the signal lookback window. The AI inferred: the CTO is vocal and frustrated, which means the problem has executive sponsorship. Frame the outreach as responding to something they already said publicly, not a cold pitch.",
+
+  "This is slide 3. The six-tile signal grid is the transparency layer of the pitch. The AI Pitch Generator does not hide its sourcing — it shows the prospect exactly which signals triggered this outreach. Reo.Dev pricing-page visits signal active evaluation. The job posting signals headcount investment in outbound. The CTO's LinkedIn post confirms internal frustration. The Series B funding shows budget availability. Fireflies intel shows a competing consultant is already in play. Firecrawl's homepage scrape confirms Lumen is pivoting messaging toward AI-native positioning.",
+
+  "This is slide 4. This is the synthesis slide — the AI's pattern-recognition output. Individually, each signal could be coincidence. Together, they form a coherent picture: Lumen is scaling its outbound motion (job post), frustrated with manual research (CTO quote), has budget to act (Series B), and is actively evaluating solutions (competitor meetings, pricing page visits). The AI Pitch Generator used this pattern to set the urgency framing of the deck.",
+
+  "This is slide 5. The CTO's exact words, rendered as the visual centerpiece. The AI Pitch Generator treats direct quotes as the highest-confidence signal because they eliminate interpretation — the pain is self-described. The attribution (name, title, date, platform) is included to remind the reader that this is not a made-up scenario. The AI pulled this from the LinkedIn public post monitor in the signal aggregation layer.",
+
+  "This is slide 6. The cost-math slide. The AI Pitch Generator applied Lumen's known headcount (12 SDRs from firmographic enrichment) against industry-average research time (2.5 hrs/day) and a fully-loaded SDR cost assumption ($65/hr) to produce an annualized number. The formula is shown explicitly because showing the math is more persuasive than asserting a number — it lets the VP RevOps sanity-check and adjust the inputs. The AI chose to make the formula transparent rather than hide it.",
+
+  "This is slide 7. The industry benchmark slide. The 38% research-time figure is an illustrative benchmark for data observability SaaS companies at Lumen's stage. The AI Pitch Generator included this to contextualize Lumen's situation — they are not an outlier, they are at the industry average. This makes the problem feel systemic rather than personal, which reduces defensiveness in the prospect.",
+
+  "This is slide 8. The product explanation slide. The AI Pitch Generator kept this to three bullets because the preceding slides already established the problem and cost. By slide 8, the prospect understands the pain — the product slide just needs to name what DevGTM Mesh does. The third bullet ('generates personalized pitches — the same way this deck was generated') is the meta-moment: the deck is its own proof of concept.",
+
+  "This is slide 9. The stack-fit slide. The AI Pitch Generator used the GTM stack data from the firmographic enrichment (HubSpot + Salesforce + Outreach) to pre-answer the 'does this work with our tools?' objection before it's raised. The 'no rip-and-replace' callout is critical for a VP RevOps — they know integration projects are risky. Native connectors eliminate that objection.",
+
+  "This is slide 10. The SDR before/after. The AI Pitch Generator built this table by contrasting the 'status quo' workflow (manual research, Google searches, LinkedIn lookups, 2.5 hrs consumed) against the DevGTM-augmented workflow (signals pre-aggregated, research brief auto-generated, pitch drafted in seconds). The time savings is the headline. The AI matched these specifics to Lumen's 12-SDR team structure.",
+
+  "This is slide 11. The AE before/after. Account Executives face a different preparation bottleneck than SDRs — their problem is meeting prep and context synthesis across multiple prior touchpoints, not initial prospecting. The AI Pitch Generator generated a separate before/after table for AEs because the Fireflies integration maps directly to AE use cases. Lumen has 18 AEs, and the Fireflies signal (competitor meetings logged) confirmed they are active meeting users.",
+
+  "This is slide 12. The social proof slide. Sentinel Metrics is a fictional analogous customer — similar profile to Lumen: a 200-person data observability SaaS at comparable stage. The AI Pitch Generator included a case study slide because the VP RevOps will ask 'has this worked for anyone like us?' The metrics (47% research-time reduction, 2.3x pipeline in 90 days) are the anchors for the projection on the next slide.",
+
+  "This is slide 13. The Lumen-specific projection slide. The AI Pitch Generator applied the Sentinel ratios to Lumen's known headcount: 12 SDRs and 18 AEs. The $200K/yr time-saved figure comes from applying the 47% reduction to the $430K research-cost baseline from slide 6. The $3.2M pipeline projection applies the 2.3x multiplier to a conservative baseline derived from Lumen's current $185K ACV and estimated pipeline volume for their team size. These are AI-generated projections, not guarantees — they are framed as estimates.",
+
+  "This is slide 14. The 30/60/90-day rollout plan. The AI Pitch Generator built this timeline around Lumen's actual stack: HubSpot and Salesforce connectors in week 1 (since those are their primary data sources), Outreach integration in week 2 (for the SDR outreach workflow), enrichment and scoring calibration in weeks 3-4, and pilot measurement checkpoints at days 30, 60, and 90. The milestones are specific enough to be credible but not so prescriptive as to create objections.",
+
+  "This is slide 15. The pricing slide. The AI Pitch Generator framed the investment as 'ROI in under 90 days' because the cost-math on slide 6 supports that claim. The per-seat pricing is positioned as accessible for a team Lumen's size. The platform option is mentioned as an alternative for prospects who prefer predictable flat-rate pricing. Exact numbers are withheld here — the AI chose to drive a pricing conversation rather than anchor prematurely.",
+
+  "This is slide 16. The risk-reversal slide. A 60-day paid pilot with pre-defined success metrics and a full refund clause addresses the VP RevOps's primary concern: what if this doesn't work? The AI Pitch Generator flagged that Lumen is 6 months post-Series B — they are in a 'prove it' mode with their board. A pilot with a refund clause de-risks the decision and accelerates the yes.",
+
+  "This is slide 17. The next-step slide. The AI Pitch Generator made the ask specific: a 30-minute working session (not a vague 'call'), with a named attendee list (VP RevOps + 1 SDR manager + 1 AE), a three-bullet agenda, and two proposed date options. Specificity reduces friction. The AI chose a working session format (not a demo) because the SDR bottleneck signal suggests Lumen needs to see the workflow, not a feature tour.",
+
+  "This is slide 18. The transparency appendix. Every claim in this deck is traceable to a specific signal, source, and date. The AI Pitch Generator generated this audit trail automatically — it is not optional. Showing the sourcing does two things: it demonstrates that the pitch is AI-generated (not a template with the company name swapped in), and it gives the VP RevOps confidence that the data is real and recent. This is the 'why this is AI, not mail merge' slide."
+]
+</script>
+<script src="../sap-ai-use-cases/deck-stage.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #060a12; font-family: 'DM Sans', sans-serif; }
+
+  section {
+    width: 1920px; height: 1080px;
+    background: #0b0f1a; color: #e8edf5;
+    position: relative; overflow: hidden;
+  }
+
+  /* ── Shared ────────────────────────────────────────────── */
+  .dot-grid {
+    position: absolute; inset: 0; pointer-events: none;
+    background-image: radial-gradient(circle, #1e2540 1px, transparent 1px);
+    background-size: 48px 48px; opacity: 0.4;
+  }
+  .glow {
+    position: absolute; width: 700px; height: 700px;
+    border-radius: 50%; filter: blur(160px); opacity: 0.1; pointer-events: none;
+  }
+  .slide-num {
+    position: absolute; bottom: 48px; right: 80px;
+    font-size: 24px; color: #3d4a6e; font-weight: 500; letter-spacing: 0.06em;
+  }
+  .logo {
+    position: absolute; top: 44px; left: 80px;
+    display: flex; align-items: center; gap: 14px; z-index: 10;
+  }
+  .logo-icon {
+    width: 44px; height: 44px; border-radius: 12px;
+    background: linear-gradient(135deg, #7c3aed, #2dd4bf);
+    display: flex; align-items: center; justify-content: center; font-size: 22px;
+  }
+  .logo-text { font-size: 24px; font-weight: 600; color: #7c3aed; letter-spacing: 0.06em; text-transform: uppercase; }
+
+  .pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 24px; border-radius: 24px;
+    font-size: 24px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .ai-badge {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 8px 20px; border-radius: 12px;
+    font-size: 20px; font-weight: 600;
+    background: rgba(124,58,237,0.12); border: 1px solid rgba(124,58,237,0.35);
+    color: #a78bfa; text-transform: uppercase; letter-spacing: 0.06em;
+  }
+
+  /* ── Cover ─────────────────────────────────────────────── */
+  .cover-body {
+    position: absolute; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center; z-index: 2; gap: 0;
+  }
+  .cover-kicker { font-size: 26px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #7c3aed; margin-bottom: 28px; }
+  .cover-prospect { font-size: 28px; font-weight: 500; color: #2dd4bf; letter-spacing: 0.04em; margin-bottom: 16px; }
+  .cover-h1 {
+    font-size: 84px; font-weight: 700; line-height: 1.08; margin-bottom: 28px;
+    background: linear-gradient(140deg, #e8edf5 20%, #5a6a8a);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .cover-sub { font-size: 28px; color: #6b7fa3; max-width: 960px; line-height: 1.7; margin-bottom: 48px; }
+  .cover-meta { display: flex; gap: 28px; flex-wrap: wrap; justify-content: center; }
+  .cover-meta-item {
+    background: #131929; border: 1px solid #1e2d47; border-radius: 14px;
+    padding: 16px 28px; display: flex; flex-direction: column; gap: 4px; text-align: left;
+  }
+  .cover-meta-label { font-size: 18px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #3d4a6e; }
+  .cover-meta-val { font-size: 22px; color: #e8edf5; font-family: 'DM Mono', monospace; }
+
+  /* ── Section body ──────────────────────────────────────── */
+  .section-body {
+    position: absolute; inset: 0; z-index: 2;
+    display: flex; flex-direction: column;
+    padding: 130px 80px 72px;
+  }
+  .section-h { font-size: 52px; font-weight: 700; line-height: 1.1; margin-bottom: 12px; }
+  .section-sub { font-size: 26px; color: #6b7fa3; line-height: 1.6; }
+
+  /* ── Signal tiles ──────────────────────────────────────── */
+  .signal-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px;
+    margin-top: 40px; flex: 1;
+  }
+  .signal-tile {
+    background: #131929; border: 1px solid #1e2d47; border-radius: 20px;
+    padding: 32px 32px; display: flex; flex-direction: column; gap: 14px;
+    position: relative; overflow: hidden;
+  }
+  .signal-tile::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  }
+  .signal-source-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .signal-source { font-size: 20px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
+  .signal-ts { font-size: 18px; font-family: 'DM Mono', monospace; color: #3d4a6e; }
+  .signal-body { font-size: 25px; color: #e8edf5; font-weight: 600; line-height: 1.4; flex: 1; }
+  .signal-detail { font-size: 22px; color: #6b7fa3; line-height: 1.5; }
+  .signal-conf { display: flex; align-items: center; gap: 8px; font-size: 19px; font-weight: 600; }
+
+  /* ── Pattern slide ─────────────────────────────────────── */
+  .pattern-chain {
+    display: flex; flex-direction: column; gap: 24px; margin-top: 40px;
+  }
+  .pattern-item {
+    display: flex; align-items: stretch; gap: 0;
+    background: #131929; border-radius: 18px; border: 1px solid #1e2d47; overflow: hidden;
+  }
+  .pattern-num {
+    width: 96px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+    font-size: 48px; font-weight: 800; font-family: 'DM Mono', monospace;
+    border-right: 1px solid #1e2d47;
+  }
+  .pattern-content { flex: 1; padding: 28px 36px; display: flex; flex-direction: column; justify-content: center; gap: 8px; }
+  .pattern-label { font-size: 20px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
+  .pattern-text { font-size: 28px; color: #e8edf5; line-height: 1.45; }
+  .pattern-signal { font-size: 20px; color: #6b7fa3; font-family: 'DM Mono', monospace; }
+
+  /* ── Quote slide ────────────────────────────────────────── */
+  .quote-body {
+    position: absolute; inset: 0; z-index: 2;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; padding: 80px 140px; text-align: center; gap: 0;
+  }
+  .quote-mark { font-size: 160px; font-weight: 800; line-height: 0.7; color: #7c3aed; opacity: 0.3; margin-bottom: 20px; font-family: Georgia, serif; }
+  .quote-text {
+    font-size: 52px; font-weight: 600; line-height: 1.4; color: #e8edf5;
+    max-width: 1400px; margin-bottom: 48px;
+  }
+  .quote-attr { display: flex; align-items: center; gap: 24px; }
+  .quote-avatar {
+    width: 72px; height: 72px; border-radius: 50%;
+    background: linear-gradient(135deg, #7c3aed, #2dd4bf);
+    display: flex; align-items: center; justify-content: center; font-size: 32px; flex-shrink: 0;
+  }
+  .quote-attr-text { text-align: left; }
+  .quote-name { font-size: 28px; font-weight: 700; color: #e8edf5; }
+  .quote-role { font-size: 24px; color: #6b7fa3; }
+  .quote-platform { font-size: 20px; font-family: 'DM Mono', monospace; color: #7c3aed; margin-top: 6px; }
+
+  /* ── Math slide ─────────────────────────────────────────── */
+  .math-body {
+    position: absolute; inset: 0; z-index: 2;
+    display: flex; flex-direction: column;
+    padding: 130px 80px 72px;
+  }
+  .formula-box {
+    background: #0d1220; border: 1px solid #7c3aed44; border-radius: 20px;
+    padding: 48px 56px; margin-top: 36px; display: flex; flex-direction: column; gap: 20px;
+  }
+  .formula-line { display: flex; align-items: center; gap: 24px; font-size: 30px; font-family: 'DM Mono', monospace; color: #a8bdd4; }
+  .formula-op { color: #7c3aed; font-weight: 700; width: 48px; text-align: center; font-size: 36px; }
+  .formula-label { font-size: 22px; color: #6b7fa3; min-width: 340px; }
+  .formula-val { font-size: 30px; color: #e8edf5; font-weight: 700; }
+  .formula-divider { height: 1px; background: #1e2d47; margin: 8px 0; }
+  .formula-result {
+    display: flex; align-items: center; gap: 24px;
+    margin-top: 16px;
+  }
+  .formula-result-label { font-size: 26px; color: #6b7fa3; }
+  .formula-result-val { font-size: 64px; font-weight: 800; color: #2dd4bf; font-family: 'DM Mono', monospace; }
+  .formula-result-sub { font-size: 24px; color: #6b7fa3; align-self: flex-end; margin-bottom: 12px; }
+
+  /* ── Benchmark slide ────────────────────────────────────── */
+  .benchmark-body {
+    position: absolute; inset: 0; z-index: 2;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; padding: 80px 140px; gap: 0;
+  }
+  .benchmark-big { font-size: 180px; font-weight: 800; font-family: 'DM Mono', monospace; color: #f59e0b; line-height: 1; }
+  .benchmark-label { font-size: 36px; color: #a8bdd4; margin-top: 16px; text-align: center; }
+  .benchmark-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; width: 100%; margin-top: 56px; }
+  .benchmark-card {
+    background: #131929; border: 1px solid #1e2d47; border-radius: 20px; padding: 36px 32px;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .benchmark-card-icon { font-size: 40px; }
+  .benchmark-card-val { font-size: 44px; font-weight: 800; font-family: 'DM Mono', monospace; }
+  .benchmark-card-label { font-size: 22px; color: #6b7fa3; line-height: 1.5; }
+
+  /* ── Product slide ─────────────────────────────────────── */
+  .product-body {
+    position: absolute; inset: 0; z-index: 2;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; padding: 80px 100px;
+  }
+  .product-pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 36px; width: 100%; margin-top: 56px; }
+  .product-pillar {
+    background: #131929; border: 1px solid #1e2d47; border-radius: 24px;
+    padding: 56px 48px; display: flex; flex-direction: column; gap: 24px;
+  }
+  .product-pillar-num { font-size: 80px; font-weight: 800; font-family: 'DM Mono', monospace; opacity: 0.07; line-height: 1; }
+  .product-pillar-icon { font-size: 56px; margin-top: -32px; }
+  .product-pillar-title { font-size: 34px; font-weight: 700; color: #e8edf5; line-height: 1.2; }
+  .product-pillar-desc { font-size: 24px; color: #a8bdd4; line-height: 1.65; }
+
+  /* ── Stack fit ──────────────────────────────────────────── */
+  .stack-body {
+    position: absolute; inset: 0; z-index: 2;
+    display: flex; flex-direction: column;
+    padding: 130px 80px 72px;
+  }
+  .stack-row { display: flex; gap: 28px; margin-top: 40px; align-items: stretch; }
+  .stack-arrow { display: flex; align-items: center; justify-content: center; font-size: 48px; color: #1e2d47; flex-shrink: 0; width: 60px; }
+  .stack-tool {
+    flex: 1; background: #131929; border-radius: 20px; padding: 36px 40px;
+    display: flex; flex-direction: column; gap: 14px; align-items: center; text-align: center;
+  }
+  .stack-tool-logo { font-size: 56px; }
+  .stack-tool-name { font-size: 32px; font-weight: 700; }
+  .stack-tool-role { font-size: 20px; color: #6b7fa3; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; }
+  .stack-tool-desc { font-size: 21px; color: #a8bdd4; line-height: 1.5; }
+  .stack-devgtm {
+    background: linear-gradient(135deg, rgba(124,58,237,0.15), rgba(45,212,191,0.1));
+    border: 1px solid #7c3aed44;
+  }
+  .stack-callout {
+    margin-top: 40px; padding: 24px 40px; background: rgba(45,212,191,0.07);
+    border: 1px solid rgba(45,212,191,0.25); border-radius: 16px;
+    font-size: 28px; color: #2dd4bf; text-align: center; font-weight: 600;
+  }
+
+  /* ── Before/After tables ────────────────────────────────── */
+  .ba-body {
+    position: absolute; inset: 0; z-index: 2;
+    display: flex; flex-direction: column;
+    padding: 130px 80px 72px;
+  }
+  .ba-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; margin-top: 36px; flex: 1; }
+  .ba-col { background: #131929; border-radius: 20px; overflow: hidden; display: flex; flex-direction: column; }
+  .ba-col-header {
+    padding: 24px 32px; font-size: 24px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.08em; display: flex; align-items: center; gap: 14px;
+  }
+  .ba-rows { padding: 8px 0; flex: 1; }
+  .ba-row { padding: 18px 32px; display: flex; align-items: flex-start; gap: 18px; border-bottom: 1px solid #0f1624; }
+  .ba-row:last-child { border-bottom: none; }
+  .ba-icon { font-size: 26px; flex-shrink: 0; margin-top: 2px; }
+  .ba-text { font-size: 24px; color: #a8bdd4; line-height: 1.5; }
+  .ba-time { font-size: 20px; font-family: 'DM Mono', monospace; color: #6b7fa3; margin-top: 4px; }
+
+  /* ── Case study ─────────────────────────────────────────── */
+  .case-body {
+    position: absolute; inset: 0; z-index: 2;
+    display: flex; flex-direction: column;
+    padding: 130px 80px 72px;
+  }
+  .case-split { display: grid; grid-template-columns: 1.1fr 1fr; gap: 48px; margin-top: 36px; flex: 1; }
+  .case-card {
+    background: #131929; border: 1px solid #7c3aed33; border-radius: 24px; padding: 48px 48px;
+    display: flex; flex-direction: column; gap: 24px;
+  }
+  .case-name { font-size: 42px; font-weight: 700; color: #e8edf5; }
+  .case-profile { font-size: 22px; color: #6b7fa3; line-height: 1.6; }
+  .case-metrics { display: flex; flex-direction: column; gap: 20px; margin-top: 8px; }
+  .case-metric { display: flex; align-items: center; gap: 20px; }
+  .case-metric-val { font-size: 52px; font-weight: 800; font-family: 'DM Mono', monospace; min-width: 160px; }
+  .case-metric-desc { font-size: 24px; color: #a8bdd4; line-height: 1.5; }
+  .case-testimonial {
+    background: rgba(124,58,237,0.08); border: 1px solid rgba(124,58,237,0.2);
+    border-radius: 18px; padding: 36px 40px;
+    font-size: 26px; color: #c4b5fd; line-height: 1.6; font-style: italic;
+  }
+  .case-testimonial-attr { font-size: 20px; color: #7c3aed; margin-top: 16px; font-style: normal; font-weight: 700; }
+
+  /* ── Projection ─────────────────────────────────────────── */
+  .proj-body {
+    position: absolute; inset: 0; z-index: 2;
+    display: flex; flex-direction: column;
+    padding: 130px 80px 72px;
+  }
+  .proj-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; margin-top: 40px; }
+  .proj-card {
+    background: #131929; border: 1px solid #1e2d47; border-radius: 20px;
+    padding: 36px 32px; display: flex; flex-direction: column; gap: 14px;
+  }
+  .proj-card-icon { font-size: 44px; }
+  .proj-card-val { font-size: 50px; font-weight: 800; font-family: 'DM Mono', monospace; line-height: 1; }
+  .proj-card-label { font-size: 22px; color: #6b7fa3; line-height: 1.5; }
+  .proj-card-basis { font-size: 18px; color: #3d4a6e; margin-top: 4px; font-family: 'DM Mono', monospace; }
+  .proj-note {
+    margin-top: 36px; padding: 20px 32px; background: rgba(45,212,191,0.06);
+    border: 1px solid rgba(45,212,191,0.2); border-radius: 14px;
+    font-size: 22px; color: #6b7fa3; text-align: center;
+  }
+
+  /* ── Rollout timeline ───────────────────────────────────── */
+  .rollout-body {
+    position: absolute; inset: 0; z-index: 2;
+    display: flex; flex-direction: column;
+    padding: 130px 80px 72px;
+  }
+  .rollout-phases { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; margin-top: 36px; flex: 1; }
+  .rollout-phase { background: #131929; border: 1px solid #1e2d47; border-radius: 20px; overflow: hidden; display: flex; flex-direction: column; }
+  .rollout-phase-header {
+    padding: 24px 28px; display: flex; flex-direction: column; gap: 4px;
+    border-bottom: 1px solid #1e2d47;
+  }
+  .rollout-phase-label { font-size: 20px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
+  .rollout-phase-period { font-size: 28px; font-weight: 700; color: #e8edf5; }
+  .rollout-milestones { padding: 12px 0; flex: 1; }
+  .rollout-milestone { padding: 16px 28px; display: flex; align-items: flex-start; gap: 14px; border-bottom: 1px solid #0f1624; }
+  .rollout-milestone:last-child { border-bottom: none; }
+  .rollout-week { font-size: 18px; font-weight: 700; font-family: 'DM Mono', monospace; color: #3d4a6e; flex-shrink: 0; width: 52px; }
+  .rollout-task { font-size: 22px; color: #a8bdd4; line-height: 1.45; }
+  .rollout-check { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
+
+  /* ── Investment / pricing ───────────────────────────────── */
+  .invest-body {
+    position: absolute; inset: 0; z-index: 2;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; padding: 80px 100px;
+  }
+  .invest-options { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; width: 100%; max-width: 1500px; }
+  .invest-card {
+    background: #131929; border: 1px solid #1e2d47; border-radius: 24px; padding: 52px 52px;
+    display: flex; flex-direction: column; gap: 20px;
+  }
+  .invest-card.featured { border-color: #7c3aed55; background: linear-gradient(145deg, #131929, #1a1238); }
+  .invest-card-badge { font-size: 20px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
+  .invest-card-name { font-size: 42px; font-weight: 700; }
+  .invest-card-price { font-size: 32px; font-family: 'DM Mono', monospace; color: #6b7fa3; }
+  .invest-card-features { display: flex; flex-direction: column; gap: 14px; margin-top: 8px; }
+  .invest-feature { display: flex; align-items: flex-start; gap: 14px; font-size: 24px; color: #a8bdd4; line-height: 1.5; }
+  .invest-roi {
+    margin-top: 48px; padding: 28px 48px;
+    background: rgba(45,212,191,0.08); border: 1px solid rgba(45,212,191,0.3); border-radius: 18px;
+    text-align: center; font-size: 30px; color: #2dd4bf; font-weight: 700;
+    max-width: 1500px; width: 100%;
+  }
+
+  /* ── Risk reversal ──────────────────────────────────────── */
+  .risk-body {
+    position: absolute; inset: 0; z-index: 2;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; padding: 80px 120px; gap: 0;
+  }
+  .risk-hero {
+    background: linear-gradient(135deg, rgba(124,58,237,0.12), rgba(45,212,191,0.08));
+    border: 1px solid #7c3aed33; border-radius: 28px;
+    padding: 60px 80px; text-align: center; width: 100%; max-width: 1400px;
+    display: flex; flex-direction: column; align-items: center; gap: 24px;
+  }
+  .risk-headline { font-size: 56px; font-weight: 700; line-height: 1.2; color: #e8edf5; }
+  .risk-sub { font-size: 28px; color: #6b7fa3; max-width: 900px; line-height: 1.6; }
+  .risk-terms { display: flex; gap: 36px; margin-top: 8px; }
+  .risk-term {
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    background: rgba(45,212,191,0.07); border: 1px solid rgba(45,212,191,0.2);
+    border-radius: 16px; padding: 24px 36px;
+  }
+  .risk-term-icon { font-size: 40px; }
+  .risk-term-val { font-size: 36px; font-weight: 700; color: #2dd4bf; font-family: 'DM Mono', monospace; }
+  .risk-term-desc { font-size: 20px; color: #6b7fa3; text-align: center; line-height: 1.4; max-width: 200px; }
+  .risk-guarantee {
+    margin-top: 40px; font-size: 24px; color: #6b7fa3; text-align: center; max-width: 1200px; line-height: 1.6;
+  }
+
+  /* ── Next step ──────────────────────────────────────────── */
+  .next-body {
+    position: absolute; inset: 0; z-index: 2;
+    display: flex; flex-direction: column;
+    padding: 130px 80px 72px;
+  }
+  .next-split { display: grid; grid-template-columns: 1.1fr 1fr; gap: 56px; margin-top: 40px; flex: 1; }
+  .next-ask {
+    background: linear-gradient(145deg, #131929, #1a1238);
+    border: 1px solid #7c3aed44; border-radius: 24px; padding: 52px 52px;
+    display: flex; flex-direction: column; gap: 20px;
+  }
+  .next-ask-head { font-size: 32px; font-weight: 700; color: #a78bfa; text-transform: uppercase; letter-spacing: 0.06em; }
+  .next-ask-title { font-size: 48px; font-weight: 700; color: #e8edf5; line-height: 1.2; }
+  .next-attendees { display: flex; flex-direction: column; gap: 12px; margin-top: 4px; }
+  .next-attendee { display: flex; align-items: center; gap: 14px; font-size: 24px; color: #a8bdd4; }
+  .next-attendee-dot { width: 10px; height: 10px; border-radius: 50%; background: #7c3aed; flex-shrink: 0; }
+  .next-agenda {
+    background: #131929; border: 1px solid #1e2d47; border-radius: 24px; padding: 48px 48px;
+    display: flex; flex-direction: column; gap: 20px;
+  }
+  .next-agenda-head { font-size: 28px; font-weight: 700; color: #6b7fa3; text-transform: uppercase; letter-spacing: 0.06em; }
+  .next-agenda-items { display: flex; flex-direction: column; gap: 20px; }
+  .next-agenda-item { display: flex; align-items: flex-start; gap: 18px; }
+  .next-agenda-num { font-size: 22px; font-weight: 700; font-family: 'DM Mono', monospace; color: #7c3aed; min-width: 32px; margin-top: 4px; }
+  .next-agenda-text { font-size: 26px; color: #a8bdd4; line-height: 1.5; }
+  .next-dates { display: flex; gap: 20px; margin-top: 8px; }
+  .next-date {
+    flex: 1; background: rgba(124,58,237,0.1); border: 1px solid rgba(124,58,237,0.3);
+    border-radius: 14px; padding: 20px 28px; text-align: center; display: flex; flex-direction: column; gap: 6px;
+  }
+  .next-date-label { font-size: 18px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #7c3aed; }
+  .next-date-val { font-size: 26px; color: #e8edf5; font-family: 'DM Mono', monospace; }
+
+  /* ── Appendix ───────────────────────────────────────────── */
+  .appendix-body {
+    position: absolute; inset: 0; z-index: 2;
+    display: flex; flex-direction: column;
+    padding: 130px 80px 72px;
+  }
+  .appendix-table { margin-top: 36px; flex: 1; display: flex; flex-direction: column; gap: 0; }
+  .appendix-row {
+    display: grid; grid-template-columns: 80px 2fr 2fr 1.5fr 1fr;
+    gap: 0; border-bottom: 1px solid #1e2d47; align-items: center;
+  }
+  .appendix-row.header-row {
+    background: #131929; border-radius: 14px 14px 0 0; border: 1px solid #1e2d47;
+    border-bottom: 1px solid #2a3a55;
+  }
+  .appendix-cell { padding: 18px 24px; font-size: 20px; border-right: 1px solid #1a2236; }
+  .appendix-cell:last-child { border-right: none; }
+  .appendix-header-cell { font-size: 18px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #3d4a6e; padding: 16px 24px; border-right: 1px solid #1a2236; }
+  .appendix-header-cell:last-child { border-right: none; }
+  .appendix-slide-num { font-size: 20px; font-weight: 700; font-family: 'DM Mono', monospace; color: #7c3aed; }
+  .appendix-signal-type { font-size: 20px; color: #e8edf5; }
+  .appendix-source { font-size: 19px; font-family: 'DM Mono', monospace; color: #2dd4bf; }
+  .appendix-date { font-size: 18px; font-family: 'DM Mono', monospace; color: #6b7fa3; }
+  .appendix-conf { font-size: 18px; font-weight: 600; }
+</style>
+</head>
+<body>
+<deck-stage>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 01 — Cover
+══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="01 Cover">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#7c3aed;top:-200px;right:-200px;"></div>
+  <div class="glow" style="background:#2dd4bf;bottom:-200px;left:-200px;"></div>
+  <div class="logo"><div class="logo-icon">⬡</div><div class="logo-text">DevGTM Mesh</div></div>
+  <div class="cover-body">
+    <div class="ai-badge" style="margin-bottom:28px;">✦ AI-Generated Pitch · Pitch Generator Demo</div>
+    <div class="cover-prospect">DevGTM Mesh × Lumen Analytics</div>
+    <div class="cover-h1">Why now</div>
+    <div class="cover-sub">A pitch tailored to your team, your stack, your moment</div>
+    <div class="cover-meta">
+      <div class="cover-meta-item">
+        <div class="cover-meta-label">Prospect</div>
+        <div class="cover-meta-val">Lumen Analytics</div>
+      </div>
+      <div class="cover-meta-item">
+        <div class="cover-meta-label">Stage</div>
+        <div class="cover-meta-val">Series B · $42M</div>
+      </div>
+      <div class="cover-meta-item">
+        <div class="cover-meta-label">Buyer</div>
+        <div class="cover-meta-val">VP RevOps</div>
+      </div>
+      <div class="cover-meta-item">
+        <div class="cover-meta-label">Team</div>
+        <div class="cover-meta-val">12 SDRs · 18 AEs</div>
+      </div>
+      <div class="cover-meta-item">
+        <div class="cover-meta-label">Stack</div>
+        <div class="cover-meta-val">HubSpot · Salesforce · Outreach</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">1 / 18</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 02 — Why we're reaching out
+══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="02 Why Now">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#7c3aed;top:-100px;left:-100px;"></div>
+  <div class="logo"><div class="logo-icon">⬡</div><div class="logo-text">DevGTM Mesh</div></div>
+  <div class="section-body">
+    <div style="margin-bottom:24px;"><span class="pill" style="background:#7c3aed18;border:1px solid #7c3aed44;color:#a78bfa">Opening Hook</span></div>
+    <div class="section-h">We noticed something specific.</div>
+    <div class="section-sub" style="max-width:1500px;margin-top:12px;">We are not reaching out with a template. Three days ago, we came across something your CTO posted publicly on LinkedIn — and it stopped us from moving on to the next account in our queue.</div>
+    <div style="background:#131929;border:1px solid #7c3aed33;border-radius:24px;padding:52px 64px;margin-top:44px;max-width:1400px;">
+      <div style="font-size:22px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#7c3aed;margin-bottom:20px;">Public post · LinkedIn · 9 days ago</div>
+      <div style="font-size:38px;color:#e8edf5;line-height:1.55;font-style:italic;">"Manual prospect research is our SDR team's #1 bottleneck — we're losing hours a day."</div>
+      <div style="display:flex;align-items:center;gap:16px;margin-top:28px;">
+        <div style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#2dd4bf);display:flex;align-items:center;justify-content:center;font-size:24px;">👤</div>
+        <div>
+          <div style="font-size:24px;font-weight:700;color:#e8edf5;">CTO, Lumen Analytics</div>
+          <div style="font-size:20px;color:#6b7fa3;margin-top:2px;">San Francisco · 180 employees · Data Observability</div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:32px;font-size:26px;color:#6b7fa3;max-width:1300px;line-height:1.65;">We build software that eliminates exactly this bottleneck — and we can show you the math on what it is costing Lumen right now.</div>
+  </div>
+  <div class="slide-num">2 / 18</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 03 — What our AI saw (signal grid)
+══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="03 Signal Grid">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#2dd4bf;bottom:-200px;right:-100px;"></div>
+  <div class="logo"><div class="logo-icon">⬡</div><div class="logo-text">DevGTM Mesh</div></div>
+  <div class="section-body">
+    <div style="margin-bottom:20px;"><span class="pill" style="background:#2dd4bf18;border:1px solid #2dd4bf44;color:#2dd4bf">Signal Intelligence</span></div>
+    <div class="section-h">What our AI saw across 6 sources</div>
+    <div class="signal-grid">
+
+      <!-- Signal 1: Reo.Dev -->
+      <div class="signal-tile" style="border-color:#7c3aed33;">
+        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#7c3aed,#a78bfa);"></div>
+        <div class="signal-source-row">
+          <div class="signal-source" style="color:#a78bfa;">Reo.Dev</div>
+          <div class="signal-ts">–14 days</div>
+        </div>
+        <div class="signal-body">3 anonymous visits to getreo.dev/pricing</div>
+        <div class="signal-detail">Unique sessions, not bounce. Pricing page indicates active evaluation — not casual research.</div>
+        <div class="signal-conf" style="color:#a78bfa;">✦ <span>Buying signal · High confidence</span></div>
+      </div>
+
+      <!-- Signal 2: Job posting -->
+      <div class="signal-tile" style="border-color:#f59e0b33;">
+        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#f59e0b,#fcd34d);"></div>
+        <div class="signal-source-row">
+          <div class="signal-source" style="color:#f59e0b;">Lumen Careers</div>
+          <div class="signal-ts">–9 days</div>
+        </div>
+        <div class="signal-body">"Outbound SDR Manager" role opened</div>
+        <div class="signal-detail">Headcount investment in outbound motion. Scaling SDR team = scaling the bottleneck the CTO flagged.</div>
+        <div class="signal-conf" style="color:#f59e0b;">✦ <span>Scaling signal · High confidence</span></div>
+      </div>
+
+      <!-- Signal 3: LinkedIn -->
+      <div class="signal-tile" style="border-color:#3b82f633;">
+        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#3b82f6,#60a5fa);"></div>
+        <div class="signal-source-row">
+          <div class="signal-source" style="color:#60a5fa;">LinkedIn · Public</div>
+          <div class="signal-ts">–9 days</div>
+        </div>
+        <div class="signal-body">CTO post: "#1 bottleneck — losing hours a day"</div>
+        <div class="signal-detail">Self-described pain, executive level, public post. Highest-signal statement possible before a sales call.</div>
+        <div class="signal-conf" style="color:#60a5fa;">✦ <span>Pain signal · Very high confidence</span></div>
+      </div>
+
+      <!-- Signal 4: Funding -->
+      <div class="signal-tile" style="border-color:#2dd4bf33;">
+        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#2dd4bf,#5eead4);"></div>
+        <div class="signal-source-row">
+          <div class="signal-source" style="color:#2dd4bf;">Crunchbase</div>
+          <div class="signal-ts">–6 months</div>
+        </div>
+        <div class="signal-body">Series B closed · $42M raised</div>
+        <div class="signal-detail">Post-Series B companies have expansion budget and board pressure to show GTM efficiency. Budget signal is strong.</div>
+        <div class="signal-conf" style="color:#2dd4bf;">✦ <span>Budget signal · High confidence</span></div>
+      </div>
+
+      <!-- Signal 5: Fireflies -->
+      <div class="signal-tile" style="border-color:#f4729933;">
+        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#f472b6,#f9a8d4);"></div>
+        <div class="signal-source-row">
+          <div class="signal-source" style="color:#f472b6;">Fireflies</div>
+          <div class="signal-ts">–30 days</div>
+        </div>
+        <div class="signal-body">2 meetings logged with RevOps consultant</div>
+        <div class="signal-detail">Competitive intelligence: Lumen is evaluating alternatives. They are already in buying mode — window is open now.</div>
+        <div class="signal-conf" style="color:#f472b6;">✦ <span>Competitive signal · Medium confidence</span></div>
+      </div>
+
+      <!-- Signal 6: Firecrawl -->
+      <div class="signal-tile" style="border-color:#34d39933;">
+        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#34d399,#6ee7b7);"></div>
+        <div class="signal-source-row">
+          <div class="signal-source" style="color:#34d399;">Firecrawl</div>
+          <div class="signal-ts">–recent</div>
+        </div>
+        <div class="signal-body">Homepage hero: "AI-native data observability"</div>
+        <div class="signal-detail">Lumen updated their top-of-fold messaging toward AI. They are positioning for an AI-native buyer — their own prospects expect AI tooling.</div>
+        <div class="signal-conf" style="color:#34d399;">✦ <span>Positioning signal · Medium confidence</span></div>
+      </div>
+
+    </div>
+  </div>
+  <div class="slide-num">3 / 18</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 04 — The pattern these signals form
+══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="04 Pattern">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#7c3aed;top:-100px;right:-100px;"></div>
+  <div class="logo"><div class="logo-icon">⬡</div><div class="logo-text">DevGTM Mesh</div></div>
+  <div class="section-body">
+    <div style="margin-bottom:20px;"><span class="pill" style="background:#7c3aed18;border:1px solid #7c3aed44;color:#a78bfa">AI Analysis</span></div>
+    <div class="section-h">Connect the dots</div>
+    <div class="section-sub">Six signals. One coherent picture: Lumen is scaling outbound, acknowledging the bottleneck, holding budget, and actively evaluating solutions.</div>
+    <div class="pattern-chain" style="margin-top:32px;">
+      <div class="pattern-item">
+        <div class="pattern-num" style="color:#f59e0b;border-color:#f59e0b22;">01</div>
+        <div class="pattern-content">
+          <div class="pattern-label" style="color:#f59e0b;">Scaling Into the Problem</div>
+          <div class="pattern-text">You hired an Outbound SDR Manager 9 days ago — which means you are actively growing the team that is already spending 2.5 hours a day on manual research.</div>
+          <div class="pattern-signal">source: Lumen Careers · job posting · April 2025</div>
+        </div>
+      </div>
+      <div class="pattern-item">
+        <div class="pattern-num" style="color:#60a5fa;border-color:#3b82f622;">02</div>
+        <div class="pattern-content">
+          <div class="pattern-label" style="color:#60a5fa;">Executive Acknowledgment</div>
+          <div class="pattern-text">The CTO publicly named manual research as the #1 SDR bottleneck. That is not a hypothesis from our end — it is a self-report from the top of the org, on the record.</div>
+          <div class="pattern-signal">source: LinkedIn public post · CTO · April 2025</div>
+        </div>
+      </div>
+      <div class="pattern-item">
+        <div class="pattern-num" style="color:#2dd4bf;border-color:#2dd4bf22;">03</div>
+        <div class="pattern-content">
+          <div class="pattern-label" style="color:#2dd4bf;">Budget + Active Evaluation</div>
+          <div class="pattern-text">Series B closed 6 months ago (budget exists). Two meetings already held with a RevOps consultant (you are already evaluating). Three pricing-page visits (you looked at us specifically).</div>
+          <div class="pattern-signal">source: Crunchbase · Fireflies meeting logs · Reo.Dev</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">4 / 18</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 05 — Your stated bottleneck (CTO quote)
+══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="05 CTO Quote">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#7c3aed;top:-200px;left:-200px;"></div>
+  <div class="glow" style="background:#2dd4bf;bottom:-200px;right:-200px;"></div>
+  <div class="logo"><div class="logo-icon">⬡</div><div class="logo-text">DevGTM Mesh</div></div>
+  <div class="quote-body">
+    <div class="quote-mark">"</div>
+    <div class="quote-text">Manual prospect research is our SDR team's #1 bottleneck — we're losing hours a day.</div>
+    <div class="quote-attr">
+      <div class="quote-avatar">👤</div>
+      <div class="quote-attr-text">
+        <div class="quote-name">CTO, Lumen Analytics</div>
+        <div class="quote-role">Data Observability · Series B · San Francisco</div>
+        <div class="quote-platform">LinkedIn public post · April 2025</div>
+      </div>
+    </div>
+    <div style="margin-top:44px;padding:20px 40px;background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.2);border-radius:14px;font-size:22px;color:#6b7fa3;text-align:center;max-width:1000px;">
+      The AI Pitch Generator surfaced this verbatim quote from LinkedIn's public feed and flagged it as the highest-priority outreach signal in Lumen's account profile.
+    </div>
+  </div>
+  <div class="slide-num">5 / 18</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 06 — The cost of that bottleneck (math)
+══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="06 Cost Math">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#f59e0b;top:-100px;right:-100px;opacity:0.08;"></div>
+  <div class="logo"><div class="logo-icon">⬡</div><div class="logo-text">DevGTM Mesh</div></div>
+  <div class="math-body">
+    <div style="margin-bottom:20px;"><span class="pill" style="background:#f59e0b18;border:1px solid #f59e0b44;color:#f59e0b">Cost Analysis</span></div>
+    <div class="section-h" style="font-size:44px;">What this bottleneck costs Lumen — annually</div>
+    <div class="formula-box">
+      <div class="formula-line">
+        <div class="formula-label">SDR headcount</div>
+        <div class="formula-op">=</div>
+        <div class="formula-val">12 SDRs</div>
+        <div style="font-size:20px;color:#3d4a6e;margin-left:20px;">from firmographic enrichment</div>
+      </div>
+      <div class="formula-line">
+        <div class="formula-label">Daily research time per SDR</div>
+        <div class="formula-op">×</div>
+        <div class="formula-val">2.5 hrs / day</div>
+        <div style="font-size:20px;color:#3d4a6e;margin-left:20px;">industry average · data obs. SaaS</div>
+      </div>
+      <div class="formula-line">
+        <div class="formula-label">Fully-loaded SDR cost</div>
+        <div class="formula-op">×</div>
+        <div class="formula-val">$65 / hr</div>
+        <div style="font-size:20px;color:#3d4a6e;margin-left:20px;">salary + benefits + tools</div>
+      </div>
+      <div class="formula-line">
+        <div class="formula-label">Working days per year</div>
+        <div class="formula-op">×</div>
+        <div class="formula-val">220 days</div>
+        <div style="font-size:20px;color:#3d4a6e;margin-left:20px;">excluding PTO and holidays</div>
+      </div>
+      <div class="formula-divider"></div>
+      <div class="formula-result">
+        <div class="formula-result-label">Annual research cost:</div>
+        <div class="formula-result-val">~$429,000</div>
+        <div class="formula-result-sub">12 × 2.5 × $65 × 220 = $429,000</div>
+      </div>
+    </div>
+    <div style="margin-top:28px;font-size:24px;color:#6b7fa3;">These are your numbers. Our AI applied Lumen's 12-SDR headcount to the industry time benchmark — adjust the hours/day if your actual number differs.</div>
+  </div>
+  <div class="slide-num">6 / 18</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 07 — Industry benchmark
+══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="07 Benchmark">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#f59e0b;bottom:-200px;left:-200px;opacity:0.08;"></div>
+  <div class="logo"><div class="logo-icon">⬡</div><div class="logo-text">DevGTM Mesh</div></div>
+  <div class="benchmark-body">
+    <div style="margin-bottom:16px;"><span class="pill" style="background:#f59e0b18;border:1px solid #f59e0b44;color:#f59e0b">Industry Benchmark</span></div>
+    <div class="benchmark-big">38%</div>
+    <div class="benchmark-label">of SDR time spent on manual prospect research<br>— data observability SaaS companies at Lumen's stage (illustrative benchmark)</div>
+    <div class="benchmark-cards">
+      <div class="benchmark-card">
+        <div class="benchmark-card-icon">🔍</div>
+        <div class="benchmark-card-val" style="color:#f59e0b;">38%</div>
+        <div class="benchmark-card-label">Lumen estimated research share<br>(industry average applied)</div>
+      </div>
+      <div class="benchmark-card">
+        <div class="benchmark-card-icon">⚡</div>
+        <div class="benchmark-card-val" style="color:#a78bfa;">62%</div>
+        <div class="benchmark-card-label">Remaining SDR capacity<br>for selling activities</div>
+      </div>
+      <div class="benchmark-card">
+        <div class="benchmark-card-icon">🎯</div>
+        <div class="benchmark-card-val" style="color:#2dd4bf;">&gt;90%</div>
+        <div class="benchmark-card-label">Target selling-time ratio<br>with DevGTM automation</div>
+      </div>
+    </div>
+    <div style="margin-top:28px;font-size:22px;color:#6b7fa3;text-align:center;">Lumen is not an outlier — this is the industry average. The good news: it is solvable, and companies at your stage have already done it.</div>
+  </div>
+  <div class="slide-num">7 / 18</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 08 — What DevGTM Mesh does
+══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="08 Product">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#7c3aed;top:-100px;right:-100px;"></div>
+  <div class="logo"><div class="logo-icon">⬡</div><div class="logo-text">DevGTM Mesh</div></div>
+  <div class="product-body">
+    <div style="margin-bottom:20px;text-align:center;"><span class="pill" style="background:#7c3aed18;border:1px solid #7c3aed44;color:#a78bfa">DevGTM Mesh</span></div>
+    <div style="text-align:center;font-size:56px;font-weight:700;line-height:1.15;margin-bottom:12px;">AI-powered GTM intelligence<br>built for developer-led sales</div>
+    <div class="product-pillars">
+      <div class="product-pillar" style="border-color:#7c3aed33;">
+        <div class="product-pillar-num">01</div>
+        <div class="product-pillar-icon">🔗</div>
+        <div class="product-pillar-title" style="color:#a78bfa;">Unify your GTM data</div>
+        <div class="product-pillar-desc">HubSpot, Salesforce, Outreach, Reo.Dev, Fireflies, Firecrawl — all normalized into one account record. No silos. No manual reconciliation.</div>
+      </div>
+      <div class="product-pillar" style="border-color:#2dd4bf33;">
+        <div class="product-pillar-num">02</div>
+        <div class="product-pillar-icon">⚡</div>
+        <div class="product-pillar-title" style="color:#2dd4bf;">Score intent automatically</div>
+        <div class="product-pillar-desc">Six signal sources weighted and aggregated into a single intent score per account. Your reps know which accounts to call today — before they open Salesforce.</div>
+      </div>
+      <div class="product-pillar" style="border-color:#f59e0b33;">
+        <div class="product-pillar-num">03</div>
+        <div class="product-pillar-icon">✦</div>
+        <div class="product-pillar-title" style="color:#f59e0b;">Generate personalized pitches</div>
+        <div class="product-pillar-desc">The same way this deck was generated: AI reads your prospect's signals, writes the pitch, and delivers it as a shareable URL. Not a template — a reasoned argument.</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">8 / 18</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 09 — Stack fit (HubSpot + Salesforce + Outreach)
+══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="09 Stack Fit">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#2dd4bf;bottom:-200px;right:-100px;"></div>
+  <div class="logo"><div class="logo-icon">⬡</div><div class="logo-text">DevGTM Mesh</div></div>
+  <div class="stack-body">
+    <div style="margin-bottom:20px;"><span class="pill" style="background:#2dd4bf18;border:1px solid #2dd4bf44;color:#2dd4bf">Stack Fit · Lumen's Exact Tools</span></div>
+    <div class="section-h">Native integrations with your current stack</div>
+    <div class="stack-row">
+      <div class="stack-tool" style="border:1px solid #ff7a5944;border-radius:20px;">
+        <div class="stack-tool-logo">🟠</div>
+        <div class="stack-tool-name" style="color:#ff7a59;">HubSpot</div>
+        <div class="stack-tool-role">CRM</div>
+        <div class="stack-tool-desc">Native HubSpot connector syncs companies, contacts, deals, and activities in real time. No manual export.</div>
+      </div>
+      <div class="stack-arrow">+</div>
+      <div class="stack-tool" style="border:1px solid #00a1e044;border-radius:20px;">
+        <div class="stack-tool-logo">☁️</div>
+        <div class="stack-tool-name" style="color:#00a1e0;">Salesforce</div>
+        <div class="stack-tool-role">CRM · Source of truth</div>
+        <div class="stack-tool-desc">Bidirectional Salesforce sync keeps intent scores, research briefs, and pitch data visible directly in your SF records.</div>
+      </div>
+      <div class="stack-arrow">+</div>
+      <div class="stack-tool" style="border:1px solid #5c4ee544;border-radius:20px;">
+        <div class="stack-tool-logo">🟣</div>
+        <div class="stack-tool-name" style="color:#a78bfa;">Outreach</div>
+        <div class="stack-tool-role">Sales Engagement</div>
+        <div class="stack-tool-desc">AI-generated pitch content flows directly into Outreach sequences. SDRs launch personalized sequences in seconds, not hours.</div>
+      </div>
+      <div class="stack-arrow">→</div>
+      <div class="stack-tool stack-devgtm" style="border-radius:20px;">
+        <div class="stack-tool-logo">⬡</div>
+        <div class="stack-tool-name" style="color:#a78bfa;">DevGTM Mesh</div>
+        <div class="stack-tool-role">Intelligence layer</div>
+        <div class="stack-tool-desc">Sits above your existing stack. Reads from all three. Writes enrichment, scores, and pitches back into them.</div>
+      </div>
+    </div>
+    <div class="stack-callout">No rip-and-replace. DevGTM Mesh enhances your existing HubSpot + Salesforce + Outreach investment — it does not replace any of them.</div>
+  </div>
+  <div class="slide-num">9 / 18</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 10 — Before / After for SDRs
+══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="10 SDR Before After">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#7c3aed;top:-100px;left:-100px;"></div>
+  <div class="logo"><div class="logo-icon">⬡</div><div class="logo-text">DevGTM Mesh</div></div>
+  <div class="ba-body">
+    <div style="margin-bottom:20px;"><span class="pill" style="background:#f59e0b18;border:1px solid #f59e0b44;color:#f59e0b">12 SDRs · Daily Workflow</span></div>
+    <div class="section-h" style="font-size:44px;">SDR research workflow — before &amp; after</div>
+    <div class="ba-grid">
+      <div class="ba-col" style="border:1px solid #ef444433;">
+        <div class="ba-col-header" style="background:#ef444412;border-bottom:1px solid #ef444433;">
+          <span style="font-size:30px;">✗</span>
+          <span style="color:#f87171;">Today — Manual</span>
+        </div>
+        <div class="ba-rows">
+          <div class="ba-row">
+            <div class="ba-icon">🔍</div>
+            <div>
+              <div class="ba-text">Open Google, LinkedIn, company site — 5+ tabs per account</div>
+              <div class="ba-time">~25 min / account</div>
+            </div>
+          </div>
+          <div class="ba-row">
+            <div class="ba-icon">📋</div>
+            <div>
+              <div class="ba-text">Manually copy company facts into CRM / notepad</div>
+              <div class="ba-time">~10 min / account</div>
+            </div>
+          </div>
+          <div class="ba-row">
+            <div class="ba-icon">✍️</div>
+            <div>
+              <div class="ba-text">Write a "personalized" opening from generic template</div>
+              <div class="ba-time">~15 min / account</div>
+            </div>
+          </div>
+          <div class="ba-row">
+            <div class="ba-icon">❌</div>
+            <div>
+              <div class="ba-text">No signal awareness — outreach is time-based, not intent-based</div>
+            </div>
+          </div>
+          <div class="ba-row">
+            <div class="ba-icon">⏰</div>
+            <div>
+              <div class="ba-text" style="color:#f87171;font-weight:700;">Total: ~2.5 hrs/day on research = $429K/yr across 12 SDRs</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ba-col" style="border:1px solid #34d39933;">
+        <div class="ba-col-header" style="background:#34d39912;border-bottom:1px solid #34d39933;">
+          <span style="font-size:30px;">✓</span>
+          <span style="color:#34d399;">With DevGTM Mesh</span>
+        </div>
+        <div class="ba-rows">
+          <div class="ba-row">
+            <div class="ba-icon">⚡</div>
+            <div>
+              <div class="ba-text">Intent-ranked account queue surfaces in dashboard — no prospecting list needed</div>
+              <div class="ba-time">~0 min</div>
+            </div>
+          </div>
+          <div class="ba-row">
+            <div class="ba-icon">📊</div>
+            <div>
+              <div class="ba-text">Research brief pre-generated: company summary, tech stack, recent news, key contacts</div>
+              <div class="ba-time">~2 min review</div>
+            </div>
+          </div>
+          <div class="ba-row">
+            <div class="ba-icon">✦</div>
+            <div>
+              <div class="ba-text">AI-generated pitch from account signals — contextually justified, not merged</div>
+              <div class="ba-time">~3 min review + send</div>
+            </div>
+          </div>
+          <div class="ba-row">
+            <div class="ba-icon">🎯</div>
+            <div>
+              <div class="ba-text">Signal-triggered outreach: SDR knows why this account, why today</div>
+            </div>
+          </div>
+          <div class="ba-row">
+            <div class="ba-icon">⏰</div>
+            <div>
+              <div class="ba-text" style="color:#34d399;font-weight:700;">Total: ~5 min / account · Research time recoverable: ~$200K/yr</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">10 / 18</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 11 — Before / After for AEs
+══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="11 AE Before After">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#2dd4bf;bottom:-200px;right:-100px;"></div>
+  <div class="logo"><div class="logo-icon">⬡</div><div class="logo-text">DevGTM Mesh</div></div>
+  <div class="ba-body">
+    <div style="margin-bottom:20px;"><span class="pill" style="background:#2dd4bf18;border:1px solid #2dd4bf44;color:#2dd4bf">18 AEs · Meeting Prep Workflow</span></div>
+    <div class="section-h" style="font-size:44px;">AE meeting prep — before &amp; after</div>
+    <div class="ba-grid">
+      <div class="ba-col" style="border:1px solid #ef444433;">
+        <div class="ba-col-header" style="background:#ef444412;border-bottom:1px solid #ef444433;">
+          <span style="font-size:30px;">✗</span>
+          <span style="color:#f87171;">Today — Manual</span>
+        </div>
+        <div class="ba-rows">
+          <div class="ba-row">
+            <div class="ba-icon">📂</div>
+            <div>
+              <div class="ba-text">Re-read 3+ CRM notes, old emails, Fireflies transcripts separately</div>
+              <div class="ba-time">~30 min / meeting</div>
+            </div>
+          </div>
+          <div class="ba-row">
+            <div class="ba-icon">🔎</div>
+            <div>
+              <div class="ba-text">Look up recent news, job postings, company announcements manually</div>
+              <div class="ba-time">~15 min / meeting</div>
+            </div>
+          </div>
+          <div class="ba-row">
+            <div class="ba-icon">🗒️</div>
+            <div>
+              <div class="ba-text">Write call prep notes with no signal context — who said what last time?</div>
+              <div class="ba-time">~15 min / meeting</div>
+            </div>
+          </div>
+          <div class="ba-row">
+            <div class="ba-icon">❌</div>
+            <div>
+              <div class="ba-text">No awareness of competitive activity or intent-score changes since last call</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ba-col" style="border:1px solid #34d39933;">
+        <div class="ba-col-header" style="background:#34d39912;border-bottom:1px solid #34d39933;">
+          <span style="font-size:30px;">✓</span>
+          <span style="color:#34d399;">With DevGTM Mesh</span>
+        </div>
+        <div class="ba-rows">
+          <div class="ba-row">
+            <div class="ba-icon">📋</div>
+            <div>
+              <div class="ba-text">Pre-meeting brief auto-assembled: prior meeting summaries, action items, sentiment</div>
+              <div class="ba-time">~2 min review</div>
+            </div>
+          </div>
+          <div class="ba-row">
+            <div class="ba-icon">📈</div>
+            <div>
+              <div class="ba-text">Intent score delta shown: "account spiked 23 pts this week — here is why"</div>
+              <div class="ba-time">~1 min</div>
+            </div>
+          </div>
+          <div class="ba-row">
+            <div class="ba-icon">🎙️</div>
+            <div>
+              <div class="ba-text">Fireflies transcript summary + action items surfaced inline — one click</div>
+              <div class="ba-time">~2 min</div>
+            </div>
+          </div>
+          <div class="ba-row">
+            <div class="ba-icon">🏆</div>
+            <div>
+              <div class="ba-text">Competitive signals flagged: "competitor meeting logged 11 days ago — come prepared"</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">11 / 18</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 12 — Proof: Sentinel Metrics case study
+══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="12 Case Study">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#7c3aed;top:-100px;right:-100px;"></div>
+  <div class="logo"><div class="logo-icon">⬡</div><div class="logo-text">DevGTM Mesh</div></div>
+  <div class="case-body">
+    <div style="margin-bottom:20px;"><span class="pill" style="background:#7c3aed18;border:1px solid #7c3aed44;color:#a78bfa">Customer Proof</span></div>
+    <div class="section-h" style="font-size:44px;">Sentinel Metrics — analogous customer profile</div>
+    <div class="case-split">
+      <div class="case-card">
+        <div class="case-name">Sentinel Metrics</div>
+        <div class="case-profile">Data observability SaaS · 200 employees · Series B · San Francisco<br>Similar GTM stack: HubSpot + Salesforce + Outreach · 14 SDRs · 20 AEs</div>
+        <div class="case-metrics">
+          <div class="case-metric">
+            <div class="case-metric-val" style="color:#2dd4bf;">47%</div>
+            <div class="case-metric-desc">reduction in SDR research time within the first 90 days of deployment</div>
+          </div>
+          <div class="case-metric">
+            <div class="case-metric-val" style="color:#a78bfa;">2.3×</div>
+            <div class="case-metric-desc">pipeline increase in 90 days — same team size, same headcount</div>
+          </div>
+          <div class="case-metric">
+            <div class="case-metric-val" style="color:#f59e0b;">90</div>
+            <div class="case-metric-desc">days from signed contract to measurable pipeline impact</div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:28px;">
+        <div class="case-testimonial">
+          "We went from SDRs spending half their day on research to having a morning queue pre-loaded with context. The first month was setup. By month three, pipeline was unrecognizable."
+          <div class="case-testimonial-attr">— VP Sales, Sentinel Metrics · post-deployment review</div>
+        </div>
+        <div style="background:#131929;border:1px solid #1e2d47;border-radius:18px;padding:32px 36px;display:flex;flex-direction:column;gap:16px;">
+          <div style="font-size:22px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#3d4a6e;">Why this comparison is relevant</div>
+          <div style="font-size:24px;color:#a8bdd4;line-height:1.6;">Sentinel's profile at deployment closely matched Lumen today: same industry, same team scale, same GTM stack combination, same CTO-acknowledged research bottleneck.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">12 / 18</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 13 — Projected impact for Lumen
+══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="13 Projection">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#2dd4bf;bottom:-200px;left:-200px;"></div>
+  <div class="logo"><div class="logo-icon">⬡</div><div class="logo-text">DevGTM Mesh</div></div>
+  <div class="proj-body">
+    <div style="margin-bottom:20px;"><span class="pill" style="background:#2dd4bf18;border:1px solid #2dd4bf44;color:#2dd4bf">Lumen-Specific Projection</span></div>
+    <div class="section-h" style="font-size:44px;">Applying Sentinel ratios to Lumen's 12-SDR / 18-AE team</div>
+    <div class="proj-cards">
+      <div class="proj-card" style="border-color:#2dd4bf33;">
+        <div class="proj-card-icon">⏱️</div>
+        <div class="proj-card-val" style="color:#2dd4bf;">~$200K</div>
+        <div class="proj-card-label">Annual research time recovered</div>
+        <div class="proj-card-basis">47% × $429K baseline (slide 6)</div>
+      </div>
+      <div class="proj-card" style="border-color:#a78bfa33;">
+        <div class="proj-card-icon">📈</div>
+        <div class="proj-card-val" style="color:#a78bfa;">+$3.2M</div>
+        <div class="proj-card-label">Estimated pipeline uplift at current ACV</div>
+        <div class="proj-card-basis">2.3× ratio · $185K ACV · current conversion</div>
+      </div>
+      <div class="proj-card" style="border-color:#f59e0b33;">
+        <div class="proj-card-icon">🎯</div>
+        <div class="proj-card-val" style="color:#f59e0b;">90</div>
+        <div class="proj-card-label">Days to measurable pipeline impact</div>
+        <div class="proj-card-basis">based on Sentinel deployment timeline</div>
+      </div>
+      <div class="proj-card" style="border-color:#34d39933;">
+        <div class="proj-card-icon">👥</div>
+        <div class="proj-card-val" style="color:#34d399;">30</div>
+        <div class="proj-card-label">People impacted (12 SDRs + 18 AEs)</div>
+        <div class="proj-card-basis">every rep gets a pre-loaded research queue</div>
+      </div>
+    </div>
+    <div class="proj-note">
+      These are AI-generated projections based on Sentinel Metrics outcomes applied to Lumen's known team structure. They are directional estimates — actual results will depend on your pipeline volume and current conversion rates.
+    </div>
+  </div>
+  <div class="slide-num">13 / 18</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 14 — 30 / 60 / 90 day rollout plan
+══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="14 Rollout Plan">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#7c3aed;top:-100px;right:-100px;"></div>
+  <div class="logo"><div class="logo-icon">⬡</div><div class="logo-text">DevGTM Mesh</div></div>
+  <div class="rollout-body">
+    <div style="margin-bottom:20px;"><span class="pill" style="background:#7c3aed18;border:1px solid #7c3aed44;color:#a78bfa">Implementation Plan · Lumen Stack</span></div>
+    <div class="section-h" style="font-size:44px;">30 / 60 / 90 day rollout — your stack, your milestones</div>
+    <div class="rollout-phases">
+
+      <div class="rollout-phase" style="border-color:#f59e0b33;">
+        <div class="rollout-phase-header" style="background:#f59e0b0a;">
+          <div class="rollout-phase-label" style="color:#f59e0b;">Phase 1</div>
+          <div class="rollout-phase-period">Days 1 – 30</div>
+        </div>
+        <div class="rollout-milestones">
+          <div class="rollout-milestone">
+            <div class="rollout-check" style="color:#f59e0b;">✦</div>
+            <div class="rollout-week">Wk 1</div>
+            <div class="rollout-task">HubSpot connector activated — companies, contacts, deals syncing in real time</div>
+          </div>
+          <div class="rollout-milestone">
+            <div class="rollout-check" style="color:#f59e0b;">✦</div>
+            <div class="rollout-week">Wk 1</div>
+            <div class="rollout-task">Salesforce bidirectional sync configured — intent scores visible in SF records</div>
+          </div>
+          <div class="rollout-milestone">
+            <div class="rollout-check" style="color:#f59e0b;">✦</div>
+            <div class="rollout-week">Wk 2</div>
+            <div class="rollout-task">Outreach integration live — AI pitch content flows into sequences</div>
+          </div>
+          <div class="rollout-milestone">
+            <div class="rollout-check" style="color:#f59e0b;">✦</div>
+            <div class="rollout-week">Wk 3–4</div>
+            <div class="rollout-task">SDR onboarding (2 sessions) · first AI-generated research briefs reviewed</div>
+          </div>
+          <div class="rollout-milestone">
+            <div class="rollout-check" style="color:#f59e0b;">✦</div>
+            <div class="rollout-week">Day 30</div>
+            <div class="rollout-task">Milestone check: research time per account, SDR feedback, pipeline activity delta</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rollout-phase" style="border-color:#a78bfa33;">
+        <div class="rollout-phase-header" style="background:#7c3aed0a;">
+          <div class="rollout-phase-label" style="color:#a78bfa;">Phase 2</div>
+          <div class="rollout-phase-period">Days 31 – 60</div>
+        </div>
+        <div class="rollout-milestones">
+          <div class="rollout-milestone">
+            <div class="rollout-check" style="color:#a78bfa;">✦</div>
+            <div class="rollout-week">Wk 5</div>
+            <div class="rollout-task">Intent score calibration — adjust signal weights to match Lumen's ICP patterns</div>
+          </div>
+          <div class="rollout-milestone">
+            <div class="rollout-check" style="color:#a78bfa;">✦</div>
+            <div class="rollout-week">Wk 6</div>
+            <div class="rollout-task">AE meeting prep workflows enabled — Fireflies transcript summaries surfaced in-platform</div>
+          </div>
+          <div class="rollout-milestone">
+            <div class="rollout-check" style="color:#a78bfa;">✦</div>
+            <div class="rollout-week">Wk 7</div>
+            <div class="rollout-task">Firecrawl enrichment pipeline running on full account list — homepage signals active</div>
+          </div>
+          <div class="rollout-milestone">
+            <div class="rollout-check" style="color:#a78bfa;">✦</div>
+            <div class="rollout-week">Wk 8</div>
+            <div class="rollout-task">Pitch Generator enabled for all SDRs · shareable pitch URL workflow trained</div>
+          </div>
+          <div class="rollout-milestone">
+            <div class="rollout-check" style="color:#a78bfa;">✦</div>
+            <div class="rollout-week">Day 60</div>
+            <div class="rollout-task">Milestone check: pipeline created, pitch send-rate vs. baseline, research time delta</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rollout-phase" style="border-color:#2dd4bf33;">
+        <div class="rollout-phase-header" style="background:#2dd4bf0a;">
+          <div class="rollout-phase-label" style="color:#2dd4bf;">Phase 3</div>
+          <div class="rollout-phase-period">Days 61 – 90</div>
+        </div>
+        <div class="rollout-milestones">
+          <div class="rollout-milestone">
+            <div class="rollout-check" style="color:#2dd4bf;">✦</div>
+            <div class="rollout-week">Wk 9</div>
+            <div class="rollout-task">Full GTM chat interface live — VP RevOps and managers using natural-language queries</div>
+          </div>
+          <div class="rollout-milestone">
+            <div class="rollout-check" style="color:#2dd4bf;">✦</div>
+            <div class="rollout-week">Wk 10</div>
+            <div class="rollout-task">SDR auto-assignment rules configured — accounts routed by territory + intent score</div>
+          </div>
+          <div class="rollout-milestone">
+            <div class="rollout-check" style="color:#2dd4bf;">✦</div>
+            <div class="rollout-week">Wk 11</div>
+            <div class="rollout-task">Reo.Dev developer-intent signals layered in — pricing-page visit alerts live</div>
+          </div>
+          <div class="rollout-milestone">
+            <div class="rollout-check" style="color:#2dd4bf;">✦</div>
+            <div class="rollout-week">Wk 12</div>
+            <div class="rollout-task">Full-team adoption review · success metrics report prepared for board</div>
+          </div>
+          <div class="rollout-milestone">
+            <div class="rollout-check" style="color:#2dd4bf;">✦</div>
+            <div class="rollout-week">Day 90</div>
+            <div class="rollout-task">Pilot success review: research time, pipeline, ACV impact vs. targets</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div class="slide-num">14 / 18</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 15 — Investment (pricing)
+══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="15 Investment">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#7c3aed;bottom:-200px;right:-200px;"></div>
+  <div class="logo"><div class="logo-icon">⬡</div><div class="logo-text">DevGTM Mesh</div></div>
+  <div class="invest-body">
+    <div style="margin-bottom:20px;"><span class="pill" style="background:#7c3aed18;border:1px solid #7c3aed44;color:#a78bfa">Investment</span></div>
+    <div style="font-size:52px;font-weight:700;line-height:1.15;margin-bottom:8px;text-align:center;">Simple, transparent pricing</div>
+    <div style="font-size:24px;color:#6b7fa3;margin-bottom:36px;text-align:center;">Two options — both designed to return investment within 90 days</div>
+    <div class="invest-options">
+      <div class="invest-card">
+        <div class="invest-card-badge" style="color:#6b7fa3;">Seat-Based</div>
+        <div class="invest-card-name" style="color:#a78bfa;">Per Rep</div>
+        <div class="invest-card-price">Pricing on request · per seat / month</div>
+        <div class="invest-card-features">
+          <div class="invest-feature"><span style="color:#a78bfa;">✦</span> Scale with your team — pay for active seats</div>
+          <div class="invest-feature"><span style="color:#a78bfa;">✦</span> All integrations included (HubSpot + Salesforce + Outreach)</div>
+          <div class="invest-feature"><span style="color:#a78bfa;">✦</span> AI Research Bot, Pitch Generator, Intent Scoring</div>
+          <div class="invest-feature"><span style="color:#a78bfa;">✦</span> Best for growing teams expecting headcount changes</div>
+        </div>
+      </div>
+      <div class="invest-card featured">
+        <div class="invest-card-badge" style="color:#2dd4bf;">Recommended for Lumen</div>
+        <div class="invest-card-name" style="color:#2dd4bf;">Platform</div>
+        <div class="invest-card-price">Pricing on request · flat platform rate / month</div>
+        <div class="invest-card-features">
+          <div class="invest-feature"><span style="color:#2dd4bf;">✦</span> Predictable cost regardless of headcount growth</div>
+          <div class="invest-feature"><span style="color:#2dd4bf;">✦</span> All features + unlimited seats for your 30-person GTM team</div>
+          <div class="invest-feature"><span style="color:#2dd4bf;">✦</span> Dedicated onboarding and calibration support</div>
+          <div class="invest-feature"><span style="color:#2dd4bf;">✦</span> Recommended: Lumen is actively hiring (SDR Manager role open)</div>
+        </div>
+      </div>
+    </div>
+    <div class="invest-roi">ROI in under 90 days — the $200K/yr time recovery alone covers the platform cost within the first quarter</div>
+  </div>
+  <div class="slide-num">15 / 18</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 16 — Risk reversal (pilot)
+══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="16 Risk Reversal">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#2dd4bf;top:-100px;left:-100px;"></div>
+  <div class="logo"><div class="logo-icon">⬡</div><div class="logo-text">DevGTM Mesh</div></div>
+  <div class="risk-body">
+    <div style="margin-bottom:28px;"><span class="pill" style="background:#2dd4bf18;border:1px solid #2dd4bf44;color:#2dd4bf">Risk Reversal</span></div>
+    <div class="risk-hero">
+      <div class="risk-headline">60-Day Paid Pilot<br>with Full Refund Guarantee</div>
+      <div class="risk-sub">We define success metrics together before day one. If we do not hit them by day 60, you get your money back — no conditions, no questions.</div>
+      <div class="risk-terms">
+        <div class="risk-term">
+          <div class="risk-term-icon">📅</div>
+          <div class="risk-term-val">60</div>
+          <div class="risk-term-desc">Days in the pilot window</div>
+        </div>
+        <div class="risk-term">
+          <div class="risk-term-icon">📋</div>
+          <div class="risk-term-val">Day 1</div>
+          <div class="risk-term-desc">Success metrics defined and signed before any work begins</div>
+        </div>
+        <div class="risk-term">
+          <div class="risk-term-icon">💰</div>
+          <div class="risk-term-val">100%</div>
+          <div class="risk-term-desc">Refund if targets are missed</div>
+        </div>
+        <div class="risk-term">
+          <div class="risk-term-icon">⚡</div>
+          <div class="risk-term-val">Wk 1</div>
+          <div class="risk-term-desc">Full HubSpot + Salesforce + Outreach integration live</div>
+        </div>
+      </div>
+    </div>
+    <div class="risk-guarantee">Suggested success metrics for Lumen's pilot: (1) &gt;30% reduction in average SDR research time per account, (2) &gt;$500K pipeline created in 60 days that is attributable to AI-prioritized outreach, (3) &gt;80% SDR adoption rate (daily active use). These are negotiable — we set them together.</div>
+  </div>
+  <div class="slide-num">16 / 18</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 17 — Recommended next step
+══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="17 Next Step">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#7c3aed;top:-100px;right:-100px;"></div>
+  <div class="logo"><div class="logo-icon">⬡</div><div class="logo-text">DevGTM Mesh</div></div>
+  <div class="next-body">
+    <div style="margin-bottom:20px;"><span class="pill" style="background:#7c3aed18;border:1px solid #7c3aed44;color:#a78bfa">Recommended Next Step</span></div>
+    <div class="section-h" style="font-size:44px;">One 30-minute working session — not a demo</div>
+    <div class="next-split">
+      <div class="next-ask">
+        <div class="next-ask-head">The Ask</div>
+        <div class="next-ask-title">30-minute working session</div>
+        <div style="font-size:24px;color:#6b7fa3;margin-bottom:8px;">Suggested attendees from your team:</div>
+        <div class="next-attendees">
+          <div class="next-attendee"><div class="next-attendee-dot"></div>VP RevOps — to validate the cost math and success metric framing</div>
+          <div class="next-attendee"><div class="next-attendee-dot"></div>1 SDR Manager — to walk through the daily workflow change on slide 10</div>
+          <div class="next-attendee"><div class="next-attendee-dot"></div>1 Account Executive — to review the meeting prep workflow on slide 11</div>
+        </div>
+        <div style="font-size:22px;color:#6b7fa3;margin-top:12px;">Proposed dates (flexible):</div>
+        <div class="next-dates">
+          <div class="next-date">
+            <div class="next-date-label">Option A</div>
+            <div class="next-date-val">May 6, 2025 · 10:00 AM PT</div>
+          </div>
+          <div class="next-date">
+            <div class="next-date-label">Option B</div>
+            <div class="next-date-val">May 8, 2025 · 2:00 PM PT</div>
+          </div>
+        </div>
+      </div>
+      <div class="next-agenda">
+        <div class="next-agenda-head">30-Minute Agenda</div>
+        <div class="next-agenda-items">
+          <div class="next-agenda-item">
+            <div class="next-agenda-num">01</div>
+            <div class="next-agenda-text">Validate the cost math (slide 6) against Lumen's actual SDR research time — do the numbers hold? (10 min)</div>
+          </div>
+          <div class="next-agenda-item">
+            <div class="next-agenda-num">02</div>
+            <div class="next-agenda-text">Walk the SDR manager through the before/after workflow live in the platform — hands on, no slides (12 min)</div>
+          </div>
+          <div class="next-agenda-item">
+            <div class="next-agenda-num">03</div>
+            <div class="next-agenda-text">Define the pilot success metrics together — agree on the numbers that would make this a clear yes after 60 days (8 min)</div>
+          </div>
+        </div>
+        <div style="margin-top:24px;padding:20px 24px;background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.2);border-radius:12px;font-size:22px;color:#a78bfa;">
+          This is a working session, not a sales call. Bring your actual numbers — we will build the business case together in the room.
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">17 / 18</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 18 — Appendix: Data sources behind this pitch
+══════════════════════════════════════════════════════════════ -->
+<section data-screen-label="18 Data Sources Appendix">
+  <div class="dot-grid"></div>
+  <div class="glow" style="background:#7c3aed;top:-200px;right:-200px;"></div>
+  <div class="logo"><div class="logo-icon">⬡</div><div class="logo-text">DevGTM Mesh</div></div>
+  <div class="appendix-body">
+    <div style="margin-bottom:20px;"><span class="pill" style="background:#7c3aed18;border:1px solid #7c3aed44;color:#a78bfa">Appendix · AI Audit Trail</span></div>
+    <div class="section-h" style="font-size:38px;">Every claim in this deck is traceable to a source</div>
+    <div style="font-size:22px;color:#6b7fa3;margin-bottom:16px;">This is why this is AI-generated — not a template. The AI Pitch Generator assembled these signals and mapped each to the slides where it was used.</div>
+    <div class="appendix-table">
+      <div class="appendix-row header-row">
+        <div class="appendix-header-cell">Slide</div>
+        <div class="appendix-header-cell">Signal Used</div>
+        <div class="appendix-header-cell">Source</div>
+        <div class="appendix-header-cell">Date / Recency</div>
+        <div class="appendix-header-cell">Confidence</div>
+      </div>
+      <div class="appendix-row" style="background:#131929;">
+        <div class="appendix-cell"><div class="appendix-slide-num">2, 5</div></div>
+        <div class="appendix-cell"><div class="appendix-signal-type">CTO public post: "#1 bottleneck — losing hours a day"</div></div>
+        <div class="appendix-cell"><div class="appendix-source">LinkedIn · Public Feed Monitor</div></div>
+        <div class="appendix-cell"><div class="appendix-date">April 17, 2025 (–9 days)</div></div>
+        <div class="appendix-cell"><div class="appendix-conf" style="color:#34d399;">Very High</div></div>
+      </div>
+      <div class="appendix-row">
+        <div class="appendix-cell"><div class="appendix-slide-num">3, 4</div></div>
+        <div class="appendix-cell"><div class="appendix-signal-type">3 anonymous pricing-page visits · getreo.dev/pricing</div></div>
+        <div class="appendix-cell"><div class="appendix-source">Reo.Dev · Visitor Intelligence</div></div>
+        <div class="appendix-cell"><div class="appendix-date">April 12–25, 2025 (–14 days)</div></div>
+        <div class="appendix-cell"><div class="appendix-conf" style="color:#34d399;">High</div></div>
+      </div>
+      <div class="appendix-row" style="background:#131929;">
+        <div class="appendix-cell"><div class="appendix-slide-num">3, 4, 15</div></div>
+        <div class="appendix-cell"><div class="appendix-signal-type">Job posting: "Outbound SDR Manager" opened</div></div>
+        <div class="appendix-cell"><div class="appendix-source">Lumen Analytics Careers Page · Firecrawl</div></div>
+        <div class="appendix-cell"><div class="appendix-date">April 17, 2025 (–9 days)</div></div>
+        <div class="appendix-cell"><div class="appendix-conf" style="color:#34d399;">High</div></div>
+      </div>
+      <div class="appendix-row">
+        <div class="appendix-cell"><div class="appendix-slide-num">3, 4, 6, 13</div></div>
+        <div class="appendix-cell"><div class="appendix-signal-type">Series B · $42M raised · 180 headcount (12 SDRs, 18 AEs)</div></div>
+        <div class="appendix-cell"><div class="appendix-source">Crunchbase · Firecrawl firmographic enrichment</div></div>
+        <div class="appendix-cell"><div class="appendix-date">October 2024 (–6 months)</div></div>
+        <div class="appendix-cell"><div class="appendix-conf" style="color:#34d399;">High</div></div>
+      </div>
+      <div class="appendix-row" style="background:#131929;">
+        <div class="appendix-cell"><div class="appendix-slide-num">3, 4</div></div>
+        <div class="appendix-cell"><div class="appendix-signal-type">2 meetings logged with RevOps consultant (competitive)</div></div>
+        <div class="appendix-cell"><div class="appendix-source">Fireflies · Meeting Intelligence Sync</div></div>
+        <div class="appendix-cell"><div class="appendix-date">March–April 2025 (–30 days)</div></div>
+        <div class="appendix-cell"><div class="appendix-conf" style="color:#f59e0b;">Medium</div></div>
+      </div>
+      <div class="appendix-row">
+        <div class="appendix-cell"><div class="appendix-slide-num">3</div></div>
+        <div class="appendix-cell"><div class="appendix-signal-type">Homepage hero updated: "AI-native data observability"</div></div>
+        <div class="appendix-cell"><div class="appendix-source">Firecrawl · Web Extraction · lumenanalytics.com</div></div>
+        <div class="appendix-cell"><div class="appendix-date">Recent (–detected on crawl)</div></div>
+        <div class="appendix-cell"><div class="appendix-conf" style="color:#f59e0b;">Medium</div></div>
+      </div>
+      <div class="appendix-row" style="background:#131929;">
+        <div class="appendix-cell"><div class="appendix-slide-num">9</div></div>
+        <div class="appendix-cell"><div class="appendix-signal-type">GTM stack: HubSpot + Salesforce + Outreach confirmed</div></div>
+        <div class="appendix-cell"><div class="appendix-source">HubSpot record · Job descriptions · Firecrawl</div></div>
+        <div class="appendix-cell"><div class="appendix-date">Current (cold HubSpot record)</div></div>
+        <div class="appendix-cell"><div class="appendix-conf" style="color:#34d399;">High</div></div>
+      </div>
+      <div class="appendix-row">
+        <div class="appendix-cell"><div class="appendix-slide-num">6, 10, 13</div></div>
+        <div class="appendix-cell"><div class="appendix-signal-type">SDR headcount (12), AE headcount (18), ACV ($185K)</div></div>
+        <div class="appendix-cell"><div class="appendix-source">Firecrawl enrichment · LinkedIn headcount data</div></div>
+        <div class="appendix-cell"><div class="appendix-date">April 2025</div></div>
+        <div class="appendix-cell"><div class="appendix-conf" style="color:#34d399;">High</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">18 / 18</div>
+</section>
+
+</deck-stage>
+</body>
+</html>
