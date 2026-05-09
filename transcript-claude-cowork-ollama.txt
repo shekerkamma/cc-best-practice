@@ -1,0 +1,131 @@
+Title: Claude Cowork + Ollama = 100% FREE & PRIVATE (Full Setup)
+URL: https://www.youtube.com/watch?v=ME4flXK_6tQ
+---
+
+Hello legends. In this video, I'm going to show you how to use Claude CoWork completely for free and 100% privately by using a local AI model that you're running on your computer. This means you could use something like Ollama to then download a free local AI model onto your computer. In this video, I'll demonstrate using my Gemma 26B, which is 18 gigs and it's got a 256K context window.
+
+We could even try with the Gemma E2B, which is very small at 7.2 gigs. Now, if your computer isn't powerful enough to run a local AI model, I'll also show you how to connect up to something called OpenRouter, which gives you access to hundreds of other AI models, all of which run in the cloud. So, if you wanted to follow along with my example, you could still use the cloud version of the Gemma 26B, which is insanely cheap at just 0.06 cents per million input tokens and then 33 cents per million output tokens. We could also browse by free models and then try your luck with one of these.
+
+From my experience, this is pretty hit and miss and sometimes it doesn't work. And just one final note, if you are going to use OpenRouter, I would assume that any information you share it's going to be collected and used in some way. So, let's start by sending in our very first message using our local AI model. I'm just going to choose an existing project.
+
+Let's click allow and just going to have a generic conversation to start with. Hi there. Now, if you are running local AI models, your processing time is going to be slower than if you're using one of the cloud models on OpenRouter or obviously much slower than if you're using something like Opus 4.6 or Sonnet 7 directly through the paid version. So, there are going to be some tradeoffs in terms of like speed and the ability of the model to actually handle this entire Claude workspace.
+
+But as you can see, this is our very first free and private response from Claude CoWork. And now to explore the rest of this interface, we have the included progress task tracker panel up the top. We have our folder or project that we're working with in. We have the context panel, so whenever we're using one of our skills or web search, all that kind of stuff is going to come into here.
+
+If we come down to the plus icon to look at some additional context we can bring in. We've got files, photos, folders. There is a little bit of difference between this version of Claude CoWork and then the When it comes to skills, connectors, and plugins, we actually have to import these in ourselves. I'll show you how to do that later in this video.
+
+And in our main menu bar, we still have our projects that we can work on as we see the 3P demo that I'm currently in. We have scheduled tasks. So, you can actually create a task that executes as long as this app is open. So, I've got a random schedule that was firing off since yesterday every single hour and just saying hi to me.
+
+All these skipped ones and the ones that say error was when my my app was closed. I was logged into a different account. For example, if we jump into here, the instruction for my scheduled task just said to say hello and this is exactly what we got. The one thing you'll notice is that we don't have that dispatch button here.
+
+So, this version of Claude CoWork and also if you were to use Claude Code, there is no dispatch button for us to use. That might change in the future. And then finally, let's go into this customize panel and just like normal, we've got these skills, connectors, and plugins. So, I'll show you more about this in just a second.
+
+So, just in case you're wondering, this is actually the official version of Claude CoWork. It's just a slightly different product. It's called CoWork on 3P. And CoWork on 3P gives you a CoWork access to third-party model providers.
+
+For example, we can use Ollama with local models on our computer or OpenRouter with other cloud-based models. And we can plug those third-party models directly into the Claude desktop app, which means we actually get access for Claude CoWork and the Claude Code in the desktop app. So, if I go into the Claude Code section, by the way, this is the only place that I'm using Claude Code as of the last 7 days. 7 days ago, they released an incredible update to this interface and it is absolutely amazing.
+
+But as you can see here, I've got my Gemma model and then all the other models that I have as well. Now, I recommend reading through the rest of this article because there are some nuanced differences between the paid version of CoWork and then the 3P version of CoWork. From my testing so far, it's like 90% the same and I'm pretty sure Anthropic did this because they wanted to separate the harness, which is the desktop app, from their model because some of their enterprise customers wanted to use the harness, the desktop app, which is an amazing tool, but they wanted to use some of their own private models for certain tasks. So, because of that, they relatively silently released this updated feature, which we can all benefit from by using our own private models.
+
+So, we're going to come back to having more of a conversation later with our local model. I now want to show you how to get everything installed and set up. Back in the CoWork on 3P article, we've got the instructions of how to get this set up. So, the first thing we need to do is launch the Claude desktop app.
+
+If you don't have the Claude desktop app, just go across to claude.com and then download the version for your device. So, with the Claude desktop app open on your computer, we now need to go into the main menu bar of Claude and go on to help, then into troubleshooting and then enable developer mode. Once you enable developer mode, you can go back into the menu. You now see a new drop-down, which is called developer.
+
+So, go into developer and then go into configure third-party inference. So, I've got my Claude desktop app open. I'm just going to go into developer and then configure third-party. And then we see the configuration settings for our third-party provider.
+
+Let's make sure that we're on the gateway connection. Scroll down and we need to fill in these three fields over here. So, we need a URL that's going to be speaking to our model. Then we need to get the API key to give us permission to that model and then we need to choose our authentication type, so either bearer or X-API-Key.
+
+So, let's first start with getting our local model set up. So, this is your first time using a local AI model. In order for us to get Gemma 4 onto our computer and to plug it into Claude CoWork, we need to use a like a middleman. So, in this case, we're going to be using something called Ollama.
+
+Ollama's going to let us download and manage and connect up our AI models into different tools in this video for Claude CoWork. So, to do that, let's start by installing Ollama onto our computer. We can either install the app or if you want to follow along for this video, I'm going to be doing everything in the terminal. So, let's copy this command and let's open up a new terminal.
+
+So, if you're on Mac, this is called terminal. If you're on a Windows computer, I think it's called PowerShell. And let's paste in that command into the terminal. And for my case, cuz I already had Ollama on my computer, we're just going to remove the old version and then reinstall the latest version.
+
+If this is your first time using Ollama, it's just going to install that for the first time. And once that's done, we can go back to Ollama and find a local model. I'm going to be using Gemma 4 for this example. Now, when it comes to figuring out what kind of model can fit on your computer, for Ollama, you kind of have to know which model you can use.
+
+Now, there are alternatives to using Ollama. You can use something called LM Studio. Once you download this app and you browse AI models, LM Studio will be able to read your device and understand what kind of models you can run and it's either going to say, "Yep, you can run this model on your computer." or "No, this is too big to run." Let's say we want to start with running the Gemma E2B. I'm just going to copy this command.
+
+And back in our terminal, I'm going to type in Ollama pull and then paste in that model. And now we're going to be downloading that model to our computer. And if you ever want to see all the models available on your computer, you can just type in Ollama list. And here we go.
+
+We've got the Gemma 4 model E2B that was just downloaded. So, at this stage, we've got our Ollama and our local model downloaded onto our computer. It's time for us to get this URL. Now, Ollama comes with a default URL that we can use to tap into our model, but that URL has a HTTP connection.
+
+And for Anthropic, in order for us to use a third-party model, we actually need a HTTPS connection, which is a secure connection. Now, unfortunately, Ollama doesn't natively give the HTTPS connection. So, we cannot actually just use the Ollama URL. So, this means we need to put one more tool in between Claude CoWork and in between Ollama so that we can go from the Ollama HTTP and actually generate a HTTPS connection.
+
+For this video, I'm going to use an existing tool that I have called Tailscale. I'm not affiliated with these guys. I just use them for different things that I do. And Tailscale will let us create a secure connection between Ollama and Claude CoWork, which gives us that HTTPS.
+
+So, just go ahead and then create an account here. It can be a free account. I'm actually running a free account. I haven't paid for anything.
+
+And after you've created an account, you would have been taken through the onboarding process where you have to download the app onto your computer. Um just go through and configure some settings. You could, if you wanted to, just go to your Claude and just say, "Hey, you know, here's a transcript from this video. We want to figure out how to get, you know, Tailscale.
+
+What are we using that we can use instead? Do we have a different VPN that we can use to route these calls to get that HTTPS?" So, definitely just figure out what works best for your use case. So, this first command that we're going to run in the terminal is going to give us the ability to run Tailscale commands in our terminal. So, just like before we had Ollama and we could run Ollama list and see all the models, we can run Ollama pull and then download that model.
+
+Same thing with Tailscale. We need to run Tailscale serve to actually create that HTTPS URL. Then for this second command, uh this is going to be a temporary session where we're creating that HTTPS URL and then we're deploying a version of Ollama with some configurations that are going to work for the Claude CoWork connection. Now, when you run this for the very first time, your terminal's going to come back to you and say, "Hey, I can see you've got Tailscale.
+
+In order for you to run this Tailscale serve command, you just need to change one more setting in your Tailscale app." It's going to give you a URL that you can click and it's going to take you straight to that page. You just need to enable that setting. And then if we're done with the session for the day, we want to fully terminate all those things that we set up, you can run this command. It's going to turn off your Ollama from emitting any AI into Tailscale and it's also going to turn off Tailscale.
+
+So, at this stage, you'll be basically back to zero. This is still what I'm doing right now, turning everything off until I figure out a better way forward. So, let's run this first command, paste it into our terminal, and there we go. Now, let's take our second command to generate that temporary session.
+
+Once again, you can just take all these instructions, give it to your Claude and ask it to help you walk through the process. So, here's our temporary session. Let's just scroll up and find our URL. And this is it here.
+
+Now, we can drop in that URL into our gateway credentials. Let's paste it in here. To get our API key, if you haven't set an API key for your connection right now, you can just put a default value of Ollama. And then for our gateway, we can just leave it as bearer like it is right now.
+
+And at this stage, we're ready to apply these settings and actually test out our local model. Let's relaunch the app. And here Here go. We can see the Gemma 4 E2B, which is running on my local computer.
+
+Now, once your Claude CoWork reopens, if you were signed into your paid account, you just have to go down to the very bottom here, just click on the settings, and for me, cuz I'm already on my gateway, I would just disconnect. But, for you, you just have to log out of your paid account, and then you're taken to this login page. So, the top setting is what gets us access to our local model, that's the gateway connection, and the bottom setting is uh the connection to your paid account. So, you actually don't lose anything here.
+
+I'm going to go with the gateway connection, and I'll just quickly flip back to my Mac Studio connection, just because my my main computer that I'm recording on right now will probably crash if I was trying to run my local model at the same time. So, that's why I see the Gemma 4 26B. All right, so now let me show you how to set up some of these custom configurations, like skills, connectors, and plugins. I'm going to go to skills, I'm going to go to manage skills, and here you can see the ones that I've already added, like the doc, Excel, and PDF skills.
+
+To add a new skill, let's go to the plus sign, and let's go to create skill. We can either create a skill with Claude, but for now, I'll be uploading a new skill. And to get access to the official skills that Anthropic has, let's go across to the Anthropic GitHub page, go into the skills repo, and then over here we have a green button. We just drop down and click on download zip.
+
+So, now we've just downloaded all the Anthropic skills onto our computer. Let's go across to that skills zip file and unpack it. Here is that skills folder. Let's go into the skills, and here we have all the official Anthropic skills, like the document, the PDF, and the Excel.
+
+So, let's now get the PowerPoint skill uploaded. For this, we just want to go to right click, and then compress this. We want to turn this back into a zip, and let's just drag that zip file into Claude CoWork, and here we have we uploaded the PowerPoint skill, which is over here. Now, if we come back to our regular chat window, let's drop down on our skills, and we can see the PowerPoint skill added over here.
+
+Now, the next thing we're going to need for sure is to get some kind of web search capability. So, when we're using the Anthropic API, like Opus or Sonnet, those models have built-in web search. So, if we're going to be using our own local model, we don't actually have web search, but this is incredibly important for us to use. So, I'm going to show you how to configure a Brave web search.
+
+To do that, let's go down to the bottom of the settings panel, and let's go into settings. Then let's go into developer, and then we can see our Brave web search connected over here. Now, this connection is going to be an MCP connection, and we'll have to edit our configuration file. So, let's click on this, and open that file.
+
+So, your default configuration is going to look like this. It's going to be completely bare-bones. And if we want to add another MCP connection, so just another way for us to interact with different tools, we can go across to the model context protocol GitHub page, go into the servers repo, and then scroll down, and then browse the tools that we want to connect. For this video, we want to plug in our Brave search.
+
+There's two different ways that we can configure this. We're just going to be using the NPX over here. So, let's copy this, and now we need to figure out how to add that MCP connection into our default configuration file. What I would do from here is just go into Claude, paste in the default configuration file, paste in the MCP that you want to get, and then ask it to adjust the file for you.
+
+And after it does that, you can paste it back into this configuration file. As you can see, I've got my Brave search MCP, and then the default configuration. Every time you want to add a new MCP server, you can just go into Claude and say, "Hey, can you add this extra MCP server?" Then it'll take that file and paste it back into here. And with some MCP connections, you need to get an API key to actually use the service.
+
+So, with Brave, you just need to create an account, go across to your API keys, create a new key, and then copy the value, and then paste it right into here. And then once you're done, you'll be able to see your Brave web search as an MCP connector. Now, at any stage, if you've just added the MCP connector or the skills, and there's no other errors showing, but you don't actually see it here, you might just need to close the app and then restart it for the changes to push through. So, let's test this out.
+
+Hi, can you Brave web search the latest AI news? Let's just choose our project. Let's click allow, and fire off this question. Let's accept the permission for the Brave web search, and here's the results of that AI web search.
+
+All right. And now let's take a look at how to plug it into OpenRouter to get access to different cloud models. We want to go back into developer, and then configure 3P settings. Let's drop down here, and go to add a new configuration.
+
+This way you can have a configuration for your local models, and then another configuration for your cloud models. Let's call it cloud demo two. Same thing, we want to be using the gateway connection, and then we need to figure out these three settings over here. So, let's first get our gateway base URL.
+
+Now, this is your first time using OpenRouter, just go across to openrouter.ai. We'll need to create an account. We'll need to pop in some credits. I recommend just starting with like 10 bucks, and then we'll need to generate an API key.
+
+So, once you've created your account, just go across and grab this URL from the browser, and let's come back into the gateway connection. Let's paste that URL into here, and just backspace the stuff that we don't need. We want to backspace until we have the forward slash, and then write the word API. So, then it's going to be https openrouter API.
+
+Now, let's get our API key. So, go across to API keys, click create, give this a name, and then create again. Let's copy this key, and paste it in. And for OpenRouter, we're going to have to drop this down and click on X API key.
+
+Now, at this stage, we're actually ready to go and apply locally, but while we're here, I want to look at one other setting that we can change. So, let's go into the sandbox and workspace. Now, like I mentioned before, when we were adding the Brave web search MCP, there's a bunch of built-in tools that the model that we were using before, like Opus and Sonnet, that they have. For example, one of those built-in tools is web search.
+
+So, by default, when we're having a conversation, the model's going to try first hit the web search, cuz it's like a built-in tool, but it's going to fail because a lot of our local models or these cloud models won't necessarily have native web search built-in. So, for that, we just want to list it as a disabled tool. So, when we're interacting with our local models, it's not even going to try use the web search, it'll just default directly to Brave. And now we're ready to apply locally.
+
+Let's relaunch. And now we can see we've plugged into OpenRouter, and we've got access to all those different models. So, there is one more thing I want to mention about accessing different models. Let's click onto that API key that we just created, and let's scroll down a little bit until we see the API key setting.
+
+We've got three different levels of API access, or AI model access. This is the available models that we can use under our API key. Then we have partially available, and then we have fully unavailable. For the fully unavailable models, I think it's a combination of different things.
+
+One of the uh reasons it might be unavailable is if that model doesn't meet some privacy standards that OpenRouter sets. In general, if you're going to be using OpenRouter, I would just assume whatever model you use is going to be collecting your information in some way. But, for example, you won't be able to use all these models listed here. So, when you are in your app, if you do choose a model, and like GPT 5.5 that we just saw wasn't available, and you try and chat with it, it's just going to give you a warning and say, "Hey, this model's not available on your account." But, otherwise, we can access certain models, like MiniMax 2.7.
+
+Hey, can you Brave search the latest AI news? Let's also get the latest AI news, choose our project, and hit send. And using cloud models through OpenRouter is going to be a lot faster, most likely, than using local models on your own hardware. Let's just click allow once for the Brave web search.
+
+Looks like it tried to be sneaky here and reset it. Uh let's just go back to MiniMax. And here we have the latest AI news. So, now I want to test out if MiniMax can actually use one of our skills, and I want to create a document uh with a summary of this AI news.
+
+Please create a doc with a summary of this AI news. Let's hit send. Now, I've been testing the exact same sequence of getting the local AI news, and then getting the model to create a doc with a summary of that news. And what I actually found is the model, like the cloud models, some of them would actually struggle to use that skill effectively.
+
+And after I read some of these command executions, I think it's because the cloud model here is not necessarily trained on the like how to use the Claude desktop app. There's a lot of underlying configuration, underlying prompting, that is actually sent with each request. So, when you're using Opus or Sonnet, those models know how to interact with this harness, with this Claude desktop app. And as you can see, the same thing is happening on this one.
+
+It just keeps going through and like kind of getting stuck, and then trying to figure out what's going on. If you are going to be using local or cloud models, so like anything aside from Opus or Sonnet, it might be a good idea to actually run the skill once, then investigate like where the issue was, and then ask that model to actually adjust the skill, so that it can learn from its mistakes. And then the second time it hits that skill, it just does it in one shot, instead of like going through 10 times. But, it looks like the model has completed the task and created this Word document for us.
+
+Nice. There we go. So, let's see what happened at the very end. Uh we created that AI news summary, and here is that summary of those AI news results.
+
+So, I'm going to keep testing this out, trying different models. I think now that we can use any AI model, I might try and replace like my open Claude usage with this. If you do want to see more videos on this topic, please drop a comment below. And if you've watched this far, I would appreciate if you could subscribe to my channel, as well.
+
+All right, thanks for watching, and I'll see you in the next one.
